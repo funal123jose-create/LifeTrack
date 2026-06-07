@@ -1081,6 +1081,227 @@ export type Database = {
           },
         ]
       }
+      project_task_assets: {
+        Row: {
+          asset_type: string
+          created_at: string
+          doc_id: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_url: string
+          id: string
+          mime_type: string | null
+          project_id: string
+          section_key: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          asset_type?: string
+          created_at?: string
+          doc_id?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          mime_type?: string | null
+          project_id: string
+          section_key?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          asset_type?: string
+          created_at?: string
+          doc_id?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          mime_type?: string | null
+          project_id?: string
+          section_key?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_task_assets_doc_id_fkey"
+            columns: ["doc_id"]
+            isOneToOne: false
+            referencedRelation: "project_task_docs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_task_assets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_task_assets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_assets_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "project_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_task_docs: {
+        Row: {
+          challenges: string | null
+          content: string | null
+          created_at: string
+          document_content_html: string | null
+          document_content_json: Json | null
+          id: string
+          learnings: string | null
+          objective: string | null
+          project_id: string
+          reference_links: string | null
+          result_summary: string | null
+          solution: string | null
+          task_id: string
+          technical_notes: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenges?: string | null
+          content?: string | null
+          created_at?: string
+          document_content_html?: string | null
+          document_content_json?: Json | null
+          id?: string
+          learnings?: string | null
+          objective?: string | null
+          project_id: string
+          reference_links?: string | null
+          result_summary?: string | null
+          solution?: string | null
+          task_id: string
+          technical_notes?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenges?: string | null
+          content?: string | null
+          created_at?: string
+          document_content_html?: string | null
+          document_content_json?: Json | null
+          id?: string
+          learnings?: string | null
+          objective?: string | null
+          project_id?: string
+          reference_links?: string | null
+          result_summary?: string | null
+          solution?: string | null
+          task_id?: string
+          technical_notes?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_task_docs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_task_docs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_docs_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: true
+            referencedRelation: "project_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_task_skills: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          proficiency_level: string | null
+          project_id: string
+          skill_id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          proficiency_level?: string | null
+          project_id: string
+          skill_id: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          proficiency_level?: string | null
+          project_id?: string
+          skill_id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_task_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_task_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "career_skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_task_skills_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "project_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_tasks: {
         Row: {
           completed_at: string | null
