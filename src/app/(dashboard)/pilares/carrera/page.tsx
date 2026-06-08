@@ -1183,6 +1183,105 @@ interface ProjectSkillLink {
   career_skills: CareerSkill | null
 }
 
+interface ProjectProfessionalScore {
+  project_id: string
+  total_tasks: number
+  completed_tasks: number
+  documented_tasks: number
+  total_task_skills: number
+  total_assets: number
+  task_completion_percentage: number
+  documentation_percentage: number
+  skill_coverage_percentage: number
+  evidence_coverage_percentage: number
+  professional_score: number
+}
+
+interface ProjectTechnicalSummary {
+  project_id: string
+  project_title: string
+  project_description: string | null
+  project_summary: string | null
+  project_status: string | null
+  project_priority: string | null
+  start_date: string | null
+  end_date: string | null
+  total_tasks: number
+  completed_tasks: number
+  in_progress_tasks: number
+  pending_tasks: number
+  archived_tasks: number
+  documented_tasks: number
+  total_project_skills: number
+  total_task_skills: number
+  tasks_with_skills: number
+  total_assets: number
+  total_images: number
+  total_documents: number
+  tasks_with_assets: number
+  project_stack: string
+  task_stack: string
+  task_completion_percentage: number
+  documentation_percentage: number
+  skill_coverage_percentage: number
+  evidence_coverage_percentage: number
+  professional_score: number
+}
+
+interface ProjectCaseStudySkill {
+  skill_id: string
+  name: string
+  category: string | null
+  color: string | null
+  icon: string | null
+  proficiency_level?: string | null
+  notes?: string | null
+}
+
+interface ProjectCaseStudyAsset {
+  asset_id: string
+  asset_type: "image" | "document" | "link"
+  section_key: string
+  file_name: string
+  file_path: string
+  file_url: string
+  mime_type: string | null
+  file_size: number | null
+  created_at: string
+}
+
+interface ProjectCaseStudyTaskDoc {
+  doc_id?: string | null
+  title?: string | null
+  objective?: string | null
+  content?: string | null
+  technical_notes?: string | null
+  challenges?: string | null
+  solution?: string | null
+  learnings?: string | null
+  result_summary?: string | null
+  reference_links?: string | null
+  document_content_html?: string | null
+  document_content_json?: any | null
+}
+
+interface ProjectCaseStudyTask {
+  task_id: string
+  task_title: string
+  task_status: string
+  documentation: ProjectCaseStudyTaskDoc
+  skills: ProjectCaseStudySkill[]
+  assets: ProjectCaseStudyAsset[]
+  total_assets: number
+  total_images: number
+  total_documents: number
+}
+
+interface ProjectCaseStudyDetail extends ProjectTechnicalSummary {
+  project_stack_json: ProjectCaseStudySkill[]
+  tasks_json: ProjectCaseStudyTask[]
+}
+
 interface Project {
   id: string
   title: string
@@ -1200,6 +1299,8 @@ export default function DataCarreraPage() {
   const supabase = createClient()
 
   const [projects, setProjects] = useState<Project[]>([])
+  const [projectScores, setProjectScores] = useState<Record<string, ProjectProfessionalScore>>({})
+  const [technicalSummaries, setTechnicalSummaries] = useState<Record<string, ProjectTechnicalSummary>>({})
   const [careerSkills, setCareerSkills] = useState<CareerSkill[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingSkills, setLoadingSkills] = useState(true)
@@ -1216,6 +1317,9 @@ export default function DataCarreraPage() {
 
   const [selectedTaskSkillLinks, setSelectedTaskSkillLinks] = useState<ProjectTaskSkillLink[]>([])
   const [loadingTaskSkills, setLoadingTaskSkills] = useState(false)
+
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<ProjectCaseStudyDetail | null>(null)
+  const [loadingCaseStudy, setLoadingCaseStudy] = useState(false)
 
   const macroColumns: { id: ProjectStatus; label: string; color: string; bg: string; borderGlow: string; icon: any }[] = [
     { id: 'Backlog', label: 'Backlog', color: 'text-slate-400', bg: 'bg-slate-500/5', borderGlow: 'group-hover:border-slate-500/30', icon: HelpCircle },
@@ -1241,6 +1345,89 @@ export default function DataCarreraPage() {
     return getProjectSkillLinks(project)
       .map((link) => link.career_skills)
       .filter((skill): skill is CareerSkill => Boolean(skill))
+  }
+
+  const getProjectScore = (project?: Project | null) => {
+    if (!project) return null
+    return projectScores[project.id] || null
+  }
+
+  const getProjectTechnicalSummary = (project?: Project | null) => {
+    if (!project) return null
+    return technicalSummaries[project.id] || null
+  }
+
+  const splitStack = (stack?: string | null) => {
+    return (stack || "")
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+
+  const getCaseStudyDocHasContent = (doc?: ProjectCaseStudyTaskDoc | null) => {
+    if (!doc) return false
+    return Boolean(
+      doc.document_content_html ||
+      doc.objective ||
+      doc.content ||
+      doc.technical_notes ||
+      doc.challenges ||
+      doc.solution ||
+      doc.learnings ||
+      doc.result_summary ||
+      doc.reference_links
+    )
+  }
+
+  const getTaskStatusTone = (status?: string | null) => {
+    const normalized = String(status || "").toUpperCase()
+
+    if (normalized === "COMPLETADO") return "border-emerald-300/16 bg-emerald-500/[0.08] text-emerald-200"
+    if (normalized === "EN CURSO") return "border-blue-300/16 bg-blue-500/[0.08] text-blue-200"
+    if (normalized === "ARCHIVADO") return "border-zinc-300/10 bg-zinc-500/[0.06] text-zinc-300"
+    return "border-slate-300/10 bg-slate-500/[0.06] text-slate-300"
+  }
+
+  const getScoreTone = (score?: number | null) => {
+    const safeScore = Number(score || 0)
+
+    if (safeScore >= 80) {
+      return {
+        label: "Excelente",
+        text: "text-emerald-200",
+        border: "border-emerald-300/20",
+        bg: "bg-emerald-500/[0.10]",
+        gradient: "from-emerald-500 via-teal-300 to-lime-300",
+      }
+    }
+
+    if (safeScore >= 55) {
+      return {
+        label: "Sólido",
+        text: "text-cyan-200",
+        border: "border-cyan-300/20",
+        bg: "bg-cyan-500/[0.10]",
+        gradient: "from-cyan-500 via-blue-300 to-sky-300",
+      }
+    }
+
+    if (safeScore >= 30) {
+      return {
+        label: "En construcción",
+        text: "text-orange-200",
+        border: "border-orange-300/20",
+        bg: "bg-orange-500/[0.10]",
+        gradient: "from-orange-600 via-amber-400 to-yellow-200",
+      }
+    }
+
+    return {
+      label: "Inicial",
+      text: "text-slate-300",
+      border: "border-white/[0.08]",
+      bg: "bg-white/[0.035]",
+      gradient: "from-slate-600 via-slate-400 to-slate-300",
+    }
   }
 
   const groupedCareerSkills = careerSkills.reduce<Record<string, CareerSkill[]>>((acc, skill) => {
@@ -1458,10 +1645,229 @@ export default function DataCarreraPage() {
     }
   }, [supabase, selectedProject?.id])
 
+  const fetchProfessionalScores = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return
+
+      const { data, error } = await supabase
+        .from('vw_project_professional_score')
+        .select(`
+          project_id,
+          total_tasks,
+          completed_tasks,
+          documented_tasks,
+          total_task_skills,
+          total_assets,
+          task_completion_percentage,
+          documentation_percentage,
+          skill_coverage_percentage,
+          evidence_coverage_percentage,
+          professional_score
+        `)
+        .eq('user_id', session.user.id)
+
+      if (error) throw error
+
+      const mappedScores: Record<string, ProjectProfessionalScore> = {}
+
+      ;(data || []).forEach((score: any) => {
+        mappedScores[score.project_id] = {
+          project_id: score.project_id,
+          total_tasks: Number(score.total_tasks || 0),
+          completed_tasks: Number(score.completed_tasks || 0),
+          documented_tasks: Number(score.documented_tasks || 0),
+          total_task_skills: Number(score.total_task_skills || 0),
+          total_assets: Number(score.total_assets || 0),
+          task_completion_percentage: Number(score.task_completion_percentage || 0),
+          documentation_percentage: Number(score.documentation_percentage || 0),
+          skill_coverage_percentage: Number(score.skill_coverage_percentage || 0),
+          evidence_coverage_percentage: Number(score.evidence_coverage_percentage || 0),
+          professional_score: Number(score.professional_score || 0),
+        }
+      })
+
+      setProjectScores(mappedScores)
+    } catch (err: any) {
+      console.error("Error cargando score profesional de proyectos:", err?.message || err)
+    }
+  }, [supabase])
+
+  const fetchTechnicalSummaries = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return
+
+      const { data, error } = await supabase
+        .from('vw_project_technical_summary')
+        .select(`
+          project_id,
+          project_title,
+          project_description,
+          project_summary,
+          project_status,
+          project_priority,
+          start_date,
+          end_date,
+          total_tasks,
+          completed_tasks,
+          in_progress_tasks,
+          pending_tasks,
+          archived_tasks,
+          documented_tasks,
+          total_project_skills,
+          total_task_skills,
+          tasks_with_skills,
+          total_assets,
+          total_images,
+          total_documents,
+          tasks_with_assets,
+          project_stack,
+          task_stack,
+          task_completion_percentage,
+          documentation_percentage,
+          skill_coverage_percentage,
+          evidence_coverage_percentage,
+          professional_score
+        `)
+        .eq('user_id', session.user.id)
+
+      if (error) throw error
+
+      const mappedSummaries: Record<string, ProjectTechnicalSummary> = {}
+
+      ;(data || []).forEach((summary: any) => {
+        mappedSummaries[summary.project_id] = {
+          project_id: summary.project_id,
+          project_title: summary.project_title || "",
+          project_description: summary.project_description || null,
+          project_summary: summary.project_summary || null,
+          project_status: summary.project_status || null,
+          project_priority: summary.project_priority || null,
+          start_date: summary.start_date || null,
+          end_date: summary.end_date || null,
+          total_tasks: Number(summary.total_tasks || 0),
+          completed_tasks: Number(summary.completed_tasks || 0),
+          in_progress_tasks: Number(summary.in_progress_tasks || 0),
+          pending_tasks: Number(summary.pending_tasks || 0),
+          archived_tasks: Number(summary.archived_tasks || 0),
+          documented_tasks: Number(summary.documented_tasks || 0),
+          total_project_skills: Number(summary.total_project_skills || 0),
+          total_task_skills: Number(summary.total_task_skills || 0),
+          tasks_with_skills: Number(summary.tasks_with_skills || 0),
+          total_assets: Number(summary.total_assets || 0),
+          total_images: Number(summary.total_images || 0),
+          total_documents: Number(summary.total_documents || 0),
+          tasks_with_assets: Number(summary.tasks_with_assets || 0),
+          project_stack: summary.project_stack || "",
+          task_stack: summary.task_stack || "",
+          task_completion_percentage: Number(summary.task_completion_percentage || 0),
+          documentation_percentage: Number(summary.documentation_percentage || 0),
+          skill_coverage_percentage: Number(summary.skill_coverage_percentage || 0),
+          evidence_coverage_percentage: Number(summary.evidence_coverage_percentage || 0),
+          professional_score: Number(summary.professional_score || 0),
+        }
+      })
+
+      setTechnicalSummaries(mappedSummaries)
+    } catch (err: any) {
+      console.error("Error cargando resumen técnico de proyectos:", err?.message || err)
+    }
+  }, [supabase])
+
+  const fetchProjectCaseStudy = useCallback(async (projectId: string) => {
+    try {
+      setLoadingCaseStudy(true)
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return
+
+      const { data, error } = await supabase
+        .from('vw_project_case_study_detail')
+        .select(`
+          project_id,
+          project_title,
+          project_description,
+          project_summary,
+          project_status,
+          project_priority,
+          start_date,
+          end_date,
+          total_tasks,
+          completed_tasks,
+          in_progress_tasks,
+          pending_tasks,
+          archived_tasks,
+          documented_tasks,
+          total_project_skills,
+          total_task_skills,
+          tasks_with_skills,
+          total_assets,
+          total_images,
+          total_documents,
+          tasks_with_assets,
+          project_stack,
+          task_stack,
+          project_stack_json,
+          tasks_json,
+          task_completion_percentage,
+          documentation_percentage,
+          skill_coverage_percentage,
+          evidence_coverage_percentage,
+          professional_score
+        `)
+        .eq('user_id', session.user.id)
+        .eq('project_id', projectId)
+        .single()
+
+      if (error) throw error
+
+      setSelectedCaseStudy({
+        project_id: String(data.project_id || ""),
+        project_title: data.project_title || "",
+        project_description: data.project_description || null,
+        project_summary: data.project_summary || null,
+        project_status: data.project_status || null,
+        project_priority: data.project_priority || null,
+        start_date: data.start_date || null,
+        end_date: data.end_date || null,
+        total_tasks: Number(data.total_tasks || 0),
+        completed_tasks: Number(data.completed_tasks || 0),
+        in_progress_tasks: Number(data.in_progress_tasks || 0),
+        pending_tasks: Number(data.pending_tasks || 0),
+        archived_tasks: Number(data.archived_tasks || 0),
+        documented_tasks: Number(data.documented_tasks || 0),
+        total_project_skills: Number(data.total_project_skills || 0),
+        total_task_skills: Number(data.total_task_skills || 0),
+        tasks_with_skills: Number(data.tasks_with_skills || 0),
+        total_assets: Number(data.total_assets || 0),
+        total_images: Number(data.total_images || 0),
+        total_documents: Number(data.total_documents || 0),
+        tasks_with_assets: Number(data.tasks_with_assets || 0),
+        project_stack: data.project_stack || "",
+        task_stack: data.task_stack || "",
+        project_stack_json: (Array.isArray(data.project_stack_json) ? data.project_stack_json : []) as unknown as ProjectCaseStudySkill[],
+        tasks_json: (Array.isArray(data.tasks_json) ? data.tasks_json : []) as unknown as ProjectCaseStudyTask[],
+        task_completion_percentage: Number(data.task_completion_percentage || 0),
+        documentation_percentage: Number(data.documentation_percentage || 0),
+        skill_coverage_percentage: Number(data.skill_coverage_percentage || 0),
+        evidence_coverage_percentage: Number(data.evidence_coverage_percentage || 0),
+        professional_score: Number(data.professional_score || 0),
+      })
+    } catch (err: any) {
+      console.error("Error cargando caso técnico del proyecto:", err?.message || err)
+      alert(`No se pudo cargar el caso técnico: ${err?.message || "Error desconocido"}`)
+    } finally {
+      setLoadingCaseStudy(false)
+    }
+  }, [supabase])
+
   useEffect(() => {
     fetchCareerSkills()
     fetchProjects()
-  }, [fetchCareerSkills, fetchProjects])
+    fetchProfessionalScores()
+    fetchTechnicalSummaries()
+  }, [fetchCareerSkills, fetchProjects, fetchProfessionalScores, fetchTechnicalSummaries])
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -1486,7 +1892,9 @@ export default function DataCarreraPage() {
 
       setNewTitle("")
       setNewDescription("")
-      fetchProjects()
+      await fetchProjects()
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
     } catch (err: any) {
       alert(`No se pudo inicializar el nodo de proyecto: ${err?.message}`)
     }
@@ -1508,7 +1916,9 @@ export default function DataCarreraPage() {
         .eq('id', selectedProject.id)
 
       if (error) throw error
-      fetchProjects(selectedProject.id)
+      await fetchProjects(selectedProject.id)
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
     } catch (err: any) {
       console.error("Error al mutar datos del proyecto en Supabase:", err?.message)
     }
@@ -1523,7 +1933,9 @@ export default function DataCarreraPage() {
       setSelectedTaskForDoc(null)
       setTaskDoc(null)
       setSelectedTaskSkillLinks([])
-      fetchProjects()
+      await fetchProjects()
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
     } catch (err: any) {
       console.error("Error en protocolo de eliminación:", err?.message || err)
     }
@@ -1560,6 +1972,8 @@ export default function DataCarreraPage() {
       }
 
       await fetchProjects(selectedProject.id)
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
     } catch (err: any) {
       console.error("Error actualizando stack del proyecto:", err?.message || err)
       alert(`No se pudo actualizar el stack del proyecto: ${err?.message}`)
@@ -1649,6 +2063,8 @@ export default function DataCarreraPage() {
 
       await fetchTaskSkills(selectedTaskForDoc.id)
       await fetchProjects(selectedProject.id)
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
     } catch (err: any) {
       console.error("Error actualizando skills de subtarea:", err?.message || err)
       alert(`No se pudo actualizar la skill de la subtarea: ${err?.message}`)
@@ -1775,6 +2191,9 @@ export default function DataCarreraPage() {
         document_content_json: data.document_content_json || null,
         document_content_html: data.document_content_html || "",
       })
+
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
     } catch (err: any) {
       console.error("Error guardando documentación de subtarea:", err?.message || err)
       alert(`No se pudo guardar la documentación: ${err?.message}`)
@@ -1797,6 +2216,8 @@ export default function DataCarreraPage() {
       if (error) throw error
       setNewTaskText("")
       await fetchProjects(selectedProject.id)
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
     } catch (err: any) {
       alert(`Error de inyección en subtareas: ${err?.message}`)
     }
@@ -1813,6 +2234,8 @@ export default function DataCarreraPage() {
       if (taskError) throw taskError
 
       await fetchProjects(selectedProject.id)
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
     } catch (err: any) {
       console.error("Error en transición de microestado:", err?.message || err)
     }
@@ -1824,6 +2247,8 @@ export default function DataCarreraPage() {
       const { error } = await supabase.from('project_tasks').delete().eq('id', taskId)
       if (error) throw error
       await fetchProjects(selectedProject.id)
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
     } catch (err: any) {
       console.error("Error al purgar microtarea:", err?.message || err)
     }
@@ -1988,6 +2413,9 @@ export default function DataCarreraPage() {
                           const total = project.project_tasks.length
                           const done = project.project_tasks.filter(t => t.status === 'COMPLETADO').length
                           const pct = total > 0 ? Math.round((done / total) * 100) : 0
+                          const score = getProjectScore(project)
+                          const scoreValue = score?.professional_score ?? 0
+                          const scoreTone = getScoreTone(scoreValue)
 
                           return (
                             <motion.div
@@ -2058,6 +2486,33 @@ export default function DataCarreraPage() {
                                   />
                                 </div>
                               </div>
+
+                              <div className={`relative z-10 mt-3 rounded-2xl border ${scoreTone.border} ${scoreTone.bg} p-3`}>
+                                <div className="mb-2 flex items-center justify-between">
+                                  <span className="text-[8px] font-black uppercase tracking-[0.18em] text-slate-500">
+                                    Score profesional
+                                  </span>
+                                  <span className={`text-[10px] font-black ${scoreTone.text}`}>
+                                    {scoreValue.toFixed(1)}%
+                                  </span>
+                                </div>
+
+                                <div className="h-1.5 overflow-hidden rounded-full border border-white/[0.04] bg-[#02040a]">
+                                  <motion.div
+                                    className={`h-full rounded-full bg-gradient-to-r ${scoreTone.gradient}`}
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${Math.min(scoreValue, 100)}%` }}
+                                    transition={{ duration: 0.9, ease: "easeOut" }}
+                                  />
+                                </div>
+
+                                <div className="mt-2 grid grid-cols-2 gap-1.5 text-[7px] font-black uppercase tracking-wider text-slate-500">
+                                  <span>Doc {score?.documentation_percentage ?? 0}%</span>
+                                  <span>Skills {score?.skill_coverage_percentage ?? 0}%</span>
+                                  <span>Evid {score?.evidence_coverage_percentage ?? 0}%</span>
+                                  <span className={scoreTone.text}>{scoreTone.label}</span>
+                                </div>
+                              </div>
                             </motion.div>
                           )
                         })
@@ -2118,6 +2573,7 @@ export default function DataCarreraPage() {
                       setSelectedTaskForDoc(null)
                       setTaskDoc(null)
                       setSelectedTaskSkillLinks([])
+                      setSelectedCaseStudy(null)
                     }}
                     className="rounded-xl p-2.5 text-slate-400 transition-all duration-200 hover:bg-white/8 hover:text-white"
                   >
@@ -2127,6 +2583,180 @@ export default function DataCarreraPage() {
               </div>
 
               <div className="custom-scrollbar relative flex-1 space-y-8 overflow-y-auto p-6 md:p-8">
+                {(() => {
+                  const score = getProjectScore(selectedProject)
+                  const scoreValue = score?.professional_score ?? 0
+                  const scoreTone = getScoreTone(scoreValue)
+
+                  return (
+                    <div className={`relative overflow-hidden rounded-[1.7rem] border ${scoreTone.border} ${scoreTone.bg} p-5 shadow-[0_18px_48px_rgba(0,0,0,0.24)] backdrop-blur-xl`}>
+                      <div className="pointer-events-none absolute right-0 top-0 h-44 w-44 rounded-full bg-orange-500/[0.045] blur-3xl" />
+                      <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+                        <div>
+                          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-orange-200/85">
+                            <Activity size={14} className="text-orange-300" />
+                            Score profesional del proyecto
+                          </div>
+                          <p className="mt-2 max-w-3xl text-xs font-medium leading-relaxed text-slate-500">
+                            Este score combina avance operativo, documentación, skills aplicadas y evidencias adjuntas. No solo mide tareas completadas: mide qué tan sólido está el proyecto como caso profesional.
+                          </p>
+                        </div>
+
+                        <div className="min-w-[190px] rounded-2xl border border-white/[0.06] bg-black/28 p-4 text-right">
+                          <p className={`text-4xl font-black tracking-tight ${scoreTone.text}`}>
+                            {scoreValue.toFixed(1)}%
+                          </p>
+                          <p className="mt-1 text-[9px] font-black uppercase tracking-[0.25em] text-slate-500">
+                            {scoreTone.label}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="relative mt-5 h-2 overflow-hidden rounded-full border border-white/[0.04] bg-[#02040a]">
+                        <motion.div
+                          className={`h-full rounded-full bg-gradient-to-r ${scoreTone.gradient}`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.min(scoreValue, 100)}%` }}
+                          transition={{ duration: 0.9, ease: "easeOut" }}
+                        />
+                      </div>
+
+                      <div className="relative mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                        {[
+                          { label: "Operativo", value: score?.task_completion_percentage ?? 0, detail: `${score?.completed_tasks ?? 0}/${score?.total_tasks ?? 0} tareas` },
+                          { label: "Documentación", value: score?.documentation_percentage ?? 0, detail: `${score?.documented_tasks ?? 0}/${score?.total_tasks ?? 0} subtareas` },
+                          { label: "Skills", value: score?.skill_coverage_percentage ?? 0, detail: `${score?.total_task_skills ?? 0} skills aplicadas` },
+                          { label: "Evidencias", value: score?.evidence_coverage_percentage ?? 0, detail: `${score?.total_assets ?? 0} archivos` },
+                        ].map((metric) => (
+                          <div key={metric.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[8px] font-black uppercase tracking-[0.18em] text-slate-500">
+                                {metric.label}
+                              </span>
+                              <span className="text-[10px] font-black text-slate-200">
+                                {Number(metric.value).toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/45">
+                              <motion.div
+                                className="h-full rounded-full bg-gradient-to-r from-orange-600 via-amber-400 to-yellow-200"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.min(Number(metric.value), 100)}%` }}
+                                transition={{ duration: 0.8, ease: "easeOut" }}
+                              />
+                            </div>
+                            <p className="mt-2 text-[9px] font-medium text-slate-600">
+                              {metric.detail}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
+
+                {(() => {
+                  const technicalSummary = getProjectTechnicalSummary(selectedProject)
+                  const plannedStack = splitStack(technicalSummary?.project_stack)
+                  const appliedStack = splitStack(technicalSummary?.task_stack)
+                  const scoreTone = getScoreTone(technicalSummary?.professional_score ?? 0)
+
+                  return (
+                    <div className="relative overflow-hidden rounded-[1.7rem] border border-white/[0.06] bg-[#080b12]/68 p-5 shadow-[0_18px_48px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+                      <div className="pointer-events-none absolute left-0 top-0 h-40 w-40 rounded-full bg-cyan-500/[0.045] blur-3xl" />
+                      <div className="pointer-events-none absolute right-0 bottom-0 h-44 w-44 rounded-full bg-orange-500/[0.045] blur-3xl" />
+
+                      <div className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
+                        <div>
+                          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-200/85">
+                            <Database size={14} className="text-cyan-300" />
+                            Resumen técnico del proyecto
+                          </div>
+                          <p className="mt-2 max-w-4xl text-xs font-medium leading-relaxed text-slate-500">
+                            Vista consolidada del proyecto como caso técnico: compara el stack planificado con el stack realmente aplicado en subtareas, además de documentación y evidencias.
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                          <button
+                            type="button"
+                            onClick={() => fetchProjectCaseStudy(selectedProject.id)}
+                            disabled={loadingCaseStudy}
+                            className="inline-flex items-center gap-2 rounded-2xl border border-cyan-300/14 bg-cyan-500/[0.10] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-cyan-100 transition-all hover:-translate-y-0.5 hover:bg-cyan-500/[0.16] disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            <BookOpen size={14} />
+                            {loadingCaseStudy ? "Cargando..." : "Ver caso técnico"}
+                          </button>
+
+                          <div className={`w-fit rounded-2xl border ${scoreTone.border} ${scoreTone.bg} px-4 py-3 text-right`}>
+                            <p className={`text-2xl font-black ${scoreTone.text}`}>
+                              {(technicalSummary?.professional_score ?? 0).toFixed(1)}%
+                            </p>
+                            <p className="mt-1 text-[8px] font-black uppercase tracking-[0.22em] text-slate-500">
+                              madurez técnica
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="relative mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                        {[
+                          { label: "Tareas", value: technicalSummary?.total_tasks ?? 0, detail: `${technicalSummary?.completed_tasks ?? 0} completadas` },
+                          { label: "Documentadas", value: technicalSummary?.documented_tasks ?? 0, detail: `${technicalSummary?.documentation_percentage ?? 0}% cobertura` },
+                          { label: "Skills aplicadas", value: technicalSummary?.total_task_skills ?? 0, detail: `${technicalSummary?.tasks_with_skills ?? 0} subtareas` },
+                          { label: "Evidencias", value: technicalSummary?.total_assets ?? 0, detail: `${technicalSummary?.total_images ?? 0} imágenes · ${technicalSummary?.total_documents ?? 0} docs` },
+                        ].map((item) => (
+                          <div key={item.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
+                            <p className="text-[8px] font-black uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
+                            <p className="mt-2 text-2xl font-black text-slate-100">{item.value}</p>
+                            <p className="mt-1 text-[9px] font-medium text-slate-600">{item.detail}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="relative mt-5 grid gap-4 lg:grid-cols-2">
+                        <div className="rounded-2xl border border-orange-300/10 bg-orange-500/[0.045] p-4">
+                          <div className="mb-3 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.22em] text-orange-200/85">
+                            <Layers3 size={13} />
+                            Stack planificado del proyecto
+                          </div>
+
+                          {plannedStack.length === 0 ? (
+                            <p className="text-xs font-medium text-slate-600">Sin stack general asignado todavía.</p>
+                          ) : (
+                            <div className="flex flex-wrap gap-2">
+                              {plannedStack.map((skill) => (
+                                <span key={skill} className="rounded-full border border-orange-300/12 bg-black/24 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-orange-100/85">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="rounded-2xl border border-cyan-300/10 bg-cyan-500/[0.045] p-4">
+                          <div className="mb-3 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.22em] text-cyan-200/85">
+                            <Cpu size={13} />
+                            Stack aplicado en subtareas
+                          </div>
+
+                          {appliedStack.length === 0 ? (
+                            <p className="text-xs font-medium text-slate-600">Aún no hay skills aplicadas directamente a subtareas.</p>
+                          ) : (
+                            <div className="flex flex-wrap gap-2">
+                              {appliedStack.map((skill) => (
+                                <span key={skill} className="rounded-full border border-cyan-300/12 bg-black/24 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-cyan-100/85">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })()}
+
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                   <div className="relative space-y-5 overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-[#080b12]/68 p-5 shadow-[0_14px_40px_rgba(0,0,0,0.22)] backdrop-blur-xl">
                     <div className="pointer-events-none absolute right-0 top-0 h-36 w-36 rounded-full bg-orange-500/[0.045] blur-3xl" />
@@ -2621,6 +3251,262 @@ export default function DataCarreraPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+            <AnimatePresence>
+              {selectedCaseStudy && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[70] flex items-center justify-center bg-[#02040a]/88 p-4 backdrop-blur-2xl"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
+                    animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
+                    transition={{ type: "spring", stiffness: 260, damping: 24 }}
+                    className="relative flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/96 text-white shadow-[0_0_90px_rgba(0,0,0,0.70)] backdrop-blur-2xl"
+                  >
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(34,211,238,0.070),transparent_30%),radial-gradient(circle_at_88%_10%,rgba(249,115,22,0.075),transparent_30%)]" />
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/35 to-transparent" />
+
+                    <div className="relative flex shrink-0 flex-col gap-4 border-b border-white/[0.065] bg-[#080b12]/74 p-6 backdrop-blur-xl md:p-8">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex w-fit items-center gap-2 rounded-full border border-cyan-300/12 bg-cyan-500/[0.06] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.28em] text-cyan-200/85">
+                            <BookOpen size={13} className="text-cyan-300" />
+                            Caso técnico consolidado
+                          </div>
+
+                          <h3 className="mt-4 line-clamp-2 text-2xl font-black tracking-tight text-white md:text-5xl">
+                            {selectedCaseStudy.project_title}
+                          </h3>
+
+                          <p className="mt-3 max-w-5xl text-sm font-medium leading-relaxed text-slate-500">
+                            {selectedCaseStudy.project_description || "Caso técnico generado desde las subtareas, documentación, skills y evidencias registradas en LifeTrack."}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2 rounded-2xl border border-white/[0.06] bg-black/34 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCaseStudy(null)}
+                            className="rounded-xl p-2.5 text-slate-400 transition-all duration-200 hover:bg-white/8 hover:text-white"
+                          >
+                            <X size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="custom-scrollbar relative flex-1 overflow-y-auto p-6 md:p-8">
+                      <div className="mx-auto max-w-6xl space-y-7">
+                        {(() => {
+                          const scoreTone = getScoreTone(selectedCaseStudy.professional_score)
+                          const plannedStack = splitStack(selectedCaseStudy.project_stack)
+                          const appliedStack = splitStack(selectedCaseStudy.task_stack)
+
+                          return (
+                            <div className={`relative overflow-hidden rounded-[1.8rem] border ${scoreTone.border} ${scoreTone.bg} p-5`}>
+                              <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+                                <div>
+                                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-orange-200/85">
+                                    <Activity size={14} className="text-orange-300" />
+                                    Resumen ejecutivo del caso
+                                  </div>
+                                  <p className="mt-2 max-w-3xl text-xs font-medium leading-relaxed text-slate-500">
+                                    Este consolidado resume el proyecto como caso de estudio técnico: ejecución, documentación, stack real aplicado y evidencias.
+                                  </p>
+                                </div>
+
+                                <div className="rounded-2xl border border-white/[0.06] bg-black/28 p-4 text-right">
+                                  <p className={`text-4xl font-black tracking-tight ${scoreTone.text}`}>
+                                    {selectedCaseStudy.professional_score.toFixed(1)}%
+                                  </p>
+                                  <p className="mt-1 text-[9px] font-black uppercase tracking-[0.25em] text-slate-500">
+                                    score profesional
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                                {[
+                                  { label: "Tareas", value: selectedCaseStudy.total_tasks, detail: `${selectedCaseStudy.completed_tasks} completadas` },
+                                  { label: "Documentación", value: selectedCaseStudy.documented_tasks, detail: `${selectedCaseStudy.documentation_percentage}% cobertura` },
+                                  { label: "Skills", value: selectedCaseStudy.total_task_skills, detail: `${selectedCaseStudy.tasks_with_skills} subtareas` },
+                                  { label: "Evidencias", value: selectedCaseStudy.total_assets, detail: `${selectedCaseStudy.total_images} imágenes · ${selectedCaseStudy.total_documents} docs` },
+                                ].map((metric) => (
+                                  <div key={metric.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
+                                    <p className="text-[8px] font-black uppercase tracking-[0.18em] text-slate-500">{metric.label}</p>
+                                    <p className="mt-2 text-2xl font-black text-slate-100">{metric.value}</p>
+                                    <p className="mt-1 text-[9px] font-medium text-slate-600">{metric.detail}</p>
+                                  </div>
+                                ))}
+                              </div>
+
+                              <div className="mt-5 grid gap-4 lg:grid-cols-2">
+                                <div className="rounded-2xl border border-orange-300/10 bg-black/24 p-4">
+                                  <p className="mb-3 text-[9px] font-black uppercase tracking-[0.22em] text-orange-200/85">Stack planificado</p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {plannedStack.length === 0 ? (
+                                      <span className="text-xs text-slate-600">Sin stack planificado.</span>
+                                    ) : plannedStack.map((skill) => (
+                                      <span key={skill} className="rounded-full border border-orange-300/12 bg-orange-500/[0.06] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-orange-100/85">
+                                        {skill}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                <div className="rounded-2xl border border-cyan-300/10 bg-black/24 p-4">
+                                  <p className="mb-3 text-[9px] font-black uppercase tracking-[0.22em] text-cyan-200/85">Stack aplicado</p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {appliedStack.length === 0 ? (
+                                      <span className="text-xs text-slate-600">Sin stack aplicado en subtareas.</span>
+                                    ) : appliedStack.map((skill) => (
+                                      <span key={skill} className="rounded-full border border-cyan-300/12 bg-cyan-500/[0.06] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-cyan-100/85">
+                                        {skill}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        })()}
+
+                        <div className="rounded-[1.8rem] border border-white/[0.06] bg-[#080b12]/68 p-5">
+                          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-orange-200/85">
+                            <ListTodo size={14} className="text-orange-300" />
+                            Desarrollo por subtareas
+                          </div>
+
+                          <div className="mt-5 space-y-5">
+                            {selectedCaseStudy.tasks_json.length === 0 ? (
+                              <div className="rounded-2xl border border-dashed border-white/[0.06] bg-black/24 p-7 text-center">
+                                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-600">
+                                  Este proyecto aún no tiene subtareas registradas.
+                                </p>
+                              </div>
+                            ) : (
+                              selectedCaseStudy.tasks_json.map((task, index) => {
+                                const doc = task.documentation || {}
+                                const hasDocContent = getCaseStudyDocHasContent(doc)
+                                const docHtml = doc.document_content_html || ""
+
+                                return (
+                                  <div key={task.task_id} className="relative overflow-hidden rounded-[1.6rem] border border-white/[0.06] bg-black/24 p-5">
+                                    <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-white/[0.035]" />
+
+                                    <div className="relative flex flex-col justify-between gap-3 md:flex-row md:items-start">
+                                      <div>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                          <span className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-[8px] font-black uppercase tracking-wider text-slate-400">
+                                            Paso {index + 1}
+                                          </span>
+                                          <span className={`rounded-xl border px-2.5 py-1 text-[8px] font-black uppercase tracking-wider ${getTaskStatusTone(task.task_status)}`}>
+                                            {task.task_status}
+                                          </span>
+                                        </div>
+                                        <h4 className="mt-3 text-xl font-black tracking-tight text-white">
+                                          {task.task_title}
+                                        </h4>
+                                      </div>
+
+                                      <div className="flex flex-wrap gap-2">
+                                        <span className="rounded-xl border border-cyan-300/10 bg-cyan-500/[0.06] px-2.5 py-1 text-[8px] font-black uppercase tracking-wider text-cyan-100">
+                                          {task.skills?.length || 0} skills
+                                        </span>
+                                        <span className="rounded-xl border border-emerald-300/10 bg-emerald-500/[0.06] px-2.5 py-1 text-[8px] font-black uppercase tracking-wider text-emerald-100">
+                                          {task.total_assets || 0} evidencias
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {task.skills && task.skills.length > 0 && (
+                                      <div className="relative mt-4 flex flex-wrap gap-2">
+                                        {task.skills.map((skill) => (
+                                          <span
+                                            key={`${task.task_id}-${skill.skill_id}`}
+                                            className="rounded-full border border-cyan-300/12 bg-cyan-500/[0.055] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-cyan-100/85"
+                                          >
+                                            {skill.name}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {hasDocContent ? (
+                                      <div className="relative mt-5 rounded-2xl border border-white/[0.06] bg-[#080b12]/70 p-5">
+                                        {docHtml ? (
+                                          <div
+                                            className="rich-task-editor prose prose-invert max-w-none text-sm text-slate-300 [&_h1]:text-3xl [&_h1]:font-black [&_h1]:text-white [&_h2]:mt-8 [&_h2]:border-l [&_h2]:border-orange-300/30 [&_h2]:pl-4 [&_h2]:text-lg [&_h2]:font-black [&_h2]:uppercase [&_h2]:tracking-[0.14em] [&_h2]:text-orange-100 [&_p]:my-3 [&_a]:text-cyan-300 [&_img]:my-5 [&_img]:max-h-[520px] [&_img]:w-full [&_img]:rounded-2xl [&_img]:border [&_img]:border-white/[0.08] [&_img]:object-contain"
+                                            dangerouslySetInnerHTML={{ __html: docHtml }}
+                                          />
+                                        ) : (
+                                          <div className="space-y-4 text-sm leading-7 text-slate-300">
+                                            {doc.objective && <p><span className="font-black text-orange-200">Objetivo:</span> {doc.objective}</p>}
+                                            {doc.content && <p><span className="font-black text-orange-200">Proceso:</span> {doc.content}</p>}
+                                            {doc.technical_notes && <p><span className="font-black text-orange-200">Notas técnicas:</span> {doc.technical_notes}</p>}
+                                            {doc.challenges && <p><span className="font-black text-orange-200">Problemas:</span> {doc.challenges}</p>}
+                                            {doc.solution && <p><span className="font-black text-orange-200">Solución:</span> {doc.solution}</p>}
+                                            {doc.learnings && <p><span className="font-black text-orange-200">Aprendizajes:</span> {doc.learnings}</p>}
+                                            {doc.result_summary && <p><span className="font-black text-orange-200">Resultado:</span> {doc.result_summary}</p>}
+                                            {doc.reference_links && <p><span className="font-black text-orange-200">Referencias:</span> {doc.reference_links}</p>}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div className="relative mt-5 rounded-2xl border border-dashed border-white/[0.06] bg-black/20 p-5 text-[10px] font-black uppercase tracking-[0.22em] text-slate-600">
+                                        Subtarea sin documentación detallada todavía.
+                                      </div>
+                                    )}
+
+                                    {task.assets && task.assets.length > 0 && (
+                                      <div className="relative mt-5">
+                                        <p className="mb-3 text-[9px] font-black uppercase tracking-[0.22em] text-emerald-200/85">
+                                          Evidencias adjuntas
+                                        </p>
+                                        <div className="grid gap-3 md:grid-cols-2">
+                                          {task.assets.map((asset) => {
+                                            const visual = getAssetVisual(asset.mime_type, asset.file_name)
+
+                                            return (
+                                              <a
+                                                key={asset.asset_id}
+                                                href={asset.file_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={`group/evidence rounded-2xl border ${visual.border} ${visual.bg} p-4 transition-all hover:-translate-y-0.5 hover:bg-white/[0.055]`}
+                                              >
+                                                <div className="flex items-center gap-3">
+                                                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${visual.border} bg-black/28 ${visual.accent}`}>
+                                                    <FileArchive size={17} />
+                                                  </div>
+                                                  <div className="min-w-0 flex-1">
+                                                    <p className="truncate text-sm font-black text-slate-100">{asset.file_name}</p>
+                                                    <p className="mt-1 text-[9px] font-medium text-slate-600">{formatAssetSize(asset.file_size)}</p>
+                                                  </div>
+                                                  <ExternalLink size={13} className="text-slate-500 transition-colors group-hover/evidence:text-cyan-300" />
+                                                </div>
+                                              </a>
+                                            )
+                                          })}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )
+                              })
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
           </div>
         )}
       </AnimatePresence>

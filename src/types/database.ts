@@ -815,6 +815,42 @@ export type Database = {
           },
         ]
       }
+      health_routine_completions: {
+        Row: {
+          completed: boolean
+          created_at: string
+          date: string
+          dia_semana: number
+          id: string
+          routine_type: string
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          date: string
+          dia_semana: number
+          id?: string
+          routine_type: string
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          date?: string
+          dia_semana?: number
+          id?: string
+          routine_type?: string
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       meal_logs: {
         Row: {
           confidence: string
@@ -1017,7 +1053,28 @@ export type Database = {
             foreignKeyName: "project_activity_logs_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_project_case_study_detail"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_activity_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_professional_score"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_activity_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_activity_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_technical_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -1069,7 +1126,28 @@ export type Database = {
             foreignKeyName: "project_skills_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_project_case_study_detail"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_professional_score"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_technical_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -1146,7 +1224,28 @@ export type Database = {
             foreignKeyName: "project_task_assets_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_project_case_study_detail"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_assets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_professional_score"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_assets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_assets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_technical_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -1228,7 +1327,28 @@ export type Database = {
             foreignKeyName: "project_task_docs_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_project_case_study_detail"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_docs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_professional_score"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_docs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_docs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_technical_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -1283,7 +1403,28 @@ export type Database = {
             foreignKeyName: "project_task_skills_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_project_case_study_detail"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_professional_score"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_task_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_technical_summary"
             referencedColumns: ["project_id"]
           },
           {
@@ -1364,7 +1505,28 @@ export type Database = {
             foreignKeyName: "project_tasks_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_project_case_study_detail"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_professional_score"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_technical_summary"
             referencedColumns: ["project_id"]
           },
         ]
@@ -1653,7 +1815,28 @@ export type Database = {
             foreignKeyName: "project_tasks_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "vw_project_case_study_detail"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_professional_score"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_technical_summary"
             referencedColumns: ["project_id"]
           },
         ]
@@ -1960,12 +2143,148 @@ export type Database = {
           },
         ]
       }
+      vw_project_case_study_detail: {
+        Row: {
+          archived_tasks: number | null
+          completed_tasks: number | null
+          documentation_percentage: number | null
+          documented_tasks: number | null
+          end_date: string | null
+          evidence_coverage_percentage: number | null
+          in_progress_tasks: number | null
+          pending_tasks: number | null
+          professional_score: number | null
+          project_description: string | null
+          project_id: string | null
+          project_priority: string | null
+          project_stack: string | null
+          project_stack_json: Json | null
+          project_status: string | null
+          project_summary: string | null
+          project_title: string | null
+          skill_coverage_percentage: number | null
+          start_date: string | null
+          task_completion_percentage: number | null
+          task_stack: string | null
+          tasks_json: Json | null
+          tasks_with_assets: number | null
+          tasks_with_skills: number | null
+          total_assets: number | null
+          total_documents: number | null
+          total_images: number | null
+          total_project_skills: number | null
+          total_task_skills: number | null
+          total_tasks: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      vw_project_professional_score: {
+        Row: {
+          completed_tasks: number | null
+          documentation_percentage: number | null
+          documented_tasks: number | null
+          evidence_coverage_percentage: number | null
+          professional_score: number | null
+          project_id: string | null
+          project_status: string | null
+          project_title: string | null
+          skill_coverage_percentage: number | null
+          task_completion_percentage: number | null
+          tasks_with_assets: number | null
+          tasks_with_skills: number | null
+          total_assets: number | null
+          total_task_skills: number | null
+          total_tasks: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       vw_project_progress: {
         Row: {
           completed_tasks: number | null
           progress_percentage: number | null
           project_id: string | null
           project_title: string | null
+          total_tasks: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      vw_project_technical_summary: {
+        Row: {
+          archived_tasks: number | null
+          completed_tasks: number | null
+          documentation_percentage: number | null
+          documented_tasks: number | null
+          end_date: string | null
+          evidence_coverage_percentage: number | null
+          in_progress_tasks: number | null
+          pending_tasks: number | null
+          professional_score: number | null
+          project_description: string | null
+          project_id: string | null
+          project_priority: string | null
+          project_stack: string | null
+          project_status: string | null
+          project_summary: string | null
+          project_title: string | null
+          skill_coverage_percentage: number | null
+          start_date: string | null
+          task_completion_percentage: number | null
+          task_stack: string | null
+          tasks_with_assets: number | null
+          tasks_with_skills: number | null
+          total_assets: number | null
+          total_documents: number | null
+          total_images: number | null
+          total_project_skills: number | null
+          total_task_skills: number | null
           total_tasks: number | null
           user_id: string | null
         }
@@ -2159,7 +2478,28 @@ export type Database = {
             foreignKeyName: "project_tasks_project_id_fkey"
             columns: ["top_project_id"]
             isOneToOne: false
+            referencedRelation: "vw_project_case_study_detail"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["top_project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_professional_score"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["top_project_id"]
+            isOneToOne: false
             referencedRelation: "vw_project_progress"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["top_project_id"]
+            isOneToOne: false
+            referencedRelation: "vw_project_technical_summary"
             referencedColumns: ["project_id"]
           },
         ]

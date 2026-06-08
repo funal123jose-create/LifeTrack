@@ -58,6 +58,34 @@ const getLocalDateString = () => {
   return `${year}-${month}-${day}`
 }
 
+const formatDateToLocalString = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+// Semana operativa: lunes a domingo.
+// Esto permite que cada lunes los checks aparezcan vacíos sin borrar el historial anterior.
+const getCurrentWeekStartString = () => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const day = today.getDay()
+  const diffToMonday = day === 0 ? -6 : 1 - day
+
+  const monday = new Date(today)
+  monday.setDate(today.getDate() + diffToMonday)
+
+  return formatDateToLocalString(monday)
+}
+
+const getDateForWeekdayNum = (weekStart: string, diaSemana: number) => {
+  const baseDate = new Date(`${weekStart}T00:00:00`)
+  baseDate.setDate(baseDate.getDate() + (diaSemana - 1))
+  return formatDateToLocalString(baseDate)
+}
+
 const formatLocalDateTime = (value: string) => {
   try {
     return new Date(value).toLocaleString("es-PE", {
@@ -150,6 +178,13 @@ type BodyProgressLog = {
   energy_level: number | null
   notes: string | null
   created_at: string
+}
+
+type RoutineCompletion = {
+  date: string
+  dia_semana: number
+  routine_type: "fuerza" | "cardio"
+  completed: boolean
 }
 
 function BiometricsBackground() {
@@ -817,6 +852,9 @@ export default function CentroSaludPage() {
         const activeDays: string[] = []
         const fuerzaDescs: { [key: string]: string } = {}
         const cardioDescs: { [key: string]: string } = {}
+
+        // Los checks ya no se leen desde rutinas_entrenamiento.
+        // Esa tabla queda como plantilla semanal; el cumplimiento real se lee por semana/fecha.
         const fuerzaChecks: { [key: string]: boolean } = {}
         const cardioChecks: { [key: string]: boolean } = {}
 
@@ -833,18 +871,40 @@ export default function CentroSaludPage() {
                 const parsed = JSON.parse(row.descripcion_rutina)
                 fuerzaDescs[dayObj.id] = parsed.fuerza || ""
                 cardioDescs[dayObj.id] = parsed.cardio || ""
-                fuerzaChecks[dayObj.id] = parsed.fuerzaDone || false
-                cardioChecks[dayObj.id] = parsed.cardioDone || false
               } catch {
                 // Si venía de texto plano tradicional, lo mapeamos directamente a fuerza por seguridad
                 fuerzaDescs[dayObj.id] = row.descripcion_rutina || ""
                 cardioDescs[dayObj.id] = ""
-                fuerzaChecks[dayObj.id] = false
-                cardioChecks[dayObj.id] = false
               }
             }
           })
         }
+
+        const currentWeekStart = getCurrentWeekStartString()
+
+        const { data: currentWeekCompletions, error: currentWeekCompletionsError } = await supabase
+          .from("health_routine_completions")
+          .select("date, dia_semana, routine_type, completed")
+          .eq("user_id", session.user.id)
+          .eq("week_start", currentWeekStart)
+          .eq("completed", true)
+
+        if (currentWeekCompletionsError) {
+          console.error("Error cargando cumplimiento semanal de rutina:", currentWeekCompletionsError)
+        }
+
+        ;((currentWeekCompletions || []) as RoutineCompletion[]).forEach((completion) => {
+          const dayObj = DAYS_OF_WEEK.find((d) => d.num === Number(completion.dia_semana))
+          if (!dayObj) return
+
+          if (completion.routine_type === "fuerza") {
+            fuerzaChecks[dayObj.id] = true
+          }
+
+          if (completion.routine_type === "cardio") {
+            cardioChecks[dayObj.id] = true
+          }
+        })
 
         setPlannedDays(activeDays)
         setFuerzaDescriptions(fuerzaDescs)
@@ -971,8 +1031,10 @@ export default function CentroSaludPage() {
     setSelectedDayDetail(dayObj)
   }
 
-  // --- Guardar Rutina Combinada (Fuerza + Cardio + Checks) ---
-  const handleSaveDayRoutine = async (overrides?: { fCheck?: boolean; cCheck?: boolean }) => {
+  // --- Guardar Rutina Combinada (Fuerza + Cardio) ---
+  // Esta función guarda solo la plantilla semanal.
+  // El cumplimiento/check se guarda aparte en health_routine_completions.
+  const handleSaveDayRoutine = async () => {
     if (!selectedDayDetail) return
     setIsSavingRoutine(true)
 
@@ -983,19 +1045,13 @@ export default function CentroSaludPage() {
       const fText = fuerzaDescriptions[selectedDayDetail.id] || ""
       const cText = cardioDescriptions[selectedDayDetail.id] || ""
 
-      const fDone =
-        overrides?.fCheck !== undefined ? overrides.fCheck : fuerzaChecked[selectedDayDetail.id] || false
-      const cDone =
-        overrides?.cCheck !== undefined ? overrides.cCheck : cardioChecked[selectedDayDetail.id] || false
-
       const shouldBeActive = fText.trim() !== "" || cText.trim() !== ""
 
-      // Empaquetamos ambas disciplinas limpiamente en formato JSON stringificado
+      // Plantilla semanal limpia: aquí NO guardamos checks.
+      // Los checks se guardan por fecha real en health_routine_completions.
       const payloadString = JSON.stringify({
         fuerza: fText,
         cardio: cText,
-        fuerzaDone: fDone,
-        cardioDone: cDone,
       })
 
       const { error } = await supabase
@@ -1031,20 +1087,75 @@ export default function CentroSaludPage() {
     }
   }
 
+  const syncRoutineCompletion = async (
+    dayId: string,
+    routineType: "fuerza" | "cardio",
+    completed: boolean
+  ) => {
+    const dayObj = DAYS_OF_WEEK.find((d) => d.id === dayId)
+    if (!dayObj) return
+
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user) return
+
+    const weekStart = getCurrentWeekStartString()
+    const routineDate = getDateForWeekdayNum(weekStart, dayObj.num)
+
+    if (completed) {
+      const { error } = await supabase
+        .from("health_routine_completions")
+        .upsert(
+          {
+            user_id: session.user.id,
+            date: routineDate,
+            week_start: weekStart,
+            dia_semana: dayObj.num,
+            routine_type: routineType,
+            completed: true,
+          },
+          { onConflict: "user_id,date,routine_type" }
+        )
+
+      if (error) throw error
+      return
+    }
+
+    const { error } = await supabase
+      .from("health_routine_completions")
+      .delete()
+      .eq("user_id", session.user.id)
+      .eq("date", routineDate)
+      .eq("routine_type", routineType)
+
+    if (error) throw error
+  }
+
   // --- Handlers de interacción directa con los Checkboxes de Cumplimiento ---
   const toggleFuerzaCheck = async (dayId: string) => {
-    const newVal = !fuerzaChecked[dayId]
-    setFuerzaChecked({ ...fuerzaChecked, [dayId]: newVal })
-    if (selectedDayDetail?.id === dayId) {
-      await handleSaveDayRoutine({ fCheck: newVal })
+    const previousVal = !!fuerzaChecked[dayId]
+    const newVal = !previousVal
+
+    setFuerzaChecked((prev) => ({ ...prev, [dayId]: newVal }))
+
+    try {
+      await syncRoutineCompletion(dayId, "fuerza", newVal)
+    } catch (error) {
+      console.error("Error guardando cumplimiento de fuerza:", error)
+      setFuerzaChecked((prev) => ({ ...prev, [dayId]: previousVal }))
     }
   }
 
   const toggleCardioCheck = async (dayId: string) => {
-    const newVal = !cardioChecked[dayId]
-    setCardioChecked({ ...cardioChecked, [dayId]: newVal })
-    if (selectedDayDetail?.id === dayId) {
-      await handleSaveDayRoutine({ cCheck: newVal })
+    const previousVal = !!cardioChecked[dayId]
+    const newVal = !previousVal
+
+    setCardioChecked((prev) => ({ ...prev, [dayId]: newVal }))
+
+    try {
+      await syncRoutineCompletion(dayId, "cardio", newVal)
+    } catch (error) {
+      console.error("Error guardando cumplimiento de cardio:", error)
+      setCardioChecked((prev) => ({ ...prev, [dayId]: previousVal }))
     }
   }
 
