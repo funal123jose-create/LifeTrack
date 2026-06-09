@@ -50,6 +50,33 @@ const getLocalDateString = () => {
   return `${year}-${month}-${day}`
 }
 
+const formatDateToLocalString = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+const getCurrentWeekStartString = () => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const day = today.getDay()
+  const diffToMonday = day === 0 ? -6 : 1 - day
+
+  const monday = new Date(today)
+  monday.setDate(today.getDate() + diffToMonday)
+
+  return formatDateToLocalString(monday)
+}
+
+const getCurrentWeekEndString = () => {
+  const monday = new Date(`${getCurrentWeekStartString()}T00:00:00`)
+  monday.setDate(monday.getDate() + 6)
+
+  return formatDateToLocalString(monday)
+}
+
 type WeeklyHealthSummary = {
   week_start: string | null
   week_end: string | null
@@ -337,6 +364,103 @@ export default function DashboardPage() {
   const hasFetchedHealthRef = useRef(false)
   const hasMountedPanelRefreshRef = useRef(false)
 
+  // --- FUNCIÓN CENTRAL PARA CALCULAR CUMPLIMIENTO DE RUTINA SEMANAL ---
+  // La plantilla vive en rutinas_entrenamiento, pero los checks reales viven en health_routine_completions.
+  // Por eso este cálculo sí reconoce que cada lunes inicia una semana nueva.
+  const fetchCurrentRoutineMetrics = useCallback(async (userId: string) => {
+    const weekStart = getCurrentWeekStartString()
+    const weekEnd = getCurrentWeekEndString()
+
+    const [{ data: routines, error: routinesError }, { data: completions, error: completionsError }] = await Promise.all([
+      supabase
+        .from("rutinas_entrenamiento")
+        .select("dia_semana, descripcion_rutina, activo")
+        .eq("user_id", userId)
+        .eq("activo", true),
+
+      supabase
+        .from("health_routine_completions")
+        .select("dia_semana, routine_type, completed")
+        .eq("user_id", userId)
+        .eq("week_start", weekStart)
+        .eq("completed", true),
+    ])
+
+    if (routinesError) throw routinesError
+    if (completionsError) throw completionsError
+
+    const completionSet = new Set(
+      (completions || []).map((row: any) => `${Number(row.dia_semana)}-${String(row.routine_type)}`)
+    )
+
+    let plannedTrainingDays = 0
+    let completedTrainingDays = 0
+    let activeDays = 0
+    let totalRoutineItems = 0
+    let completedRoutineItems = 0
+
+    ;(routines || []).forEach((row: any) => {
+      let hasFuerza = false
+      let hasCardio = false
+
+      try {
+        const parsed = JSON.parse(row.descripcion_rutina || "{}")
+        hasFuerza = String(parsed.fuerza || "").trim() !== ""
+        hasCardio = String(parsed.cardio || "").trim() !== ""
+      } catch {
+        hasFuerza = String(row.descripcion_rutina || "").trim() !== ""
+      }
+
+      const hasAnyRoutine = hasFuerza || hasCardio
+      if (!hasAnyRoutine) return
+
+      plannedTrainingDays++
+
+      const fuerzaCompleted = hasFuerza && completionSet.has(`${Number(row.dia_semana)}-fuerza`)
+      const cardioCompleted = hasCardio && completionSet.has(`${Number(row.dia_semana)}-cardio`)
+
+      if (hasFuerza) {
+        totalRoutineItems++
+        if (fuerzaCompleted) completedRoutineItems++
+      }
+
+      if (hasCardio) {
+        totalRoutineItems++
+        if (cardioCompleted) completedRoutineItems++
+      }
+
+      if (fuerzaCompleted || cardioCompleted) {
+        activeDays++
+      }
+
+      const dayCompleted =
+        (!hasFuerza || fuerzaCompleted) &&
+        (!hasCardio || cardioCompleted)
+
+      if (dayCompleted) {
+        completedTrainingDays++
+      }
+    })
+
+    const trainingCompletionPercentage =
+      plannedTrainingDays > 0 ? Math.round((completedTrainingDays / plannedTrainingDays) * 100) : 0
+
+    const routineItemCompletionPercentage =
+      totalRoutineItems > 0 ? Math.round((completedRoutineItems / totalRoutineItems) * 100) : 0
+
+    return {
+      weekStart,
+      weekEnd,
+      plannedTrainingDays,
+      completedTrainingDays,
+      activeDays,
+      totalRoutineItems,
+      completedRoutineItems,
+      trainingCompletionPercentage,
+      routineItemCompletionPercentage,
+    }
+  }, [supabase])
+
   // --- FUNCIÓN PARA CARGAR INSIGHTS HISTÓRICOS DE SALUD ---
   const fetchHealthInsights = useCallback(async () => {
     try {
@@ -403,6 +527,8 @@ export default function DashboardPage() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) return
 
+      const routineMetrics = await fetchCurrentRoutineMetrics(session.user.id)
+
       const { data, error } = await supabase
         .from("vw_weekly_health_summary")
         .select(`
@@ -434,39 +560,43 @@ export default function DashboardPage() {
 
       if (error) {
         console.error("Error cargando resumen semanal de salud:", error)
-        setWeeklyHealthSummary(null)
-        return
       }
 
-      setWeeklyHealthSummary(data ? {
-        week_start: data.week_start || null,
-        week_end: data.week_end || null,
-        active_days: Number(data.active_days || 0),
-        meals_count: Number(data.meals_count || 0),
-        total_meal_calories: Number(data.total_meal_calories || 0),
-        avg_calories_per_meal: Number(data.avg_calories_per_meal || 0),
-        water_events_count: Number(data.water_events_count || 0),
-        total_water_liters: Number(data.total_water_liters || 0),
-        avg_daily_water_liters: Number(data.avg_daily_water_liters || 0),
-        tracker_total_calories: Number(data.tracker_total_calories || 0),
-        avg_daily_calories: Number(data.avg_daily_calories || 0),
-        avg_calorie_target: Number(data.avg_calorie_target || 0),
-        workout_days: Number(data.workout_days || 0),
-        planned_training_days: Number(data.planned_training_days || 0),
-        completed_training_days: Number(data.completed_training_days || 0),
-        training_completion_percentage: Number(data.training_completion_percentage || 0),
-        avg_energy_level: Number(data.avg_energy_level || 0),
-        progress_records: Number(data.progress_records || 0),
-        latest_weight_kg: data.latest_weight_kg !== null && data.latest_weight_kg !== undefined ? Number(data.latest_weight_kg) : null,
-        latest_weight_date: data.latest_weight_date || null,
-      } : null)
+      setWeeklyHealthSummary({
+        week_start: data?.week_start || routineMetrics.weekStart,
+        week_end: data?.week_end || routineMetrics.weekEnd,
+
+        // Este valor se sobrescribe con la nueva fuente real de checks semanales.
+        active_days: routineMetrics.activeDays,
+
+        meals_count: Number(data?.meals_count || 0),
+        total_meal_calories: Number(data?.total_meal_calories || 0),
+        avg_calories_per_meal: Number(data?.avg_calories_per_meal || 0),
+        water_events_count: Number(data?.water_events_count || 0),
+        total_water_liters: Number(data?.total_water_liters || 0),
+        avg_daily_water_liters: Number(data?.avg_daily_water_liters || 0),
+        tracker_total_calories: Number(data?.tracker_total_calories || 0),
+        avg_daily_calories: Number(data?.avg_daily_calories || 0),
+        avg_calorie_target: Number(data?.avg_calorie_target || 0),
+        workout_days: Number(data?.workout_days || 0),
+
+        // Estos tres campos ya no dependen de fuerzaDone/cardioDone dentro de rutinas_entrenamiento.
+        planned_training_days: routineMetrics.plannedTrainingDays,
+        completed_training_days: routineMetrics.completedTrainingDays,
+        training_completion_percentage: routineMetrics.trainingCompletionPercentage,
+
+        avg_energy_level: Number(data?.avg_energy_level || 0),
+        progress_records: Number(data?.progress_records || 0),
+        latest_weight_kg: data?.latest_weight_kg !== null && data?.latest_weight_kg !== undefined ? Number(data.latest_weight_kg) : null,
+        latest_weight_date: data?.latest_weight_date || null,
+      })
     } catch (error) {
       console.error("Error sincronizando resumen semanal de salud:", error)
       setWeeklyHealthSummary(null)
     } finally {
       setLoadingWeeklyHealth(false)
     }
-  }, [supabase])
+  }, [supabase, fetchCurrentRoutineMetrics])
 
   // --- FUNCIÓN PARA CARGAR RESUMEN SEMANAL DE DATA & CARRERA ---
   const fetchWeeklyCareerSummary = useCallback(async () => {
@@ -755,62 +885,19 @@ export default function DashboardPage() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) return
 
-      const { data: routines, error } = await supabase
-        .from("rutinas_entrenamiento")
-        .select("descripcion_rutina, activo")
-        .eq("user_id", session.user.id)
+      const routineMetrics = await fetchCurrentRoutineMetrics(session.user.id)
 
-      if (error) throw error
-
-      if (routines && routines.length > 0) {
-        let totalWeeklyTasks = 0
-        let completedWeeklyTasks = 0
-        let activeDays = 0
-
-        routines.forEach((row: any) => {
-          if (row.activo && row.descripcion_rutina) {
-            activeDays++
-
-            try {
-              const parsed = JSON.parse(row.descripcion_rutina)
-
-              const hasFuerza = (parsed.fuerza || "").trim() !== ""
-              const hasCardio = (parsed.cardio || "").trim() !== ""
-
-              if (hasFuerza) {
-                totalWeeklyTasks++
-                if (parsed.fuerzaDone === true) completedWeeklyTasks++
-              }
-
-              if (hasCardio) {
-                totalWeeklyTasks++
-                if (parsed.cardioDone === true) completedWeeklyTasks++
-              }
-            } catch (e) {
-              totalWeeklyTasks++
-            }
-          }
-        })
-
-        const percentage = totalWeeklyTasks > 0 ? Math.round((completedWeeklyTasks / totalWeeklyTasks) * 100) : 0
-
-        setHealthProgress(percentage)
-        setPlannedWorkoutDays(activeDays)
-        setCompletedHealthTasks(completedWeeklyTasks)
-        setTotalHealthTasks(totalWeeklyTasks)
-      } else {
-        setHealthProgress(0)
-        setPlannedWorkoutDays(0)
-        setCompletedHealthTasks(0)
-        setTotalHealthTasks(0)
-      }
+      setHealthProgress(routineMetrics.trainingCompletionPercentage)
+      setPlannedWorkoutDays(routineMetrics.plannedTrainingDays)
+      setCompletedHealthTasks(routineMetrics.completedTrainingDays)
+      setTotalHealthTasks(routineMetrics.plannedTrainingDays)
     } catch (error) {
       console.error("Error calculando progreso de salud:", error)
     } finally {
       hasFetchedHealthRef.current = true
       setLoadingHealth(false)
     }
-  }, [supabase])
+  }, [supabase, fetchCurrentRoutineMetrics])
 
   useEffect(() => {
     const getUserProfile = async () => {
@@ -848,6 +935,22 @@ export default function DashboardPage() {
           event: "*",
           schema: "public",
           table: "rutinas_entrenamiento",
+        },
+        () => {
+          fetchHealthProgress()
+          fetchWeeklyHealthSummary()
+        }
+      )
+      .subscribe()
+
+    const routineCompletionsChannel = supabase
+      .channel("realtime-health-routine-completions-changes")
+      .on(
+        "postgres_changes" as any,
+        {
+          event: "*",
+          schema: "public",
+          table: "health_routine_completions",
         },
         () => {
           fetchHealthProgress()
@@ -986,6 +1089,7 @@ export default function DashboardPage() {
 
     return () => {
       supabase.removeChannel(healthChannel)
+      supabase.removeChannel(routineCompletionsChannel)
       supabase.removeChannel(projectsChannel)
       supabase.removeChannel(tasksChannel)
       supabase.removeChannel(careerActivityChannel)
