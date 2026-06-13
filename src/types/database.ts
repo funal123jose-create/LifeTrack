@@ -917,6 +917,125 @@ export type Database = {
         }
         Relationships: []
       }
+      personal_care_daily_logs: {
+        Row: {
+          created_at: string
+          date: string
+          gratitude_note: string | null
+          id: string
+          improvement_note: string | null
+          mood_level: number | null
+          motivation_level: number | null
+          reflection: string | null
+          sleep_quality: number | null
+          stress_level: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          gratitude_note?: string | null
+          id?: string
+          improvement_note?: string | null
+          mood_level?: number | null
+          motivation_level?: number | null
+          reflection?: string | null
+          sleep_quality?: number | null
+          stress_level?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          gratitude_note?: string | null
+          id?: string
+          improvement_note?: string | null
+          mood_level?: number | null
+          motivation_level?: number | null
+          reflection?: string | null
+          sleep_quality?: number | null
+          stress_level?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      personal_care_routine_completions: {
+        Row: {
+          completed: boolean
+          created_at: string
+          date: string
+          id: string
+          routine_id: string
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          date: string
+          id?: string
+          routine_id: string
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          date?: string
+          id?: string
+          routine_id?: string
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_care_routine_completions_routine_id_fkey"
+            columns: ["routine_id"]
+            isOneToOne: false
+            referencedRelation: "personal_care_routines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      personal_care_routines: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pillars: {
         Row: {
           color: string | null
@@ -2415,17 +2534,26 @@ export type Database = {
           active_projects_touched: number | null
           active_tasks_touched: number | null
           activity_intensity: string | null
+          documentation_activity_events: number | null
+          evidence_activity_events: number | null
           last_event_at: string | null
           last_event_description: string | null
           last_event_title: string | null
           last_event_type: string | null
           most_active_day: string | null
           most_active_day_events: number | null
+          professional_activity_events: number | null
           project_priority_changed_events: number | null
+          project_skill_assigned_events: number | null
           project_status_changed_events: number | null
           projects_completed_events: number | null
           projects_created_events: number | null
+          skill_activity_events: number | null
+          task_documentation_updated_events: number | null
+          task_documented_events: number | null
+          task_evidence_uploaded_events: number | null
           task_priority_changed_events: number | null
+          task_skill_assigned_events: number | null
           task_status_changed_events: number | null
           tasks_archived_events: number | null
           tasks_completed_events: number | null
@@ -2540,12 +2668,15 @@ export type Database = {
           avg_daily_calories: number | null
           avg_daily_water_liters: number | null
           avg_energy_level: number | null
+          cardio_completed_days: number | null
           completed_training_days: number | null
+          fuerza_completed_days: number | null
           latest_weight_date: string | null
           latest_weight_kg: number | null
           meals_count: number | null
           planned_training_days: number | null
           progress_records: number | null
+          routine_active_days: number | null
           total_meal_calories: number | null
           total_water_liters: number | null
           tracker_total_calories: number | null
@@ -2555,6 +2686,40 @@ export type Database = {
           week_end: string | null
           week_start: string | null
           workout_days: number | null
+        }
+        Relationships: []
+      }
+      vw_weekly_personal_care_summary: {
+        Row: {
+          active_days: number | null
+          active_routines: number | null
+          avg_mood_level: number | null
+          avg_motivation_level: number | null
+          avg_sleep_quality: number | null
+          avg_stress_level: number | null
+          care_intensity: string | null
+          checkin_completion_percentage: number | null
+          checkin_days: number | null
+          completed_routine_events: number | null
+          gratitude_days: number | null
+          improvement_days: number | null
+          last_activity_at: string | null
+          last_gratitude_note: string | null
+          last_improvement_note: string | null
+          last_log_date: string | null
+          last_mood_level: number | null
+          last_motivation_level: number | null
+          last_reflection: string | null
+          last_sleep_quality: number | null
+          last_stress_level: number | null
+          personal_care_score: number | null
+          reflection_days: number | null
+          routine_completed_days: number | null
+          routine_completion_percentage: number | null
+          unique_routines_completed: number | null
+          user_id: string | null
+          week_end: string | null
+          week_start: string | null
         }
         Relationships: []
       }

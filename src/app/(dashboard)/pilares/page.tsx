@@ -95,23 +95,23 @@ export default function PilaresMenuPage() {
       extraInfo: <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><Code size={12} /> Control de CRUD de proyectos</div>
     },
     {
-      title: "Hábitos & Crecimiento",
-      subtitle: "Disciplina diaria",
-      description: "Construye tu disciplina diaria. Añade, edita y realiza el checklist de tus hábitos personalizados.",
-      longDescription: "Diseña un sistema de mejora continua para sostener hábitos, ordenar prioridades y mantener enfoque personal todos los días.",
+      title: "Cuidado Personal",
+      subtitle: "Bienestar y autocuidado",
+      description: "Registra tu check-in diario, estado de ánimo, estrés, descanso y rutinas de autocuidado personal.",
+      longDescription: "Convierte tu bienestar emocional, descanso, skincare, presentación personal y pausas mentales en un sistema medible semana tras semana.",
       icon: <Target className="text-orange-300" size={26} />,
       heroIcon: BrainCircuit,
-      badge: "Por configurar",
+      badge: "Sincronizado",
       badgeColor: "bg-orange-500/10 text-orange-300 border-orange-400/20",
-      href: "/pilares/habitos",
-      actionText: "Gestionar Hábitos",
+      href: "/pilares/cuidado-personal",
+      actionText: "Gestionar Cuidado",
       borderHover: "group-hover:border-orange-400/35",
       gradient: "from-orange-500/24 via-amber-400/10 to-transparent",
       glow: "group-hover:shadow-[0_28px_70px_-28px_rgba(249,115,22,0.68)]",
       accent: "text-orange-300",
       ring: "border-orange-400/20 bg-orange-500/10",
-      stats: ["Checklist", "Rachas", "Crecimiento"],
-      extraInfo: <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><Sparkles size={12} /> Matriz de hábitos diarios</div>
+      stats: ["Check-in", "Autocuidado", "Bienestar"],
+      extraInfo: <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><Sparkles size={12} /> Check-in y rutinas personales</div>
     }
   ]
 
@@ -178,7 +178,7 @@ export default function PilaresMenuPage() {
               </div>
               <div className="rounded-2xl bg-orange-500/[0.08] px-4 py-4 text-center">
                 <CalendarCheck2 className="mx-auto mb-2 text-orange-300" size={18} />
-                <p className="text-[9px] font-black uppercase tracking-widest text-orange-300/80">Hábitos</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-orange-300/80">Cuidado</p>
                 <p className="mt-1 text-2xl font-black text-white">03</p>
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function PilaresMenuPage() {
           <div className="relative flex flex-col gap-3 text-center md:flex-row md:items-center md:justify-center md:text-left">
             <Flame className="mx-auto text-orange-300 md:mx-0" size={18} />
             <p className="text-xs font-semibold leading-relaxed text-slate-400 md:text-sm">
-              Cada pilar funciona como un módulo independiente de tu sistema personal: cuerpo, carrera y disciplina trabajando como una sola arquitectura de crecimiento.
+              Cada pilar funciona como un módulo independiente de tu sistema personal: cuerpo, carrera y bienestar personal trabajando como una sola arquitectura de crecimiento.
             </p>
           </div>
         </motion.div>

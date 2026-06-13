@@ -141,6 +141,15 @@ type WeeklyCareerActivity = {
   tasks_archived_events: number
   task_status_changed_events: number
   task_priority_changed_events: number
+  project_skill_assigned_events: number
+  task_skill_assigned_events: number
+  task_documented_events: number
+  task_documentation_updated_events: number
+  task_evidence_uploaded_events: number
+  skill_activity_events: number
+  documentation_activity_events: number
+  evidence_activity_events: number
+  professional_activity_events: number
   active_projects_touched: number
   active_tasks_touched: number
   most_active_day: string | null
@@ -150,6 +159,37 @@ type WeeklyCareerActivity = {
   last_event_description: string | null
   last_event_at: string | null
   activity_intensity: "none" | "low" | "medium" | "high" | string
+}
+
+type WeeklyPersonalCareSummary = {
+  week_start: string | null
+  week_end: string | null
+  active_days: number
+  checkin_days: number
+  avg_mood_level: number
+  avg_stress_level: number
+  avg_motivation_level: number
+  avg_sleep_quality: number
+  reflection_days: number
+  gratitude_days: number
+  improvement_days: number
+  active_routines: number
+  completed_routine_events: number
+  routine_completed_days: number
+  unique_routines_completed: number
+  routine_completion_percentage: number
+  checkin_completion_percentage: number
+  personal_care_score: number
+  last_log_date: string | null
+  last_mood_level: number | null
+  last_stress_level: number | null
+  last_motivation_level: number | null
+  last_sleep_quality: number | null
+  last_reflection: string | null
+  last_gratitude_note: string | null
+  last_improvement_note: string | null
+  last_activity_at: string | null
+  care_intensity: "none" | "low" | "medium" | "high" | string
 }
 
 type CareerSkillDetail = {
@@ -352,8 +392,10 @@ export default function DashboardPage() {
   const [careerSkillsSummary, setCareerSkillsSummary] = useState<CareerSkillsSummary | null>(null)
   const [loadingCareerSkills, setLoadingCareerSkills] = useState(true)
 
-  // Pilar todavía pendiente de conectar a tablas reales de cuidado personal
-  const [personalCareProgress] = useState(0)
+  // --- RESUMEN SEMANAL DE CUIDADO PERSONAL ---
+  const [personalCareProgress, setPersonalCareProgress] = useState(0)
+  const [weeklyPersonalCareSummary, setWeeklyPersonalCareSummary] = useState<WeeklyPersonalCareSummary | null>(null)
+  const [loadingPersonalCare, setLoadingPersonalCare] = useState(true)
 
   const supabase = createClient()
 
@@ -362,6 +404,7 @@ export default function DashboardPage() {
   // La data se sigue recalculando igual; solo se conserva el último valor visible mientras llega la nueva consulta.
   const hasFetchedCareerRef = useRef(false)
   const hasFetchedHealthRef = useRef(false)
+  const hasFetchedPersonalCareRef = useRef(false)
   const hasMountedPanelRefreshRef = useRef(false)
 
   // --- FUNCIÓN CENTRAL PARA CALCULAR CUMPLIMIENTO DE RUTINA SEMANAL ---
@@ -704,6 +747,15 @@ export default function DashboardPage() {
           tasks_archived_events,
           task_status_changed_events,
           task_priority_changed_events,
+          project_skill_assigned_events,
+          task_skill_assigned_events,
+          task_documented_events,
+          task_documentation_updated_events,
+          task_evidence_uploaded_events,
+          skill_activity_events,
+          documentation_activity_events,
+          evidence_activity_events,
+          professional_activity_events,
           active_projects_touched,
           active_tasks_touched,
           most_active_day,
@@ -738,6 +790,15 @@ export default function DashboardPage() {
         tasks_archived_events: Number(data.tasks_archived_events || 0),
         task_status_changed_events: Number(data.task_status_changed_events || 0),
         task_priority_changed_events: Number(data.task_priority_changed_events || 0),
+        project_skill_assigned_events: Number(data.project_skill_assigned_events || 0),
+        task_skill_assigned_events: Number(data.task_skill_assigned_events || 0),
+        task_documented_events: Number(data.task_documented_events || 0),
+        task_documentation_updated_events: Number(data.task_documentation_updated_events || 0),
+        task_evidence_uploaded_events: Number(data.task_evidence_uploaded_events || 0),
+        skill_activity_events: Number(data.skill_activity_events || 0),
+        documentation_activity_events: Number(data.documentation_activity_events || 0),
+        evidence_activity_events: Number(data.evidence_activity_events || 0),
+        professional_activity_events: Number(data.professional_activity_events || 0),
         active_projects_touched: Number(data.active_projects_touched || 0),
         active_tasks_touched: Number(data.active_tasks_touched || 0),
         most_active_day: data.most_active_day || null,
@@ -814,6 +875,142 @@ export default function DashboardPage() {
       setCareerSkillsSummary(null)
     } finally {
       setLoadingCareerSkills(false)
+    }
+  }, [supabase])
+
+  // --- FUNCIÓN PARA CARGAR RESUMEN SEMANAL DE CUIDADO PERSONAL ---
+  const fetchWeeklyPersonalCareSummary = useCallback(async () => {
+    try {
+      if (!hasFetchedPersonalCareRef.current) {
+        setLoadingPersonalCare(true)
+      }
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return
+
+      const currentWeekStart = getCurrentWeekStartString()
+      const currentWeekEnd = getCurrentWeekEndString()
+
+      const { data, error } = await supabase
+        .from("vw_weekly_personal_care_summary")
+        .select(`
+          week_start,
+          week_end,
+          active_days,
+          checkin_days,
+          avg_mood_level,
+          avg_stress_level,
+          avg_motivation_level,
+          avg_sleep_quality,
+          reflection_days,
+          gratitude_days,
+          improvement_days,
+          active_routines,
+          completed_routine_events,
+          routine_completed_days,
+          unique_routines_completed,
+          routine_completion_percentage,
+          checkin_completion_percentage,
+          personal_care_score,
+          last_log_date,
+          last_mood_level,
+          last_stress_level,
+          last_motivation_level,
+          last_sleep_quality,
+          last_reflection,
+          last_gratitude_note,
+          last_improvement_note,
+          last_activity_at,
+          care_intensity
+        `)
+        .eq("user_id", session.user.id)
+        .eq("week_start", currentWeekStart)
+        .maybeSingle()
+
+      if (error) {
+        console.error("Error cargando resumen semanal de Cuidado Personal:", error)
+        setWeeklyPersonalCareSummary(null)
+        setPersonalCareProgress(0)
+        return
+      }
+
+      const summary = data as any
+
+      if (!summary) {
+        setWeeklyPersonalCareSummary({
+          week_start: currentWeekStart,
+          week_end: currentWeekEnd,
+          active_days: 0,
+          checkin_days: 0,
+          avg_mood_level: 0,
+          avg_stress_level: 0,
+          avg_motivation_level: 0,
+          avg_sleep_quality: 0,
+          reflection_days: 0,
+          gratitude_days: 0,
+          improvement_days: 0,
+          active_routines: 0,
+          completed_routine_events: 0,
+          routine_completed_days: 0,
+          unique_routines_completed: 0,
+          routine_completion_percentage: 0,
+          checkin_completion_percentage: 0,
+          personal_care_score: 0,
+          last_log_date: null,
+          last_mood_level: null,
+          last_stress_level: null,
+          last_motivation_level: null,
+          last_sleep_quality: null,
+          last_reflection: null,
+          last_gratitude_note: null,
+          last_improvement_note: null,
+          last_activity_at: null,
+          care_intensity: "none",
+        })
+        setPersonalCareProgress(0)
+        return
+      }
+
+      const mappedSummary: WeeklyPersonalCareSummary = {
+        week_start: summary.week_start || currentWeekStart,
+        week_end: summary.week_end || currentWeekEnd,
+        active_days: Number(summary.active_days || 0),
+        checkin_days: Number(summary.checkin_days || 0),
+        avg_mood_level: Number(summary.avg_mood_level || 0),
+        avg_stress_level: Number(summary.avg_stress_level || 0),
+        avg_motivation_level: Number(summary.avg_motivation_level || 0),
+        avg_sleep_quality: Number(summary.avg_sleep_quality || 0),
+        reflection_days: Number(summary.reflection_days || 0),
+        gratitude_days: Number(summary.gratitude_days || 0),
+        improvement_days: Number(summary.improvement_days || 0),
+        active_routines: Number(summary.active_routines || 0),
+        completed_routine_events: Number(summary.completed_routine_events || 0),
+        routine_completed_days: Number(summary.routine_completed_days || 0),
+        unique_routines_completed: Number(summary.unique_routines_completed || 0),
+        routine_completion_percentage: Number(summary.routine_completion_percentage || 0),
+        checkin_completion_percentage: Number(summary.checkin_completion_percentage || 0),
+        personal_care_score: Number(summary.personal_care_score || 0),
+        last_log_date: summary.last_log_date || null,
+        last_mood_level: summary.last_mood_level !== null && summary.last_mood_level !== undefined ? Number(summary.last_mood_level) : null,
+        last_stress_level: summary.last_stress_level !== null && summary.last_stress_level !== undefined ? Number(summary.last_stress_level) : null,
+        last_motivation_level: summary.last_motivation_level !== null && summary.last_motivation_level !== undefined ? Number(summary.last_motivation_level) : null,
+        last_sleep_quality: summary.last_sleep_quality !== null && summary.last_sleep_quality !== undefined ? Number(summary.last_sleep_quality) : null,
+        last_reflection: summary.last_reflection || null,
+        last_gratitude_note: summary.last_gratitude_note || null,
+        last_improvement_note: summary.last_improvement_note || null,
+        last_activity_at: summary.last_activity_at || null,
+        care_intensity: summary.care_intensity || "none",
+      }
+
+      setWeeklyPersonalCareSummary(mappedSummary)
+      setPersonalCareProgress(Math.min(Math.max(Math.round(mappedSummary.personal_care_score || 0), 0), 100))
+    } catch (error) {
+      console.error("Error sincronizando resumen semanal de Cuidado Personal:", error)
+      setWeeklyPersonalCareSummary(null)
+      setPersonalCareProgress(0)
+    } finally {
+      hasFetchedPersonalCareRef.current = true
+      setLoadingPersonalCare(false)
     }
   }, [supabase])
 
@@ -923,7 +1120,8 @@ export default function DashboardPage() {
     fetchWeeklyCareerSummary()
     fetchWeeklyCareerActivity()
     fetchCareerSkillsSummary()
-  }, [supabase, fetchRealProgress, fetchHealthProgress, fetchHealthInsights, fetchWeeklyHealthSummary, fetchWeeklyCareerSummary, fetchWeeklyCareerActivity, fetchCareerSkillsSummary])
+    fetchWeeklyPersonalCareSummary()
+  }, [supabase, fetchRealProgress, fetchHealthProgress, fetchHealthInsights, fetchWeeklyHealthSummary, fetchWeeklyCareerSummary, fetchWeeklyCareerActivity, fetchCareerSkillsSummary, fetchWeeklyPersonalCareSummary])
 
   // --- ESCUCHA EN TIEMPO REAL DESDE SUPABASE ---
   useEffect(() => {
@@ -1087,6 +1285,51 @@ export default function DashboardPage() {
       )
       .subscribe()
 
+    const personalCareDailyLogsChannel = supabase
+      .channel("realtime-personal-care-daily-logs-changes")
+      .on(
+        "postgres_changes" as any,
+        {
+          event: "*",
+          schema: "public",
+          table: "personal_care_daily_logs",
+        },
+        () => {
+          fetchWeeklyPersonalCareSummary()
+        }
+      )
+      .subscribe()
+
+    const personalCareRoutinesChannel = supabase
+      .channel("realtime-personal-care-routines-changes")
+      .on(
+        "postgres_changes" as any,
+        {
+          event: "*",
+          schema: "public",
+          table: "personal_care_routines",
+        },
+        () => {
+          fetchWeeklyPersonalCareSummary()
+        }
+      )
+      .subscribe()
+
+    const personalCareCompletionsChannel = supabase
+      .channel("realtime-personal-care-completions-changes")
+      .on(
+        "postgres_changes" as any,
+        {
+          event: "*",
+          schema: "public",
+          table: "personal_care_routine_completions",
+        },
+        () => {
+          fetchWeeklyPersonalCareSummary()
+        }
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(healthChannel)
       supabase.removeChannel(routineCompletionsChannel)
@@ -1098,8 +1341,11 @@ export default function DashboardPage() {
       supabase.removeChannel(bodyProgressChannel)
       supabase.removeChannel(mealLogsChannel)
       supabase.removeChannel(waterLogsChannel)
+      supabase.removeChannel(personalCareDailyLogsChannel)
+      supabase.removeChannel(personalCareRoutinesChannel)
+      supabase.removeChannel(personalCareCompletionsChannel)
     }
-  }, [supabase, fetchHealthProgress, fetchRealProgress, fetchHealthInsights, fetchWeeklyHealthSummary, fetchWeeklyCareerSummary, fetchWeeklyCareerActivity, fetchCareerSkillsSummary])
+  }, [supabase, fetchHealthProgress, fetchRealProgress, fetchHealthInsights, fetchWeeklyHealthSummary, fetchWeeklyCareerSummary, fetchWeeklyCareerActivity, fetchCareerSkillsSummary, fetchWeeklyPersonalCareSummary])
 
   // --- REFRESCAR CUANDO SE CIERRA EL PANEL ---
   useEffect(() => {
@@ -1116,10 +1362,34 @@ export default function DashboardPage() {
       fetchWeeklyCareerSummary()
       fetchWeeklyCareerActivity()
       fetchCareerSkillsSummary()
+      fetchWeeklyPersonalCareSummary()
     }
-  }, [isPanelOpen, fetchRealProgress, fetchHealthProgress, fetchHealthInsights, fetchWeeklyHealthSummary, fetchWeeklyCareerSummary, fetchWeeklyCareerActivity, fetchCareerSkillsSummary])
+  }, [isPanelOpen, fetchRealProgress, fetchHealthProgress, fetchHealthInsights, fetchWeeklyHealthSummary, fetchWeeklyCareerSummary, fetchWeeklyCareerActivity, fetchCareerSkillsSummary, fetchWeeklyPersonalCareSummary])
 
   const globalProgress = Math.round((healthProgress + careerProgress + personalCareProgress) / 3)
+
+  const personalCareScore = weeklyPersonalCareSummary
+    ? Math.min(Math.max(Math.round(weeklyPersonalCareSummary.personal_care_score || 0), 0), 100)
+    : personalCareProgress
+
+  const personalCareIntensityLabel =
+    weeklyPersonalCareSummary?.care_intensity === "high"
+      ? "Alta constancia"
+      : weeklyPersonalCareSummary?.care_intensity === "medium"
+        ? "Constancia media"
+        : weeklyPersonalCareSummary?.care_intensity === "low"
+          ? "Inicio activo"
+          : "Sin actividad"
+
+  const weeklyPersonalCheckins = weeklyPersonalCareSummary?.checkin_days || 0
+  const weeklyPersonalCompletedRoutines = weeklyPersonalCareSummary?.completed_routine_events || 0
+  const weeklyPersonalActiveRoutines = weeklyPersonalCareSummary?.active_routines || 0
+  const weeklyPersonalRoutinePct = weeklyPersonalCareSummary
+    ? Math.min(Math.max(Math.round(weeklyPersonalCareSummary.routine_completion_percentage || 0), 0), 100)
+    : 0
+  const weeklyPersonalCheckinPct = weeklyPersonalCareSummary
+    ? Math.min(Math.max(Math.round(weeklyPersonalCareSummary.checkin_completion_percentage || 0), 0), 100)
+    : 0
 
   const weeklyTrainingPct = weeklyHealthSummary
     ? Math.min(Math.max(Math.round(weeklyHealthSummary.training_completion_percentage || 0), 0), 100)
@@ -1149,7 +1419,63 @@ export default function DashboardPage() {
           ? "Actividad inicial"
           : "Sin actividad"
 
+  const careerOperationalEvents = weeklyCareerActivity
+    ? weeklyCareerActivity.projects_created_events +
+      weeklyCareerActivity.projects_completed_events +
+      weeklyCareerActivity.project_status_changed_events +
+      weeklyCareerActivity.project_priority_changed_events +
+      weeklyCareerActivity.tasks_created_events +
+      weeklyCareerActivity.tasks_completed_events +
+      weeklyCareerActivity.tasks_archived_events +
+      weeklyCareerActivity.task_status_changed_events +
+      weeklyCareerActivity.task_priority_changed_events
+    : 0
+
+  const careerProfessionalEvents = weeklyCareerActivity?.professional_activity_events || 0
+
+  const careerProfessionalActivityPct =
+    weeklyCareerActivity && weeklyCareerActivity.total_events > 0
+      ? Math.round((careerProfessionalEvents / weeklyCareerActivity.total_events) * 100)
+      : 0
+
   const lastCareerActivityText = weeklyCareerActivity?.last_event_description || weeklyCareerActivity?.last_event_title || "Sin eventos registrados"
+
+  const lastCareerActivityLabel =
+    weeklyCareerActivity?.last_event_type === "project_skill_assigned"
+      ? "Skill asignada al proyecto"
+      : weeklyCareerActivity?.last_event_type === "task_skill_assigned"
+        ? "Skill aplicada en subtarea"
+        : weeklyCareerActivity?.last_event_type === "task_documented"
+          ? "Subtarea documentada"
+          : weeklyCareerActivity?.last_event_type === "task_documentation_updated"
+            ? "Documentación actualizada"
+            : weeklyCareerActivity?.last_event_type === "task_evidence_uploaded"
+              ? "Evidencia subida"
+              : weeklyCareerActivity?.last_event_title || "Sin actividad reciente"
+
+  const professionalActivityBreakdown = [
+    {
+      label: "Skills",
+      value: weeklyCareerActivity?.skill_activity_events || 0,
+      helper: `${weeklyCareerActivity?.project_skill_assigned_events || 0} proyecto · ${weeklyCareerActivity?.task_skill_assigned_events || 0} subtarea`,
+      icon: Cpu,
+      tone: "border-purple-300/12 bg-purple-500/[0.075] text-purple-200",
+    },
+    {
+      label: "Documentación",
+      value: weeklyCareerActivity?.documentation_activity_events || 0,
+      helper: `${weeklyCareerActivity?.task_documented_events || 0} nueva · ${weeklyCareerActivity?.task_documentation_updated_events || 0} actualizada`,
+      icon: Database,
+      tone: "border-cyan-300/12 bg-cyan-500/[0.075] text-cyan-200",
+    },
+    {
+      label: "Evidencias",
+      value: weeklyCareerActivity?.evidence_activity_events || 0,
+      helper: `${weeklyCareerActivity?.task_evidence_uploaded_events || 0} archivos subidos`,
+      icon: ShieldCheck,
+      tone: "border-emerald-300/12 bg-emerald-500/[0.075] text-emerald-200",
+    },
+  ]
 
   const skillsUsagePct = careerSkillsSummary && careerSkillsSummary.total_skills > 0
     ? Math.round((careerSkillsSummary.used_skills / careerSkillsSummary.total_skills) * 100)
@@ -1175,7 +1501,7 @@ export default function DashboardPage() {
       color: "from-slate-700 via-blue-600 to-cyan-500",
       glow: "shadow-blue-500/10",
       accent: "text-blue-300",
-      description: "Promedio de 3 pilares",
+      description: "Promedio de 3 pilares reales",
       trend: "Live",
     },
     {
@@ -1200,13 +1526,13 @@ export default function DashboardPage() {
     },
     {
       title: "Cuidado Personal",
-      value: `${personalCareProgress}%`,
+      value: loadingPersonalCare ? "..." : `${personalCareProgress}%`,
       icon: UserRound,
       color: "from-slate-700 via-purple-600 to-fuchsia-500",
       glow: "shadow-purple-500/10",
       accent: "text-purple-300",
-      description: "Pendiente de conectar módulo",
-      trend: "Next",
+      description: `${weeklyPersonalCheckins}/7 check-ins · ${weeklyPersonalCompletedRoutines} rutinas`,
+      trend: "Real-time",
     },
   ]
 
@@ -1233,14 +1559,14 @@ export default function DashboardPage() {
       color: "bg-purple-500",
       text: "text-purple-300",
       icon: UserRound,
-      description: "Rutinas de imagen y cuidado por implementar",
+      description: `${weeklyPersonalCheckins}/7 check-ins · ${weeklyPersonalActiveRoutines} rutinas activas`,
     },
   ]
 
   const milestones = [
     {
-      title: "Completar módulo de Cuidado Personal",
-      label: "Siguiente prioridad",
+      title: "Sostener check-in y rutinas de cuidado personal",
+      label: "Tercer pilar conectado",
       icon: UserRound,
       style: "border-purple-400/20 bg-purple-500/10 text-purple-300",
     },
@@ -1295,13 +1621,13 @@ export default function DashboardPage() {
                   Hola, <span className="bg-gradient-to-r from-slate-100 via-blue-200 to-slate-400 bg-clip-text text-transparent">{displayName}</span>
                 </h2>
                 <p className="max-w-3xl text-sm font-medium leading-relaxed text-slate-400 md:text-base">
-                  Panel limpio para ver lo importante: tu constancia en salud y tu avance profesional en Data & Carrera, sin saturarte con métricas repetidas.
+                  Panel limpio para ver lo importante: tu constancia en salud, tu avance profesional en Data & Carrera y tu cuidado personal, sin saturarte con métricas repetidas.
                 </p>
               </div>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row xl:flex-col">
-              <div className="grid grid-cols-3 gap-2 rounded-[1.35rem] border border-white/[0.07] bg-black/25 p-2 backdrop-blur-xl">
+              <div className="grid grid-cols-2 gap-2 rounded-[1.35rem] sm:grid-cols-4 border border-white/[0.07] bg-black/25 p-2 backdrop-blur-xl">
                 <div className="rounded-2xl bg-blue-500/[0.08] px-4 py-3 text-center">
                   <Layers3 className="mx-auto mb-1.5 text-blue-300" size={17} />
                   <p className="text-[9px] font-black uppercase tracking-widest text-blue-300/80">Global</p>
@@ -1317,6 +1643,11 @@ export default function DashboardPage() {
                   <p className="text-[9px] font-black uppercase tracking-widest text-orange-300/80">Carrera</p>
                   <p className="text-2xl font-black text-white">{loadingProgress ? "..." : `${careerProgress}%`}</p>
                 </div>
+                <div className="rounded-2xl bg-purple-500/[0.08] px-4 py-3 text-center">
+                  <UserRound className="mx-auto mb-1.5 text-purple-300" size={17} />
+                  <p className="text-[9px] font-black uppercase tracking-widest text-purple-300/80">Cuidado</p>
+                  <p className="text-2xl font-black text-white">{loadingPersonalCare ? "..." : `${personalCareProgress}%`}</p>
+                </div>
               </div>
 
               <Button
@@ -1331,7 +1662,7 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* VISTA GENERAL: SOLO LO ESENCIAL */}
-        <div className="grid gap-6 xl:grid-cols-2">
+        <div className="grid gap-6 xl:grid-cols-3">
           <motion.div variants={itemVariants}>
             <Card className="relative h-full overflow-hidden rounded-[2.2rem] border border-emerald-300/[0.10] bg-white/[0.05] shadow-[0_28px_90px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(16,185,129,0.13),transparent_30%),radial-gradient(circle_at_86%_70%,rgba(59,130,246,0.07),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.025),transparent_42%)]" />
@@ -1565,11 +1896,137 @@ export default function DashboardPage() {
                     <Cpu size={16} className="text-orange-300" />
                   </div>
                   <p className="text-sm font-semibold leading-relaxed text-slate-400">
-                    {weeklyCareerSummary
-                      ? weeklyCareerSummary.tasks_completed_week > 0
-                        ? `Esta semana cerraste ${weeklyCareerSummary.tasks_completed_week} tareas. Tu proyecto más fuerte es ${weeklyCareerSummary.top_project_title || "aún no definido"}.`
-                        : "Esta semana aún no registra tareas completadas. El foco debería ser cerrar al menos una subtarea documentada."
-                      : "Aún no hay resumen semanal de carrera. Registra proyectos y subtareas para activar este análisis."}
+                    {weeklyCareerActivity && weeklyCareerActivity.total_events > 0
+                      ? careerProfessionalEvents > 0
+                        ? `Esta semana registraste ${weeklyCareerActivity.total_events} movimientos: ${careerOperationalEvents} operativos y ${careerProfessionalEvents} profesionales. Último avance: ${lastCareerActivityLabel}.`
+                        : `Esta semana registraste ${weeklyCareerActivity.total_events} movimientos operativos. El siguiente foco es documentar subtareas, subir evidencias o asignar skills.`
+                      : weeklyCareerSummary
+                        ? weeklyCareerSummary.tasks_completed_week > 0
+                          ? `Esta semana cerraste ${weeklyCareerSummary.tasks_completed_week} tareas. Tu proyecto más fuerte es ${weeklyCareerSummary.top_project_title || "aún no definido"}.`
+                          : "Esta semana aún no registra tareas completadas. El foco debería ser cerrar al menos una subtarea documentada."
+                        : "Aún no hay resumen semanal de carrera. Registra proyectos y subtareas para activar este análisis."}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <Card className="relative h-full overflow-hidden rounded-[2.2rem] border border-purple-300/[0.10] bg-white/[0.05] shadow-[0_28px_90px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(168,85,247,0.14),transparent_30%),radial-gradient(circle_at_86%_70%,rgba(45,212,191,0.08),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.025),transparent_42%)]" />
+              <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-purple-400 via-cyan-400 to-orange-400" />
+
+              <CardHeader className="relative">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center xl:flex-col xl:items-start 2xl:flex-row 2xl:items-center">
+                  <div>
+                    <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-white">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-400/20 bg-purple-500/10 text-purple-300">
+                        <UserRound size={18} />
+                      </span>
+                      Cuidado Personal
+                    </CardTitle>
+                    <p className="mt-2 text-xs font-medium text-slate-500">
+                      Check-ins, autocuidado, descanso, estrés y rutinas personales de la semana.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-purple-300/14 bg-purple-500/[0.08] px-4 py-3 text-right">
+                    <p className="text-4xl font-black tracking-tight text-purple-200">
+                      {loadingPersonalCare ? "..." : `${personalCareProgress}%`}
+                    </p>
+                    <p className="mt-1 text-[9px] font-black uppercase tracking-[0.24em] text-slate-500">
+                      avance cuidado
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="relative space-y-5">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-purple-300/15 bg-purple-500/[0.08] text-purple-300">
+                        <CalendarClock size={16} />
+                      </span>
+                      <span className="rounded-full border border-purple-400/15 bg-purple-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-purple-300/80">
+                        semana
+                      </span>
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Check-ins</p>
+                    <p className="mt-1 text-2xl font-black text-white">{weeklyPersonalCheckins}/7</p>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      {weeklyPersonalCheckinPct}% de seguimiento semanal
+                    </p>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-cyan-300/15 bg-cyan-500/[0.08] text-cyan-300">
+                        <CheckCircle2 size={16} />
+                      </span>
+                      <span className="rounded-full border border-cyan-400/15 bg-cyan-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-cyan-300/80">
+                        rutinas
+                      </span>
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Rutinas completadas</p>
+                    <p className="mt-1 text-2xl font-black text-white">{weeklyPersonalCompletedRoutines}</p>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      {weeklyPersonalActiveRoutines} activas · {weeklyPersonalRoutinePct}% semanal
+                    </p>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-emerald-300/15 bg-emerald-500/[0.08] text-emerald-300">
+                        <Sparkles size={16} />
+                      </span>
+                      <span className="rounded-full border border-white/[0.05] bg-slate-950/60 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-slate-500">
+                        ánimo
+                      </span>
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Ánimo prom.</p>
+                    <p className="mt-1 text-2xl font-black text-white">
+                      {weeklyPersonalCareSummary && weeklyPersonalCareSummary.avg_mood_level > 0
+                        ? `${weeklyPersonalCareSummary.avg_mood_level.toFixed(1)}/10`
+                        : "—"}
+                    </p>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      Motivación {weeklyPersonalCareSummary && weeklyPersonalCareSummary.avg_motivation_level > 0 ? `${weeklyPersonalCareSummary.avg_motivation_level.toFixed(1)}/10` : "—"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-orange-300/15 bg-orange-500/[0.08] text-orange-300">
+                        <Flame size={16} />
+                      </span>
+                      <span className="rounded-full border border-white/[0.05] bg-slate-950/60 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-slate-500">
+                        estrés
+                      </span>
+                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Estrés prom.</p>
+                    <p className="mt-1 text-2xl font-black text-white">
+                      {weeklyPersonalCareSummary && weeklyPersonalCareSummary.avg_stress_level > 0
+                        ? `${weeklyPersonalCareSummary.avg_stress_level.toFixed(1)}/10`
+                        : "—"}
+                    </p>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      Sueño {weeklyPersonalCareSummary && weeklyPersonalCareSummary.avg_sleep_quality > 0 ? `${weeklyPersonalCareSummary.avg_sleep_quality.toFixed(1)}/10` : "—"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/30 p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Lectura rápida de cuidado personal</p>
+                    <ShieldCheck size={16} className="text-purple-300" />
+                  </div>
+                  <p className="text-sm font-semibold leading-relaxed text-slate-400">
+                    {weeklyPersonalCareSummary
+                      ? weeklyPersonalCheckins > 0 || weeklyPersonalCompletedRoutines > 0
+                        ? `Esta semana tienes ${weeklyPersonalCheckins} check-ins y ${weeklyPersonalCompletedRoutines} rutinas completadas. Intensidad: ${personalCareIntensityLabel.toLowerCase()}.`
+                        : "Aún no hay actividad de cuidado personal esta semana. Empieza con un check-in y una rutina simple."
+                      : "Registra un check-in o completa una rutina para activar el resumen semanal."}
                   </p>
                 </div>
               </CardContent>
@@ -1681,7 +2138,7 @@ export default function DashboardPage() {
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Actividad semanal</p>
                     <p className="mt-2 text-xl font-black text-white">{weeklyCareerActivity ? weeklyCareerActivity.total_events : "—"}</p>
                     <p className="mt-1 text-xs font-medium text-slate-600">
-                      {careerActivityLabel} · Score {careerActivityScore}%
+                      {careerActivityLabel} · {careerOperationalEvents} operativos · {careerProfessionalEvents} profesionales
                     </p>
                   </div>
 
@@ -1691,6 +2148,44 @@ export default function DashboardPage() {
                     <p className="mt-1 text-xs font-medium text-slate-600">
                       {topSkillCategoryLabel}
                     </p>
+                  </div>
+                </div>
+
+                <div className="rounded-[1.5rem] border border-orange-300/10 bg-orange-500/[0.045] p-4">
+                  <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-orange-200/80">Actividad profesional demostrable</p>
+                      <p className="mt-1 text-xs font-medium leading-relaxed text-slate-600">
+                        Documentación, evidencias y skills aplicadas esta semana.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-orange-300/14 bg-black/24 px-4 py-2 text-right">
+                      <p className="text-2xl font-black text-orange-100">{careerProfessionalEvents}</p>
+                      <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-600">{careerProfessionalActivityPct}% del total</p>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 md:grid-cols-3">
+                    {professionalActivityBreakdown.map((item) => {
+                      const Icon = item.icon
+
+                      return (
+                        <div key={item.label} className={`rounded-2xl border ${item.tone} p-3`}>
+                          <div className="mb-2 flex items-center justify-between">
+                            <Icon size={15} />
+                            <span className="text-xl font-black">{item.value}</span>
+                          </div>
+                          <p className="text-[9px] font-black uppercase tracking-widest">{item.label}</p>
+                          <p className="mt-1 text-[10px] font-medium text-slate-600">{item.helper}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  <div className="mt-4 rounded-2xl border border-white/[0.05] bg-black/20 p-3">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Última actividad</p>
+                    <p className="mt-1 text-sm font-bold text-slate-300">{lastCareerActivityLabel}</p>
+                    <p className="mt-1 line-clamp-2 text-xs font-medium text-slate-600">{lastCareerActivityText}</p>
                   </div>
                 </div>
 
@@ -1752,9 +2247,11 @@ export default function DashboardPage() {
                   Data & Carrera
                 </div>
                 <p className="text-sm font-bold leading-relaxed text-slate-300">
-                  {weeklyCareerSummary && weeklyCareerSummary.tasks_completed_week > 0
-                    ? "Vas avanzando. El siguiente paso es documentar subtareas y evidencias para subir valor de portafolio."
-                    : "Cierra al menos una subtarea y documenta qué skill usaste para que tu avance sea demostrable."}
+                  {careerProfessionalEvents > 0
+                    ? `Buen avance profesional: esta semana tienes ${careerProfessionalEvents} eventos demostrables entre skills, documentación y evidencias.`
+                    : weeklyCareerSummary && weeklyCareerSummary.tasks_completed_week > 0
+                      ? "Vas avanzando. El siguiente paso es documentar subtareas y evidencias para subir valor de portafolio."
+                      : "Cierra al menos una subtarea y documenta qué skill usaste para que tu avance sea demostrable."}
                 </p>
               </div>
             </div>
