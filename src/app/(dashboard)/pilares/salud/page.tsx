@@ -410,7 +410,7 @@ function FloatingBioChips() {
             }}
             className={`absolute rounded-2xl border px-3 py-2 shadow-[0_20px_50px_rgba(0,0,0,0.18)] backdrop-blur-2xl ${chip.className}`}
           >
-            <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.24em]">
+            <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.16em]">
               <Icon size={13} /> {chip.label}
             </div>
           </motion.div>
@@ -1321,7 +1321,7 @@ export default function CentroSaludPage() {
             <HeartPulse className="text-emerald-300 drop-shadow-[0_0_22px_rgba(16,185,129,0.55)]" size={34} />
           </div>
           <div className="text-center">
-            <p className="animate-pulse text-[10px] font-black uppercase tracking-[0.45em] text-emerald-300">
+            <p className="animate-pulse text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">
               SINCRO-BIOMÉTRICA EN CURSO
             </p>
             <p className="mt-2 text-xs font-medium text-slate-500">
@@ -1334,7 +1334,7 @@ export default function CentroSaludPage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#02050a] px-4 pb-12 pt-6 text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-100 md:px-8">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#02050a] px-4 pb-12 pt-6 text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-100 md:px-8 [overflow-wrap:anywhere]" style={{ fontFamily: "'Poppins', 'Nunito Sans', 'Inter', 'Manrope', system-ui, sans-serif" }}>
       <BiometricsBackground />
       <FloatingBioChips />
       <HudCornerFrame />
@@ -1345,7 +1345,7 @@ export default function CentroSaludPage() {
           <Link href="/pilares">
             <Button
               variant="ghost"
-              className="group flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.035] px-4 text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl transition-all hover:border-emerald-400/25 hover:bg-emerald-500/[0.07] hover:text-emerald-300"
+              className="group flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.035] px-4 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl transition-all hover:border-emerald-400/25 hover:bg-emerald-500/[0.07] hover:text-emerald-300"
             >
               <ChevronLeft size={16} className="transition-transform duration-300 group-hover:-translate-x-1" /> Volver a Pilares
             </Button>
@@ -1362,51 +1362,51 @@ export default function CentroSaludPage() {
               transition={{ type: "spring", stiffness: 120, damping: 18 }}
               className="relative z-10 mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[1.05fr_0.95fr]"
             >
-              <div className="relative overflow-hidden rounded-[2.2rem] border border-white/[0.08] bg-[#07100f]/65 p-7 shadow-[0_30px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl md:p-9">
+              <div className="relative overflow-hidden rounded-[2.2rem] border border-white/[0.085] bg-[linear-gradient(135deg,rgba(7,16,15,0.78),rgba(3,10,18,0.68))] p-7 shadow-[0_30px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl md:p-9">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_14%,rgba(16,185,129,0.075),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(59,130,246,0.12),transparent_28%)]" />
                 <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
 
                 <div className="relative flex h-full flex-col justify-between gap-8">
                   <div className="space-y-5">
-                    <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/[0.055] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.38em] text-emerald-300">
+                    <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/[0.055] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-300">
                       <ScanLine size={14} className="animate-pulse" /> Calibración Inicial
                     </div>
                     <div className="space-y-3">
-                      <h1 className="text-4xl font-black uppercase leading-[0.9] tracking-tighter text-white md:text-7xl">
+                      <h1 className="break-words text-balance text-[clamp(2.45rem,5vw,4.8rem)] font-extrabold leading-[0.94] tracking-[-0.075em] text-white">
                         Perfil <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-blue-300 bg-clip-text text-transparent">Biométrico</span>
                       </h1>
-                      <p className="max-w-xl text-sm font-medium leading-relaxed text-slate-400 md:text-base">
+                      <p className="max-w-xl break-words text-sm font-medium leading-relaxed text-slate-400 md:text-base">
                         Inicializa tu centro de salud para calcular tus metas diarias, sincronizar tu rutina semanal y activar tu panel de seguimiento físico.
                       </p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="rounded-2xl border border-white/[0.06] bg-black/25 p-4 text-center">
+                    <div className="min-w-0 rounded-2xl border border-white/[0.065] bg-black/24 p-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
                       <Scale className="mx-auto mb-2 text-emerald-300" size={20} />
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Peso</p>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">Peso</p>
                     </div>
-                    <div className="rounded-2xl border border-white/[0.06] bg-black/25 p-4 text-center">
+                    <div className="min-w-0 rounded-2xl border border-white/[0.065] bg-black/24 p-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
                       <Ruler className="mx-auto mb-2 text-blue-300" size={20} />
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Altura</p>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">Altura</p>
                     </div>
-                    <div className="rounded-2xl border border-white/[0.06] bg-black/25 p-4 text-center">
+                    <div className="min-w-0 rounded-2xl border border-white/[0.065] bg-black/24 p-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
                       <Gauge className="mx-auto mb-2 text-orange-300" size={20} />
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">BMR</p>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">BMR</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <Card className="relative overflow-hidden rounded-[2.2rem] border border-white/[0.08] bg-[#07100f]/65 shadow-[0_30px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl">
+              <Card className="relative overflow-hidden rounded-[2.2rem] border border-white/[0.085] bg-[linear-gradient(135deg,rgba(7,16,15,0.78),rgba(3,10,18,0.68))] shadow-[0_30px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(16,185,129,0.06),transparent_32%)]" />
                 <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
                 <CardHeader className="relative space-y-2">
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-300">
+                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">
                     <Sparkles size={14} className="animate-pulse" /> Calibración de Sistema
                   </div>
-                  <CardTitle className="text-3xl font-black tracking-tight text-white">Datos físicos base</CardTitle>
-                  <CardDescription className="text-slate-400">
+                  <CardTitle className="break-words text-3xl font-extrabold tracking-[-0.04em] text-white">Datos físicos base</CardTitle>
+                  <CardDescription className="break-words text-slate-400">
                     Registra tus datos para inicializar el algoritmo de gasto calórico predictivo.
                   </CardDescription>
                 </CardHeader>
@@ -1414,7 +1414,7 @@ export default function CentroSaludPage() {
                   <form onSubmit={handleSaveProfile} className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="weight" className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        <Label htmlFor="weight" className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">
                           <Scale size={14} /> Peso (kg)
                         </Label>
                         <Input
@@ -1425,11 +1425,11 @@ export default function CentroSaludPage() {
                           required
                           value={weight}
                           onChange={(e) => setWeight(e.target.value)}
-                          className="h-12 rounded-2xl border-white/10 bg-slate-950/55 text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
+                          className="h-12 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="height" className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        <Label htmlFor="height" className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">
                           <Ruler size={14} /> Altura (cm)
                         </Label>
                         <Input
@@ -1439,12 +1439,12 @@ export default function CentroSaludPage() {
                           required
                           value={height}
                           onChange={(e) => setHeight(e.target.value)}
-                          className="h-12 rounded-2xl border-white/10 bg-slate-950/55 text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
+                          className="h-12 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="birth" className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                      <Label htmlFor="birth" className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">
                         <Calendar size={14} /> Fecha de Nacimiento
                       </Label>
                       <Input
@@ -1453,16 +1453,16 @@ export default function CentroSaludPage() {
                         required
                         value={birthDate}
                         onChange={(e) => setBirthDate(e.target.value)}
-                        className="h-12 rounded-2xl border-white/10 bg-slate-950/55 text-white focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
+                        className="h-12 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-white focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Género Biológico</Label>
+                      <Label className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">Género Biológico</Label>
                       <div className="grid grid-cols-2 gap-4">
                         <button
                           type="button"
                           onClick={() => setGender("male")}
-                          className={`h-12 rounded-2xl border text-sm font-black transition-all ${
+                          className={`h-12 rounded-2xl border text-sm font-extrabold transition-all ${
                             gender === "male"
                               ? "border-emerald-300/30 bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
                               : "border-white/10 bg-black/25 text-slate-300 hover:bg-white/5"
@@ -1473,7 +1473,7 @@ export default function CentroSaludPage() {
                         <button
                           type="button"
                           onClick={() => setGender("female")}
-                          className={`h-12 rounded-2xl border text-sm font-black transition-all ${
+                          className={`h-12 rounded-2xl border text-sm font-extrabold transition-all ${
                             gender === "female"
                               ? "border-emerald-300/30 bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
                               : "border-white/10 bg-black/25 text-slate-300 hover:bg-white/5"
@@ -1485,7 +1485,7 @@ export default function CentroSaludPage() {
                     </div>
                     <Button
                       type="submit"
-                      className="mt-2 flex h-12 w-full gap-2 rounded-2xl border border-emerald-300/20 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-[11px] font-black tracking-wider text-white shadow-[0_18px_42px_rgba(16,185,129,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(16,185,129,0.34)]"
+                      className="mt-2 flex h-12 w-full gap-2 rounded-2xl border border-emerald-300/20 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-[11px] font-bold tracking-[0.08em] text-white shadow-[0_18px_42px_rgba(16,185,129,0.24)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_58px_rgba(16,185,129,0.38)] active:scale-[0.98]"
                     >
                       <Save size={16} /> GUARDAR CONFIGURACIÓN
                     </Button>
@@ -1499,11 +1499,11 @@ export default function CentroSaludPage() {
               initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.65, ease: "easeOut" }}
-              className="relative z-10 grid items-start gap-6 xl:grid-cols-[1fr_390px] 2xl:grid-cols-[1fr_420px]"
+              className="relative z-10 grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_390px] 2xl:grid-cols-[minmax(0,1fr)_420px]"
             >
               {/* LADO IZQUIERDO */}
-              <div className="space-y-6">
-                <div className="group relative overflow-hidden rounded-[2.25rem] border border-white/[0.08] bg-[#07100f]/65 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl md:p-8">
+              <div className="min-w-0 space-y-6">
+                <div className="group relative overflow-hidden rounded-[2.25rem] border border-white/[0.085] bg-[linear-gradient(135deg,rgba(7,16,15,0.78),rgba(3,10,18,0.68))] p-6 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-2xl md:p-8">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(16,185,129,0.075),transparent_30%),radial-gradient(circle_at_85%_10%,rgba(59,130,246,0.14),transparent_30%)]" />
                   <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-emerald-400/55 to-transparent" />
                   <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl transition-all duration-700 group-hover:scale-125" />
@@ -1523,32 +1523,32 @@ export default function CentroSaludPage() {
                   </div>
                   <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                     <div className="space-y-3">
-                      <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/[0.055] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.35em] text-emerald-300">
+                      <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/[0.055] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.20em] text-emerald-300">
                         <Activity size={14} className="animate-pulse" /> Centro de Operaciones
                       </div>
-                      <h2 className="text-4xl font-black uppercase leading-[0.9] tracking-tighter text-white md:text-6xl">
+                      <h2 className="break-words text-balance text-[clamp(2.35rem,4.5vw,4.3rem)] font-extrabold leading-[0.95] tracking-[-0.07em] text-white">
                         Pilar de <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-blue-300 bg-clip-text text-transparent">Salud Física</span>
                       </h2>
-                      <p className="max-w-2xl text-sm font-medium leading-relaxed text-slate-400">
+                      <p className="max-w-2xl break-words text-sm font-medium leading-relaxed text-slate-400">
                         Controla hidratación, energía diaria, entrenamiento semanal y checklist de cumplimiento desde una consola biométrica integrada.
                       </p>
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 rounded-[1.4rem] border border-white/[0.06] bg-black/25 p-2 backdrop-blur-xl">
-                      <div className="rounded-2xl bg-blue-500/[0.08] px-4 py-3 text-center">
+                      <div className="min-w-0 rounded-2xl bg-blue-500/[0.08] px-4 py-3 text-center">
                         <Droplet className="mx-auto mb-1.5 text-blue-300" size={17} />
-                        <p className="text-[9px] font-black uppercase tracking-widest text-blue-300/80">Agua</p>
-                        <p className="text-xl font-black text-white">{waterPct}%</p>
+                        <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-blue-300/80">Agua</p>
+                        <p className="text-xl font-extrabold text-white">{waterPct}%</p>
                       </div>
-                      <div className="rounded-2xl bg-orange-500/[0.08] px-4 py-3 text-center">
+                      <div className="min-w-0 rounded-2xl bg-orange-500/[0.08] px-4 py-3 text-center">
                         <Flame className="mx-auto mb-1.5 text-orange-300" size={17} />
-                        <p className="text-[9px] font-black uppercase tracking-widest text-orange-300/80">Kcal</p>
-                        <p className="text-xl font-black text-white">{caloriePct}%</p>
+                        <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-orange-300/80">Kcal</p>
+                        <p className="text-xl font-extrabold text-white">{caloriePct}%</p>
                       </div>
-                      <div className="rounded-2xl bg-emerald-500/[0.08] px-4 py-3 text-center">
+                      <div className="min-w-0 rounded-2xl bg-emerald-500/[0.08] px-4 py-3 text-center">
                         <Dumbbell className="mx-auto mb-1.5 text-emerald-300" size={17} />
-                        <p className="text-[9px] font-black uppercase tracking-widest text-emerald-300/80">Días</p>
-                        <p className="text-xl font-black text-white">{plannedCount}/7</p>
+                        <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-emerald-300/80">Días</p>
+                        <p className="text-xl font-extrabold text-white">{plannedCount}/7</p>
                       </div>
                     </div>
                   </div>
@@ -1556,7 +1556,7 @@ export default function CentroSaludPage() {
 
                 {/* CONTADORES DIARIOS */}
                 <div className="grid gap-6 md:grid-cols-2">
-                  <Card className="group relative min-h-[285px] overflow-hidden rounded-[2.1rem] border border-white/[0.08] bg-[#07100f]/70 shadow-[0_26px_85px_rgba(0,0,0,0.38)] backdrop-blur-2xl transition-all hover:-translate-y-1.5 hover:border-blue-400/35 hover:shadow-[0_32px_80px_-28px_rgba(59,130,246,0.72)]">
+                  <Card className="group relative min-h-[285px] overflow-hidden rounded-[2.1rem] border border-white/[0.085] bg-[linear-gradient(135deg,rgba(7,16,15,0.76),rgba(3,10,18,0.68))] shadow-[0_26px_85px_rgba(0,0,0,0.38)] backdrop-blur-2xl transition-all hover:-translate-y-1.5 hover:border-blue-400/35 hover:shadow-[0_32px_80px_-28px_rgba(59,130,246,0.72)]">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(59,130,246,0.22),transparent_32%),radial-gradient(circle_at_90%_80%,rgba(34,211,238,0.10),transparent_34%)]" />
                     <motion.div
                       animate={{ y: [0, -10, 0], opacity: [0.35, 0.75, 0.35] }}
@@ -1565,7 +1565,7 @@ export default function CentroSaludPage() {
                     />
                     <div className="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-blue-400 via-cyan-400 to-blue-600" />
                     <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">
+                      <CardTitle className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
                         Hidratación Diaria
                       </CardTitle>
                       <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3 text-blue-300 shadow-[0_0_22px_rgba(59,130,246,0.14)]">
@@ -1574,11 +1574,11 @@ export default function CentroSaludPage() {
                     </CardHeader>
                     <CardContent className="relative space-y-5">
                       <div className="flex items-end gap-2">
-                        <div className="text-5xl font-black tracking-tighter text-white">{waterIngested}L</div>
+                        <div className="text-5xl font-extrabold tracking-tighter text-white">{waterIngested}L</div>
                         <span className="pb-2 text-sm font-bold text-slate-500">/ 3.0L</span>
                       </div>
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-slate-500">
+                        <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
                           <span>Progreso hídrico</span>
                           <span className="text-blue-300">{waterPct}%</span>
                         </div>
@@ -1594,7 +1594,7 @@ export default function CentroSaludPage() {
                       <div className="flex gap-2">
                         <Button
                           onClick={handleAddWater}
-                          className="h-11 flex-1 rounded-2xl border border-blue-300/20 bg-gradient-to-r from-blue-600 to-cyan-500 text-[10px] font-black tracking-wider text-white shadow-lg shadow-blue-500/10 hover:from-blue-500 hover:to-cyan-400"
+                          className="h-11 flex-1 rounded-2xl border border-blue-300/20 bg-gradient-to-r from-blue-600 to-cyan-500 text-[10px] font-extrabold tracking-[0.08em] text-white shadow-lg shadow-blue-500/10 hover:from-blue-500 hover:to-cyan-400"
                         >
                           +250 ml
                         </Button>
@@ -1609,7 +1609,7 @@ export default function CentroSaludPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="group relative min-h-[285px] overflow-hidden rounded-[2.1rem] border border-white/[0.08] bg-[#07100f]/70 shadow-[0_26px_85px_rgba(0,0,0,0.38)] backdrop-blur-2xl transition-all hover:-translate-y-1.5 hover:border-orange-400/35 hover:shadow-[0_32px_80px_-28px_rgba(249,115,22,0.72)]">
+                  <Card className="group relative min-h-[285px] overflow-hidden rounded-[2.1rem] border border-white/[0.085] bg-[linear-gradient(135deg,rgba(7,16,15,0.76),rgba(3,10,18,0.68))] shadow-[0_26px_85px_rgba(0,0,0,0.38)] backdrop-blur-2xl transition-all hover:-translate-y-1.5 hover:border-orange-400/35 hover:shadow-[0_32px_80px_-28px_rgba(249,115,22,0.72)]">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(249,115,22,0.22),transparent_32%),radial-gradient(circle_at_90%_80%,rgba(251,191,36,0.10),transparent_34%)]" />
                     <motion.div
                       animate={{ y: [0, -10, 0], opacity: [0.35, 0.75, 0.35] }}
@@ -1624,7 +1624,7 @@ export default function CentroSaludPage() {
                       }`}
                     />
                     <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">
+                      <CardTitle className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
                         Presupuesto Energético
                       </CardTitle>
                       <div
@@ -1639,11 +1639,11 @@ export default function CentroSaludPage() {
                     </CardHeader>
                     <CardContent className="relative space-y-5">
                       <div className="flex items-end gap-2">
-                        <div className="text-5xl font-black tracking-tighter text-white">{caloriesIngested}</div>
+                        <div className="text-5xl font-extrabold tracking-tighter text-white">{caloriesIngested}</div>
                         <span className="pb-2 text-sm font-bold text-slate-500">/ {currentCalorieTarget} kcal</span>
                       </div>
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-slate-500">
+                        <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
                           <span>Consumo energético</span>
                           <span className={caloriesIngested > currentCalorieTarget ? "text-red-300" : "text-orange-300"}>
                             {caloriePct}%
@@ -1669,7 +1669,7 @@ export default function CentroSaludPage() {
                             setCaloriesIngested(c)
                             syncDailyTracker(waterIngested, c, isWorkoutDay)
                           }}
-                          className={`h-11 flex-1 rounded-2xl border-none text-[10px] font-black tracking-wider text-white shadow-lg ${
+                          className={`h-11 flex-1 rounded-2xl border-none text-[10px] font-extrabold tracking-[0.08em] text-white shadow-lg ${
                             caloriesIngested > currentCalorieTarget
                               ? "bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-500 hover:to-rose-400 shadow-red-500/10"
                               : "bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 shadow-orange-500/10"
@@ -1692,7 +1692,7 @@ export default function CentroSaludPage() {
                       <AnimatePresence>
                         {caloriesIngested > currentCalorieTarget && (
                           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                            <div className="mt-2 flex items-center gap-2 rounded-2xl border border-red-400/20 bg-red-500/10 p-3 text-[10px] font-black uppercase tracking-wider text-red-300">
+                            <div className="mt-2 flex items-center gap-2 rounded-2xl border border-red-400/20 bg-red-500/10 p-3 text-[10px] font-bold uppercase tracking-[0.08em] text-red-300">
                               <AlertTriangle size={14} className="shrink-0 animate-bounce" />
                               <span>¡Límite Calórico Excedido!</span>
                             </div>
@@ -1715,7 +1715,7 @@ export default function CentroSaludPage() {
                   <CardHeader className="relative">
                     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                       <div className="space-y-2">
-                        <CardTitle className="flex items-center gap-2 text-xl font-black text-white">
+                        <CardTitle className="flex items-center gap-2 text-xl font-extrabold text-white">
                           <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-amber-400/20 bg-amber-500/10 text-amber-300">
                             <Sparkles size={18} />
                           </span>
@@ -1727,7 +1727,7 @@ export default function CentroSaludPage() {
                       </div>
                       <div className="rounded-2xl border border-white/[0.06] bg-black/25 px-4 py-3 text-center">
                         <Salad className="mx-auto mb-1 text-emerald-300" size={18} />
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">IA Nutricional</p>
+                        <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">IA Nutricional</p>
                       </div>
                     </div>
                   </CardHeader>
@@ -1741,7 +1741,7 @@ export default function CentroSaludPage() {
                           setIaInputSource("text")
                         }}
                         disabled={iaLoading}
-                        className="h-12 rounded-2xl border-white/10 bg-slate-950/55 pr-14 text-sm font-medium text-white placeholder:text-slate-600 focus:border-amber-400/60 focus:ring-2 focus:ring-amber-500/10"
+                        className="h-12 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] pr-14 text-sm font-medium text-white placeholder:text-slate-600 focus:border-amber-400/60 focus:ring-2 focus:ring-amber-500/10"
                       />
                       <button
                         type="button"
@@ -1759,7 +1759,7 @@ export default function CentroSaludPage() {
                     <Button
                       onClick={handleAnalyzeNutrition}
                       disabled={iaLoading || !iaInput.trim()}
-                      className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 text-[11px] font-black tracking-wider text-white shadow-[0_18px_42px_rgba(249,115,22,0.18)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(249,115,22,0.28)] disabled:opacity-55"
+                      className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 text-[11px] font-bold tracking-[0.08em] text-white shadow-[0_18px_42px_rgba(249,115,22,0.18)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(249,115,22,0.28)] disabled:opacity-55"
                     >
                       {iaLoading ? (
                         <>
@@ -1780,13 +1780,13 @@ export default function CentroSaludPage() {
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(16,185,129,0.10),transparent_32%),radial-gradient(circle_at_88%_12%,rgba(59,130,246,0.08),transparent_28%)]" />
                   <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
                   <CardHeader className="relative">
-                    <CardTitle className="flex items-center gap-2 text-xl font-black text-white">
+                    <CardTitle className="flex items-center gap-2 text-xl font-extrabold text-white">
                       <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.055] text-emerald-300">
                         <CircleDotDashed size={18} />
                       </span>
                       Historial de Salud de Hoy
                     </CardTitle>
-                    <CardDescription className="text-slate-400">
+                    <CardDescription className="break-words text-slate-400">
                       Registro individual de comidas y eventos de hidratación guardados para análisis semanal.
                     </CardDescription>
                   </CardHeader>
@@ -1795,9 +1795,9 @@ export default function CentroSaludPage() {
                       <div className="mb-3 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Flame size={15} className="text-orange-300" />
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Comidas IA</p>
+                          <p className="text-[10px] font-bold uppercase tracking-[0.10em] text-slate-400">Comidas IA</p>
                         </div>
-                        <span className="rounded-full border border-orange-300/15 bg-orange-500/[0.055] px-2 py-1 text-[9px] font-black text-orange-200">
+                        <span className="rounded-full border border-orange-300/15 bg-orange-500/[0.055] px-2 py-1 text-[9px] font-extrabold text-orange-200">
                           {mealLogs.length}
                         </span>
                       </div>
@@ -1814,16 +1814,16 @@ export default function CentroSaludPage() {
                                 <p className="line-clamp-2 text-xs font-semibold leading-relaxed text-slate-300">
                                   {meal.meal_description}
                                 </p>
-                                <span className="shrink-0 rounded-lg bg-orange-500/[0.08] px-2 py-1 text-[10px] font-black text-orange-300">
+                                <span className="shrink-0 rounded-lg bg-orange-500/[0.08] px-2 py-1 text-[10px] font-extrabold text-orange-300">
                                   {Math.round(meal.estimated_calories)} kcal
                                 </span>
                               </div>
-                              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[9px] font-black uppercase tracking-widest text-slate-600">
+                              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[9px] font-bold uppercase tracking-[0.10em] text-slate-600">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <span className="rounded-full border border-emerald-300/10 bg-emerald-500/[0.07] px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-300/80">
+                                  <span className="rounded-full border border-emerald-300/10 bg-emerald-500/[0.07] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.10em] text-emerald-300/80">
                                     {getMealTypeLabel(meal.meal_type)}
                                   </span>
-                                  <span className={`rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${getConfidenceClass(meal.confidence)}`}>
+                                  <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.10em] ${getConfidenceClass(meal.confidence)}`}>
                                     {getConfidenceLabel(meal.confidence)}
                                   </span>
                                   <span>{meal.source === "audio" ? "Audio" : "Texto"}</span>
@@ -1845,9 +1845,9 @@ export default function CentroSaludPage() {
                       <div className="mb-3 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Droplet size={15} className="text-blue-300" />
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Agua</p>
+                          <p className="text-[10px] font-bold uppercase tracking-[0.10em] text-slate-400">Agua</p>
                         </div>
-                        <span className="rounded-full border border-blue-300/15 bg-blue-500/[0.055] px-2 py-1 text-[9px] font-black text-blue-200">
+                        <span className="rounded-full border border-blue-300/15 bg-blue-500/[0.055] px-2 py-1 text-[9px] font-extrabold text-blue-200">
                           {waterLogs.length} registros
                         </span>
                       </div>
@@ -1865,10 +1865,10 @@ export default function CentroSaludPage() {
                                   <Droplet size={14} />
                                 </div>
                                 <div>
-                                  <p className="text-xs font-black text-slate-200">
+                                  <p className="text-xs font-extrabold text-slate-200">
                                     +{water.amount_liters}L
                                   </p>
-                                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-600">
+                                  <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-600">
                                     Manual
                                   </p>
                                 </div>
@@ -1889,13 +1889,13 @@ export default function CentroSaludPage() {
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(59,130,246,0.18),transparent_32%),radial-gradient(circle_at_90%_88%,rgba(34,211,238,0.08),transparent_34%)]" />
                   <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-blue-400 to-transparent" />
                   <CardHeader className="relative">
-                    <CardTitle className="flex items-center gap-2 text-xl font-black text-white">
+                    <CardTitle className="flex items-center gap-2 text-xl font-extrabold text-white">
                       <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-blue-400/20 bg-blue-500/10 text-blue-300">
                         <Calendar size={18} />
                       </span>
                       Planificación Semanal de Entrenamiento
                     </CardTitle>
-                    <CardDescription className="text-slate-400">
+                    <CardDescription className="break-words text-slate-400">
                       Haz clic en cualquier día para desglosar o reestructurar su itinerario deportivo de la semana actual.
                     </CardDescription>
                   </CardHeader>
@@ -1919,14 +1919,14 @@ export default function CentroSaludPage() {
                             } ${isToday ? "ring-2 ring-blue-400/70" : ""} ${isSelected ? "border-cyan-300/40 bg-white/[0.08]" : ""}`}
                           >
                             <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                            <span className="text-[10px] uppercase tracking-wider">{day.name}</span>
+                            <span className="text-[10px] uppercase tracking-[0.08em]">{day.name}</span>
                             {isPlanned ? (
                               <CheckCircle2 size={17} className="drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]" />
                             ) : (
                               <div className="h-4 w-4 rounded-full border-2 border-slate-600" />
                             )}
                             {pct !== null && (
-                              <span className="rounded-full bg-black/25 px-2 py-0.5 text-[8px] font-black text-cyan-200">
+                              <span className="rounded-full bg-black/25 px-2 py-0.5 text-[8px] font-extrabold text-cyan-200">
                                 {pct}%
                               </span>
                             )}
@@ -1948,18 +1948,18 @@ export default function CentroSaludPage() {
                             <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_0%,rgba(59,130,246,0.10),transparent_30%)]" />
                             <div className="relative space-y-4">
                               <div className="flex items-center justify-between">
-                                <h4 className="flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-slate-300">
+                                <h4 className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-300">
                                   <Dumbbell size={14} className="text-blue-300" /> Configurar Itinerario:{" "}
                                   {selectedDayDetail.name}
                                 </h4>
-                                <span className="rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-blue-300">
+                                <span className="rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.10em] text-blue-300">
                                   Semana actual
                                 </span>
                               </div>
 
                               <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
-                                  <Label className="text-[11px] font-black uppercase tracking-wider text-slate-400">
+                                  <Label className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-400">
                                     💪 Ejercicios de Fuerza
                                   </Label>
                                   <Textarea
@@ -1976,7 +1976,7 @@ export default function CentroSaludPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                  <Label className="text-[11px] font-black uppercase tracking-wider text-slate-400">
+                                  <Label className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-400">
                                     🏃 Ejercicios de Cardio
                                   </Label>
                                   <Textarea
@@ -1997,7 +1997,7 @@ export default function CentroSaludPage() {
                                 <Button
                                   onClick={() => handleSaveDayRoutine()}
                                   disabled={isSavingRoutine}
-                                  className="flex h-10 items-center gap-1.5 rounded-xl border border-blue-300/20 bg-gradient-to-r from-blue-600 to-cyan-500 px-5 text-[10px] font-black tracking-wider text-white shadow-lg shadow-blue-500/10 transition-all hover:-translate-y-0.5 hover:from-blue-500 hover:to-cyan-400"
+                                  className="flex h-10 items-center gap-1.5 rounded-xl border border-blue-300/20 bg-gradient-to-r from-blue-600 to-cyan-500 px-5 text-[10px] font-extrabold tracking-[0.08em] text-white shadow-lg shadow-blue-500/10 transition-all hover:-translate-y-0.5 hover:from-blue-500 hover:to-cyan-400"
                                 >
                                   {isSavingRoutine ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
                                   GUARDAR ACTIVIDADES
@@ -2017,7 +2017,7 @@ export default function CentroSaludPage() {
                   <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
                   <CardContent className="relative flex flex-col items-center justify-between gap-4 p-6 sm:flex-row">
                     <div className="space-y-2 text-center sm:text-left">
-                      <p className="flex items-center justify-center gap-2 text-sm font-black uppercase tracking-wider text-white sm:justify-start">
+                      <p className="flex items-center justify-center gap-2 text-sm font-extrabold uppercase tracking-[0.08em] text-white sm:justify-start">
                         <BatteryCharging size={16} className="text-emerald-300" /> ¿Ya entrenaste o vas a entrenar hoy?
                       </p>
                       <p className="text-xs font-medium text-slate-400">
@@ -2032,7 +2032,7 @@ export default function CentroSaludPage() {
                         setIsWorkoutDay(s)
                         syncDailyTracker(waterIngested, caloriesIngested, s)
                       }}
-                      className={`h-12 rounded-2xl border px-6 text-[10px] font-black tracking-wider transition-all hover:-translate-y-0.5 ${
+                      className={`h-12 rounded-2xl border px-6 text-[10px] font-extrabold tracking-[0.08em] transition-all hover:-translate-y-0.5 ${
                         isWorkoutDay
                           ? "border-emerald-300/20 bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-500/20"
                           : "border-white/10 bg-white/[0.055] text-slate-300 hover:bg-white/10"
@@ -2050,7 +2050,7 @@ export default function CentroSaludPage() {
                 <Card className="relative overflow-hidden rounded-[2.15rem] border border-white/[0.08] bg-[#07100f]/70 shadow-[0_22px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(16,185,129,0.075),transparent_30%),radial-gradient(circle_at_90%_85%,rgba(59,130,246,0.08),transparent_32%)]" />
                   <CardHeader className="relative">
-                    <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-white">
+                    <CardTitle className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.08em] text-white">
                       <Scale size={16} className="text-emerald-300" /> Estado Físico Base
                     </CardTitle>
                   </CardHeader>
@@ -2074,25 +2074,25 @@ export default function CentroSaludPage() {
                     </div>
 
                     <div className="flex justify-between border-b border-white/[0.06] py-2">
-                      <span>Peso registrado</span> <span className="font-black text-white">{weight} kg</span>
+                      <span>Peso registrado</span> <span className="font-extrabold text-white">{weight} kg</span>
                     </div>
                     <div className="flex justify-between border-b border-white/[0.06] py-2">
-                      <span>Altura base</span> <span className="font-black text-white">{height} cm</span>
+                      <span>Altura base</span> <span className="font-extrabold text-white">{height} cm</span>
                     </div>
                     <div className="flex justify-between border-b border-white/[0.06] py-2">
                       <span>Edad actual</span>{" "}
-                      <span className="font-black text-blue-300">
+                      <span className="font-extrabold text-blue-300">
                         {currentAge !== null ? `${currentAge} años` : "Sin fecha"}
                       </span>
                     </div>
                     <div className="flex justify-between border-b border-white/[0.06] py-2">
                       <span>Gasto Metabólico (BMR)</span>{" "}
-                      <span className="font-black text-emerald-300">{currentCalorieTarget} kcal</span>
+                      <span className="font-extrabold text-emerald-300">{currentCalorieTarget} kcal</span>
                     </div>
                     <Button
                       onClick={() => setHasProfile(false)}
                       variant="ghost"
-                      className="mt-2 h-10 w-full rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-blue-500/10 hover:text-blue-300"
+                      className="mt-2 h-10 w-full rounded-xl text-[10px] font-bold uppercase tracking-[0.10em] text-slate-400 hover:bg-blue-500/10 hover:text-blue-300"
                     >
                       RE-CALIBRAR PERFIL
                     </Button>
@@ -2104,7 +2104,7 @@ export default function CentroSaludPage() {
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(16,185,129,0.075),transparent_30%),radial-gradient(circle_at_90%_85%,rgba(245,158,11,0.06),transparent_32%)]" />
                   <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
                   <CardHeader className="relative pb-3">
-                    <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-white">
+                    <CardTitle className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.08em] text-white">
                       <BatteryCharging size={16} className="text-emerald-300" /> Progreso Físico
                     </CardTitle>
                     <CardDescription className="text-xs text-slate-400">
@@ -2114,7 +2114,7 @@ export default function CentroSaludPage() {
                   <CardContent className="relative space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <Label className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                        <Label className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
                           Peso actual
                         </Label>
                         <Input
@@ -2123,11 +2123,11 @@ export default function CentroSaludPage() {
                           placeholder="Ej. 74.8"
                           value={progressWeight}
                           onChange={(e) => setProgressWeight(e.target.value)}
-                          className="h-11 rounded-2xl border-white/10 bg-slate-950/55 text-xs font-bold text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
+                          className="h-11 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-xs font-bold text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                        <Label className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
                           Energía 1-10
                         </Label>
                         <Input
@@ -2137,27 +2137,27 @@ export default function CentroSaludPage() {
                           placeholder="7"
                           value={energyLevel}
                           onChange={(e) => setEnergyLevel(e.target.value)}
-                          className="h-11 rounded-2xl border-white/10 bg-slate-950/55 text-xs font-bold text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
+                          className="h-11 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-xs font-bold text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                      <Label className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
                         Nota de progreso
                       </Label>
                       <Textarea
                         placeholder="Ej: Me sentí con más energía, mejor descanso o más fuerza esta semana..."
                         value={progressNotes}
                         onChange={(e) => setProgressNotes(e.target.value)}
-                        className="min-h-[82px] resize-none rounded-2xl border-white/10 bg-slate-950/55 text-xs font-medium text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
+                        className="min-h-[82px] resize-none rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-xs font-medium text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
                       />
                     </div>
 
                     <Button
                       onClick={handleSaveBodyProgress}
                       disabled={isSavingProgress}
-                      className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-500/[0.12] text-[10px] font-black uppercase tracking-widest text-emerald-100 shadow-lg shadow-emerald-950/20 transition-all hover:-translate-y-0.5 hover:bg-emerald-500/[0.18] disabled:opacity-60"
+                      className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-500/[0.12] text-[10px] font-bold uppercase tracking-[0.10em] text-emerald-100 shadow-lg shadow-emerald-950/20 transition-all hover:-translate-y-0.5 hover:bg-emerald-500/[0.18] disabled:opacity-60"
                     >
                       {isSavingProgress ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
                       Guardar Progreso
@@ -2165,8 +2165,8 @@ export default function CentroSaludPage() {
 
                     <div className="space-y-2 border-t border-white/[0.06] pt-4">
                       <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Historial reciente</p>
-                        <span className="rounded-full border border-emerald-300/15 bg-emerald-500/[0.055] px-2 py-1 text-[9px] font-black text-emerald-200">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.10em] text-slate-500">Historial reciente</p>
+                        <span className="rounded-full border border-emerald-300/15 bg-emerald-500/[0.055] px-2 py-1 text-[9px] font-extrabold text-emerald-200">
                           {bodyProgressLogs.length}
                         </span>
                       </div>
@@ -2181,14 +2181,14 @@ export default function CentroSaludPage() {
                             <div key={log.id} className="rounded-2xl border border-white/[0.055] bg-black/20 p-3">
                               <div className="flex items-center justify-between gap-3">
                                 <div>
-                                  <p className="text-xs font-black text-white">
+                                  <p className="text-xs font-extrabold text-white">
                                     {log.weight_kg !== null ? `${log.weight_kg} kg` : "Peso no registrado"}
                                   </p>
-                                  <p className="mt-0.5 text-[9px] font-black uppercase tracking-widest text-slate-600">
+                                  <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.10em] text-slate-600">
                                     {new Date(log.date).toLocaleDateString("es-PE")}
                                   </p>
                                 </div>
-                                <span className="shrink-0 rounded-lg bg-emerald-500/[0.08] px-2 py-1 text-[10px] font-black text-emerald-300">
+                                <span className="shrink-0 rounded-lg bg-emerald-500/[0.08] px-2 py-1 text-[10px] font-extrabold text-emerald-300">
                                   {log.energy_level !== null ? `${log.energy_level}/10 energía` : "Sin energía"}
                                 </span>
                               </div>
@@ -2210,7 +2210,7 @@ export default function CentroSaludPage() {
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.18),transparent_30%),radial-gradient(circle_at_90%_80%,rgba(16,185,129,0.08),transparent_32%)]" />
                   <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-blue-400 to-transparent" />
                   <CardHeader className="relative pb-3">
-                    <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-white">
+                    <CardTitle className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.08em] text-white">
                       <CheckSquare size={16} className="text-blue-300" /> Cumplimiento de Tareas
                     </CardTitle>
                     <CardDescription className="text-xs text-slate-400">
@@ -2240,11 +2240,11 @@ export default function CentroSaludPage() {
                             {pct !== null && (
                               <div className="rounded-2xl border border-white/[0.06] bg-black/24 p-4">
                                 <div className="mb-3 flex items-center justify-between">
-                                  <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                  <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">
                                     <Percent size={12} /> Tasa de Éxito
                                   </span>
                                   <span
-                                    className={`rounded-lg px-2 py-1 text-[10px] font-black ${
+                                    className={`rounded-lg px-2 py-1 text-[10px] font-extrabold ${
                                       pct === 100
                                         ? "bg-emerald-500/[0.055] text-emerald-300"
                                         : pct === 50
@@ -2285,7 +2285,7 @@ export default function CentroSaludPage() {
                                     )}
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase tracking-wider text-white">Fuerza</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-white">Fuerza</p>
                                     <p className="line-clamp-2 text-xs font-medium text-slate-400">{fText}</p>
                                   </div>
                                 </button>
@@ -2305,7 +2305,7 @@ export default function CentroSaludPage() {
                                     )}
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase tracking-wider text-white">Cardio / Resistencia</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-white">Cardio / Resistencia</p>
                                     <p className="line-clamp-2 text-xs font-medium text-slate-400">{cText}</p>
                                   </div>
                                 </button>
@@ -2331,25 +2331,25 @@ export default function CentroSaludPage() {
                         <Target size={18} />
                       </div>
                       <div>
-                        <p className="text-sm font-black text-white">Resumen de control</p>
+                        <p className="text-sm font-extrabold text-white">Resumen de control</p>
                         <p className="text-xs font-medium text-slate-500">Panel diario sincronizado</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       <div className="rounded-2xl bg-black/24 p-3 text-center">
                         <CircleDotDashed className="mx-auto mb-1 text-blue-300" size={14} />
-                        <p className="text-[9px] font-black uppercase text-slate-500">Agua</p>
-                        <p className="text-sm font-black text-white">{waterPct}%</p>
+                        <p className="text-[9px] font-bold uppercase text-slate-500">Agua</p>
+                        <p className="text-sm font-extrabold text-white">{waterPct}%</p>
                       </div>
                       <div className="rounded-2xl bg-black/24 p-3 text-center">
                         <CircleDotDashed className="mx-auto mb-1 text-orange-300" size={14} />
-                        <p className="text-[9px] font-black uppercase text-slate-500">Kcal</p>
-                        <p className="text-sm font-black text-white">{caloriePct}%</p>
+                        <p className="text-[9px] font-bold uppercase text-slate-500">Kcal</p>
+                        <p className="text-sm font-extrabold text-white">{caloriePct}%</p>
                       </div>
                       <div className="rounded-2xl bg-black/24 p-3 text-center">
                         <CircleDotDashed className="mx-auto mb-1 text-emerald-300" size={14} />
-                        <p className="text-[9px] font-black uppercase text-slate-500">Plan</p>
-                        <p className="text-sm font-black text-white">{plannedCount}/7</p>
+                        <p className="text-[9px] font-bold uppercase text-slate-500">Plan</p>
+                        <p className="text-sm font-extrabold text-white">{plannedCount}/7</p>
                       </div>
                     </div>
                   </CardContent>

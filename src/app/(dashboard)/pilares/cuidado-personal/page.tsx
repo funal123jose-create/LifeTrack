@@ -185,22 +185,83 @@ const categoryStyles: Record<string, { label: string; icon: any; className: stri
 }
 
 function PersonalCareBackground() {
+  const lightningCore =
+    "absolute h-[3px] rounded-full bg-gradient-to-r from-transparent via-purple-200 to-transparent shadow-[0_0_18px_rgba(216,180,254,0.75),0_0_42px_rgba(168,85,247,0.42)]"
+
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#02040a]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_12%,rgba(168,85,247,0.13),transparent_30%),radial-gradient(circle_at_86%_15%,rgba(45,212,191,0.105),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(249,115,22,0.08),transparent_36%),linear-gradient(135deg,#02040a_0%,#060816_48%,#030305_100%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.032)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.032)_1px,transparent_1px)] bg-[size:78px_78px] [mask-image:radial-gradient(circle_at_center,black,transparent_76%)]" />
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#02040a]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_10%,rgba(168,85,247,0.38),transparent_32%),radial-gradient(circle_at_84%_12%,rgba(217,70,239,0.22),transparent_30%),radial-gradient(circle_at_45%_82%,rgba(99,102,241,0.20),transparent_34%),linear-gradient(135deg,#02040a_0%,#08051a_44%,#030305_100%)]" />
+
       <motion.div
-        animate={{ x: [0, 24, -16, 0], y: [0, -16, 18, 0], scale: [1, 1.08, 0.98, 1] }}
+        animate={{ opacity: [0.22, 0.46, 0.26, 0.22], x: [0, 22, -14, 0], y: [0, -10, 12, 0] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0 bg-[radial-gradient(circle_at_18%_28%,rgba(216,180,254,0.36)_0_1px,transparent_2px),radial-gradient(circle_at_72%_24%,rgba(168,85,247,0.34)_0_1px,transparent_2px),radial-gradient(circle_at_52%_74%,rgba(192,132,252,0.28)_0_1px,transparent_2px),radial-gradient(circle_at_88%_68%,rgba(240,171,252,0.22)_0_1px,transparent_2px)] bg-[size:46px_46px]"
+      />
+
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(216,180,254,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(216,180,254,0.038)_1px,transparent_1px)] bg-[size:86px_86px] [mask-image:radial-gradient(circle_at_center,black,transparent_78%)]" />
+
+      <motion.div
+        animate={{ x: ["-22%", "16%", "-22%"], opacity: [0.12, 0.42, 0.12] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[16%] h-[2px] w-[82%] rotate-[-12deg] bg-gradient-to-r from-transparent via-purple-300/70 to-transparent shadow-[0_0_24px_rgba(192,132,252,0.45)] blur-[0.6px]"
+      />
+
+      <motion.div
+        animate={{ x: ["18%", "-14%", "18%"], opacity: [0.10, 0.34, 0.10] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-[24%] right-0 h-[2px] w-[74%] rotate-[14deg] bg-gradient-to-r from-transparent via-fuchsia-300/60 to-transparent shadow-[0_0_24px_rgba(217,70,239,0.38)] blur-[0.6px]"
+      />
+
+      {/* Relámpagos morados: hechos con divs animados, sin librerías externas */}
+      <motion.div
+        animate={{ opacity: [0, 0, 0.95, 0.18, 0.78, 0], scaleX: [0.75, 0.75, 1.04, 0.92, 1.08, 0.75] }}
+        transition={{ duration: 4.8, repeat: Infinity, repeatDelay: 2.6, ease: "easeInOut" }}
+        className="absolute left-[9%] top-[33%] h-[150px] w-[240px]"
+      >
+        <div className={`${lightningCore} left-0 top-0 w-[92px] rotate-[28deg]`} />
+        <div className={`${lightningCore} left-[74px] top-[43px] w-[86px] rotate-[-48deg]`} />
+        <div className={`${lightningCore} left-[126px] top-[82px] w-[110px] rotate-[25deg]`} />
+        <div className="absolute left-[112px] top-[56px] h-2 w-2 rounded-full bg-purple-100 shadow-[0_0_28px_rgba(216,180,254,0.95)]" />
+      </motion.div>
+
+      <motion.div
+        animate={{ opacity: [0, 0.82, 0.08, 0.72, 0], scaleX: [0.85, 1.05, 0.90, 1.12, 0.85] }}
+        transition={{ duration: 5.6, repeat: Infinity, repeatDelay: 3.4, ease: "easeInOut", delay: 1.2 }}
+        className="absolute right-[8%] top-[22%] h-[170px] w-[270px]"
+      >
+        <div className={`${lightningCore} right-[140px] top-[18px] w-[120px] rotate-[-24deg]`} />
+        <div className={`${lightningCore} right-[74px] top-[54px] w-[94px] rotate-[45deg]`} />
+        <div className={`${lightningCore} right-[18px] top-[100px] w-[126px] rotate-[-22deg]`} />
+        <div className="absolute right-[106px] top-[73px] h-2 w-2 rounded-full bg-fuchsia-100 shadow-[0_0_30px_rgba(240,171,252,0.95)]" />
+      </motion.div>
+
+      <motion.div
+        animate={{ opacity: [0, 0, 0.64, 0.10, 0.58, 0], scaleX: [0.80, 0.80, 1.10, 0.92, 1.04, 0.80] }}
+        transition={{ duration: 6.4, repeat: Infinity, repeatDelay: 4.2, ease: "easeInOut", delay: 2.1 }}
+        className="absolute bottom-[18%] left-[34%] h-[130px] w-[280px]"
+      >
+        <div className={`${lightningCore} left-[8px] top-[22px] w-[122px] rotate-[10deg]`} />
+        <div className={`${lightningCore} left-[110px] top-[50px] w-[84px] rotate-[-42deg]`} />
+        <div className={`${lightningCore} left-[168px] top-[84px] w-[94px] rotate-[18deg]`} />
+      </motion.div>
+
+      <motion.div
+        animate={{ x: [0, 36, -24, 0], y: [0, -22, 24, 0], scale: [1, 1.12, 0.98, 1] }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-[7%] top-[18%] h-[30rem] w-[30rem] rounded-full bg-purple-500/[0.075] blur-3xl"
+        className="absolute left-[4%] top-[14%] h-[34rem] w-[34rem] rounded-full bg-purple-500/[0.18] blur-3xl"
       />
       <motion.div
-        animate={{ x: [0, -22, 16, 0], y: [0, 18, -14, 0], scale: [1, 0.97, 1.09, 1] }}
+        animate={{ x: [0, -28, 24, 0], y: [0, 22, -18, 0], scale: [1, 0.96, 1.10, 1] }}
         transition={{ duration: 17, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute right-[8%] top-[16%] h-[28rem] w-[28rem] rounded-full bg-cyan-500/[0.065] blur-3xl"
+        className="absolute right-[5%] top-[12%] h-[30rem] w-[30rem] rounded-full bg-fuchsia-500/[0.11] blur-3xl"
       />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_16%,rgba(2,4,10,0.92)_100%)]" />
-      <div className="absolute inset-0 bg-[#02040a]/28" />
+      <motion.div
+        animate={{ x: [0, 20, -18, 0], y: [0, -16, 16, 0], opacity: [0.10, 0.24, 0.12, 0.10] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-[5%] left-[36%] h-[24rem] w-[24rem] rounded-full bg-indigo-500/[0.12] blur-3xl"
+      />
+
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_34%,rgba(2,4,10,0.48)_100%)]" />
     </div>
   )
 }
@@ -611,20 +672,20 @@ export default function CuidadoPersonalPage() {
   }
 
   const sliderClass =
-    "w-full accent-cyan-400 cursor-pointer"
+    "w-full cursor-pointer accent-cyan-400 transition-all"
 
   const personalScore = weeklySummary ? Math.min(Math.max(Math.round(weeklySummary.personal_care_score), 0), 100) : 0
   const summaryTone = scoreTone(personalScore)
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#02040a] px-4 pb-14 pt-6 text-slate-100 antialiased md:px-8">
+    <div className="relative min-h-screen overflow-hidden bg-transparent px-4 pb-14 pt-6 text-slate-100 antialiased md:px-8 [overflow-wrap:anywhere]" style={{ fontFamily: "'Poppins', 'Nunito Sans', 'Inter', 'Manrope', system-ui, sans-serif" }}>
       <PersonalCareBackground />
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1480px] flex-col gap-6">
         <Link href="/pilares" className="w-fit">
-          <Button className="h-11 rounded-2xl border border-white/[0.08] bg-white/[0.045] px-4 text-xs font-black uppercase tracking-widest text-slate-300 shadow-[0_14px_34px_rgba(0,0,0,0.22)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-white/[0.08] hover:text-white">
-            <ArrowLeft size={15} />
-            Volver a pilares
+          <Button className="h-9 rounded-full border border-white/[0.08] bg-black/24 px-4 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 shadow-[0_14px_34px_rgba(0,0,0,0.22)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-purple-300/18 hover:bg-purple-500/[0.08] hover:text-purple-100 active:scale-[0.98]">
+            <ArrowLeft size={13} />
+            <span>[ Volver a pilares ]</span>
           </Button>
         </Link>
 
@@ -632,31 +693,31 @@ export default function CuidadoPersonalPage() {
           initial={{ opacity: 0, y: -18, filter: "blur(6px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-[2.2rem] border border-white/[0.075] bg-[#070b14]/78 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.48)] backdrop-blur-2xl md:p-8"
+          className="relative overflow-hidden rounded-[2.2rem] border border-purple-300/[0.11] bg-[linear-gradient(135deg,rgba(18,12,27,0.92),rgba(6,11,20,0.76))] p-6 shadow-[0_30px_88px_rgba(0,0,0,0.34)] backdrop-blur-2xl md:p-8"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_12%,rgba(168,85,247,0.12),transparent_30%),radial-gradient(circle_at_78%_0%,rgba(45,212,191,0.10),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.035),transparent_38%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_12%,rgba(168,85,247,0.18),transparent_30%),radial-gradient(circle_at_78%_0%,rgba(45,212,191,0.12),transparent_34%),radial-gradient(circle_at_90%_90%,rgba(249,115,22,0.07),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.045),transparent_38%)]" />
           <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-purple-300/35 to-transparent" />
 
-          <div className="relative flex flex-col justify-between gap-8 xl:flex-row xl:items-end">
-            <div className="max-w-4xl space-y-4">
-              <div className="flex w-fit items-center gap-2 rounded-full border border-purple-300/14 bg-purple-500/[0.08] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.38em] text-purple-200">
-                <HeartHandshake size={14} className="animate-pulse" />
-                Pilar de bienestar personal
+          <div className="relative flex min-w-0 flex-col justify-between gap-8 xl:flex-row xl:items-end">
+            <div className="min-w-0 max-w-4xl space-y-4">
+              <div className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-purple-300/16 bg-purple-500/[0.10] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-purple-200 shadow-[0_10px_28px_rgba(168,85,247,0.08)]">
+                <HeartHandshake size={14} className="shrink-0 animate-pulse" />
+                <span className="truncate">Pilar de bienestar personal</span>
               </div>
 
               <div className="space-y-3">
-                <h1 className="text-4xl font-black uppercase leading-[0.9] tracking-tighter text-white md:text-7xl">
+                <h1 className="text-4xl font-extrabold uppercase leading-[0.9] tracking-[-0.065em] text-white md:text-7xl">
                   Cuidado <span className="bg-gradient-to-r from-purple-200 via-cyan-200 to-orange-200 bg-clip-text text-transparent">Personal</span>
                 </h1>
-                <p className="max-w-3xl text-sm font-medium leading-relaxed text-slate-400 md:text-base">
+                <p className="max-w-3xl break-words text-sm font-medium leading-relaxed text-slate-400 md:text-base">
                   Registra cómo te sientes, cuida tus rutinas personales y convierte el autocuidado en una métrica semanal clara y accionable.
                 </p>
               </div>
             </div>
 
-            <div className={`rounded-[1.6rem] border px-6 py-5 text-right ${summaryTone}`}>
-              <p className="text-5xl font-black tracking-tight">{loading ? "..." : `${personalScore}%`}</p>
-              <p className="mt-1 text-[9px] font-black uppercase tracking-[0.28em] text-slate-500">
+            <div className={`min-w-0 rounded-[1.6rem] border px-6 py-5 text-right shadow-[0_18px_46px_rgba(0,0,0,0.18)] backdrop-blur-xl ${summaryTone}`}>
+              <p className="text-5xl font-extrabold tracking-[-0.035em]">{loading ? "..." : `${personalScore}%`}</p>
+              <p className="mt-1 text-[9px] font-extrabold uppercase tracking-[0.16em] text-slate-500">
                 score semanal
               </p>
               <p className="mt-2 text-xs font-bold text-slate-400">
@@ -672,17 +733,17 @@ export default function CuidadoPersonalPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.06 }}
           >
-            <Card className="relative overflow-hidden rounded-[2rem] border border-purple-300/[0.10] bg-white/[0.05] shadow-[0_24px_76px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+            <Card className="relative overflow-hidden rounded-[2rem] border border-purple-300/[0.12] bg-[linear-gradient(135deg,rgba(18,12,27,0.82),rgba(8,11,20,0.62))] shadow-[0_24px_76px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(168,85,247,0.12),transparent_32%)]" />
 
               <CardHeader className="relative">
-                <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-white">
+                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-xl font-extrabold tracking-[-0.045em] text-white">
                   <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-400/20 bg-purple-500/10 text-purple-300">
                     <NotebookPen size={18} />
                   </span>
                   Check-in diario
                 </CardTitle>
-                <p className="text-xs font-medium text-slate-500">
+                <p className="break-words text-xs font-medium text-slate-500">
                   No es un diagnóstico. Es una bitácora personal para reconocer patrones de ánimo, estrés, descanso y motivación.
                 </p>
               </CardHeader>
@@ -726,18 +787,18 @@ export default function CuidadoPersonalPage() {
                     const Icon = metric.icon
 
                     return (
-                      <div key={metric.label} className="rounded-[1.4rem] border border-white/[0.06] bg-slate-950/38 p-4">
+                      <div key={metric.label} className="min-w-0 rounded-[1.4rem] border border-white/[0.065] bg-slate-950/34 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
                         <div className="mb-3 flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span className={`flex h-9 w-9 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.04] ${metric.accent}`}>
                               <Icon size={16} />
                             </span>
                             <div>
-                              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{metric.label}</p>
+                              <p className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{metric.label}</p>
                               <p className="text-xs font-medium text-slate-600">{metric.helper}</p>
                             </div>
                           </div>
-                          <p className={`text-2xl font-black ${metric.accent}`}>{metric.value}/10</p>
+                          <p className={`text-2xl font-extrabold ${metric.accent}`}>{metric.value}/10</p>
                         </div>
 
                         <input
@@ -755,38 +816,38 @@ export default function CuidadoPersonalPage() {
 
                 <div className="grid gap-4 lg:grid-cols-3">
                   <div className="space-y-2 lg:col-span-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">
                       Reflexión del día
                     </label>
                     <textarea
                       value={reflection}
                       onChange={(event) => setReflection(event.target.value)}
                       placeholder="¿Cómo te sentiste hoy? ¿Qué pasó?"
-                      className="min-h-[140px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/45 p-4 text-sm font-medium text-slate-200 outline-none transition focus:border-purple-300/30"
+                      className="min-h-[140px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/42 p-4 text-sm font-medium text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-purple-300/35 focus:bg-slate-950/55"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">
                       Algo que agradeces
                     </label>
                     <textarea
                       value={gratitudeNote}
                       onChange={(event) => setGratitudeNote(event.target.value)}
                       placeholder="Hoy agradezco..."
-                      className="min-h-[140px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/45 p-4 text-sm font-medium text-slate-200 outline-none transition focus:border-cyan-300/30"
+                      className="min-h-[140px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/42 p-4 text-sm font-medium text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-cyan-300/35 focus:bg-slate-950/55"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">
                       Mejora para mañana
                     </label>
                     <textarea
                       value={improvementNote}
                       onChange={(event) => setImprovementNote(event.target.value)}
                       placeholder="Mañana puedo mejorar en..."
-                      className="min-h-[140px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/45 p-4 text-sm font-medium text-slate-200 outline-none transition focus:border-orange-300/30"
+                      className="min-h-[140px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/42 p-4 text-sm font-medium text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-orange-300/35 focus:bg-slate-950/55"
                     />
                   </div>
                 </div>
@@ -795,7 +856,7 @@ export default function CuidadoPersonalPage() {
                   <Button
                     onClick={saveDailyCheckin}
                     disabled={savingCheckin}
-                    className="h-12 rounded-2xl border border-cyan-300/10 bg-cyan-500/[0.13] px-6 text-xs font-black uppercase tracking-widest text-cyan-100 transition hover:bg-cyan-500/[0.20] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-12 rounded-2xl border border-cyan-300/10 bg-cyan-500/[0.13] px-6 text-xs font-bold uppercase tracking-[0.08em] text-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500/[0.20] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Save size={16} />
                     {savingCheckin ? "Guardando..." : "Guardar check-in"}
@@ -810,17 +871,17 @@ export default function CuidadoPersonalPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.10 }}
           >
-            <Card className="relative h-full overflow-hidden rounded-[2rem] border border-cyan-300/[0.10] bg-white/[0.05] shadow-[0_24px_76px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+            <Card className="relative h-full overflow-hidden rounded-[2rem] border border-cyan-300/[0.12] bg-[linear-gradient(135deg,rgba(10,24,30,0.78),rgba(8,11,20,0.62))] shadow-[0_24px_76px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(45,212,191,0.12),transparent_32%)]" />
 
               <CardHeader className="relative">
-                <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-white">
+                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-xl font-extrabold tracking-[-0.045em] text-white">
                   <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-500/10 text-cyan-300">
                     <Activity size={18} />
                   </span>
                   Resumen semanal
                 </CardTitle>
-                <p className="text-xs font-medium text-slate-500">
+                <p className="break-words text-xs font-medium text-slate-500">
                   Semana {currentWeekStart} al {currentWeekEnd}.
                 </p>
               </CardHeader>
@@ -856,27 +917,27 @@ export default function CuidadoPersonalPage() {
                     const Icon = item.icon
 
                     return (
-                      <div key={item.label} className="rounded-[1.35rem] border border-white/[0.06] bg-slate-950/38 p-4">
+                      <div key={item.label} className="min-w-0 rounded-[1.35rem] border border-white/[0.065] bg-slate-950/34 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
                         <div className="mb-3 flex items-center justify-between">
                           <Icon size={16} className="text-cyan-300" />
-                          <span className="rounded-full border border-white/[0.05] bg-white/[0.04] px-2 py-1 text-[8px] font-black uppercase tracking-widest text-slate-500">
+                          <span className="rounded-full border border-white/[0.05] bg-white/[0.04] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-slate-500">
                             semana
                           </span>
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{item.label}</p>
-                        <p className="mt-1 text-2xl font-black text-white">{item.value}</p>
-                        <p className="mt-1 text-xs font-medium text-slate-600">{item.helper}</p>
+                        <p className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{item.label}</p>
+                        <p className="mt-1 text-2xl font-extrabold text-white">{item.value}</p>
+                        <p className="mt-1 break-words text-xs font-medium text-slate-600">{item.helper}</p>
                       </div>
                     )
                   })}
                 </div>
 
-                <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/32 p-4">
+                <div className="min-w-0 rounded-[1.5rem] border border-white/[0.065] bg-slate-950/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
                   <div className="mb-3 flex items-center justify-between">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Lectura rápida</p>
+                    <p className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">Lectura rápida</p>
                     <ShieldCheck size={16} className="text-purple-300" />
                   </div>
-                  <p className="text-sm font-semibold leading-relaxed text-slate-400">
+                  <p className="break-words text-sm font-semibold leading-relaxed text-slate-400">
                     {weeklySummary
                       ? weeklySummary.checkin_days > 0 || weeklySummary.completed_routine_events > 0
                         ? `Esta semana tienes ${weeklySummary.checkin_days} check-ins y ${weeklySummary.completed_routine_events} rutinas completadas. Intensidad: ${intensityLabel(weeklySummary.care_intensity).toLowerCase()}.`
@@ -885,8 +946,8 @@ export default function CuidadoPersonalPage() {
                   </p>
                 </div>
 
-                <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/32 p-4">
-                  <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                <div className="min-w-0 rounded-[1.5rem] border border-white/[0.065] bg-slate-950/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.10em] text-slate-500">
                     Cumplimiento de hoy
                   </p>
                   <div className="h-3 overflow-hidden rounded-full border border-white/[0.04] bg-slate-950 p-[2px]">
@@ -897,7 +958,7 @@ export default function CuidadoPersonalPage() {
                       className="h-full rounded-full bg-gradient-to-r from-purple-500 via-cyan-400 to-emerald-300 shadow-[0_0_18px_rgba(45,212,191,0.32)]"
                     />
                   </div>
-                  <p className="mt-3 text-xs font-medium text-slate-500">
+                  <p className="mt-3 break-words text-xs font-medium text-slate-500">
                     {completedRoutineIds.size}/{activeRoutines.length} rutinas activas completadas hoy.
                   </p>
                 </div>
@@ -912,38 +973,38 @@ export default function CuidadoPersonalPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.14 }}
           >
-            <Card className="relative overflow-hidden rounded-[2rem] border border-orange-300/[0.10] bg-white/[0.05] shadow-[0_24px_76px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+            <Card className="relative overflow-hidden rounded-[2rem] border border-orange-300/[0.12] bg-[linear-gradient(135deg,rgba(35,18,10,0.78),rgba(8,11,20,0.62))] shadow-[0_24px_76px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(249,115,22,0.12),transparent_32%)]" />
 
               <CardHeader className="relative">
-                <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-white">
+                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-xl font-extrabold tracking-[-0.045em] text-white">
                   <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-orange-400/20 bg-orange-500/10 text-orange-300">
                     <Plus size={18} />
                   </span>
                   Crear rutina
                 </CardTitle>
-                <p className="text-xs font-medium text-slate-500">
+                <p className="break-words text-xs font-medium text-slate-500">
                   Define acciones simples que quieras sostener diariamente.
                 </p>
               </CardHeader>
 
               <CardContent className="relative space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Nombre</label>
+                  <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">Nombre</label>
                   <input
                     value={newRoutineName}
                     onChange={(event) => setNewRoutineName(event.target.value)}
                     placeholder="Ejemplo: protector solar"
-                    className="h-12 w-full rounded-2xl border border-white/[0.07] bg-slate-950/45 px-4 text-sm font-bold text-white outline-none transition focus:border-orange-300/30"
+                    className="h-12 w-full rounded-2xl border border-white/[0.07] bg-slate-950/42 px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-orange-300/35 focus:bg-slate-950/55"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Categoría</label>
+                  <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">Categoría</label>
                   <select
                     value={newRoutineCategory}
                     onChange={(event) => setNewRoutineCategory(event.target.value)}
-                    className="h-12 w-full rounded-2xl border border-white/[0.07] bg-slate-950/45 px-4 text-sm font-bold text-white outline-none transition focus:border-orange-300/30"
+                    className="h-12 w-full rounded-2xl border border-white/[0.07] bg-slate-950/42 px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-orange-300/35 focus:bg-slate-950/55"
                   >
                     <option value="bienestar">Bienestar</option>
                     <option value="skincare">Skincare</option>
@@ -954,12 +1015,12 @@ export default function CuidadoPersonalPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Descripción</label>
+                  <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">Descripción</label>
                   <textarea
                     value={newRoutineDescription}
                     onChange={(event) => setNewRoutineDescription(event.target.value)}
                     placeholder="Describe cuándo o cómo quieres realizarla."
-                    className="min-h-[110px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/45 p-4 text-sm font-medium text-slate-200 outline-none transition focus:border-orange-300/30"
+                    className="min-h-[110px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/42 p-4 text-sm font-medium text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-orange-300/35 focus:bg-slate-950/55"
                   />
                 </div>
 
@@ -967,7 +1028,7 @@ export default function CuidadoPersonalPage() {
                   <Button
                     onClick={createRoutine}
                     disabled={savingRoutine}
-                    className="h-12 rounded-2xl border border-orange-300/10 bg-orange-500/[0.13] px-5 text-xs font-black uppercase tracking-widest text-orange-100 transition hover:bg-orange-500/[0.20] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-12 rounded-2xl border border-orange-300/10 bg-orange-500/[0.13] px-5 text-xs font-bold uppercase tracking-[0.08em] text-orange-100 transition hover:-translate-y-0.5 hover:bg-orange-500/[0.20] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Plus size={16} />
                     {savingRoutine ? "Guardando..." : "Crear rutina"}
@@ -976,7 +1037,7 @@ export default function CuidadoPersonalPage() {
                   <Button
                     onClick={seedDefaultRoutines}
                     disabled={savingRoutine || routines.length > 0}
-                    className="h-12 rounded-2xl border border-cyan-300/10 bg-cyan-500/[0.11] px-5 text-xs font-black uppercase tracking-widest text-cyan-100 transition hover:bg-cyan-500/[0.18] disabled:cursor-not-allowed disabled:opacity-45"
+                    className="h-12 rounded-2xl border border-cyan-300/10 bg-cyan-500/[0.11] px-5 text-xs font-bold uppercase tracking-[0.08em] text-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500/[0.18] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     <Sparkles size={16} />
                     Sugeridas
@@ -991,17 +1052,17 @@ export default function CuidadoPersonalPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.18 }}
           >
-            <Card className="relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.05] shadow-[0_24px_76px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+            <Card className="relative overflow-hidden rounded-[2rem] border border-white/[0.085] bg-[linear-gradient(135deg,rgba(15,23,42,0.72),rgba(8,11,20,0.62))] shadow-[0_24px_76px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_0%,rgba(45,212,191,0.10),transparent_32%)]" />
 
               <CardHeader className="relative">
-                <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-white">
+                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-xl font-extrabold tracking-[-0.045em] text-white">
                   <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-500/10 text-cyan-300">
                     <Target size={18} />
                   </span>
                   Rutinas de hoy
                 </CardTitle>
-                <p className="text-xs font-medium text-slate-500">
+                <p className="break-words text-xs font-medium text-slate-500">
                   Marca solo lo que realmente cumpliste hoy. Mañana empieza una nueva fecha.
                 </p>
               </CardHeader>
@@ -1014,7 +1075,7 @@ export default function CuidadoPersonalPage() {
                 ) : routines.length === 0 ? (
                   <div className="rounded-[1.5rem] border border-dashed border-white/[0.07] bg-slate-950/35 p-8 text-center">
                     <Sparkles className="mx-auto mb-3 text-purple-300" size={30} />
-                    <p className="text-sm font-black uppercase tracking-widest text-white">Aún no tienes rutinas</p>
+                    <p className="text-sm font-extrabold uppercase tracking-[0.10em] text-white">Aún no tienes rutinas</p>
                     <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">
                       Crea una rutina manualmente o carga las rutinas sugeridas para iniciar.
                     </p>
@@ -1029,7 +1090,7 @@ export default function CuidadoPersonalPage() {
                       return (
                         <div
                           key={routine.id}
-                          className={`relative overflow-hidden rounded-[1.35rem] border p-4 transition-all ${
+                          className={`relative overflow-hidden rounded-[1.35rem] border p-4 shadow-[0_12px_34px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-0.5 ${
                             routine.active
                               ? completed
                                 ? "border-emerald-300/20 bg-emerald-500/[0.08]"
@@ -1054,20 +1115,20 @@ export default function CuidadoPersonalPage() {
 
                               <div className="min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <p className="text-sm font-black text-white">{routine.name}</p>
-                                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[8px] font-black uppercase tracking-widest ${style.className}`}>
+                                  <p className="break-words text-sm font-extrabold text-white">{routine.name}</p>
+                                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.08em] ${style.className}`}>
                                     <Icon size={11} />
                                     {style.label}
                                   </span>
                                   {!routine.active && (
-                                    <span className="rounded-full border border-slate-300/10 bg-slate-500/[0.06] px-2.5 py-1 text-[8px] font-black uppercase tracking-widest text-slate-400">
+                                    <span className="rounded-full border border-slate-300/10 bg-slate-500/[0.06] px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-slate-400">
                                       inactiva
                                     </span>
                                   )}
                                 </div>
 
                                 {routine.description && (
-                                  <p className="mt-1 text-xs font-medium leading-relaxed text-slate-500">
+                                  <p className="mt-1 break-words text-xs font-medium leading-relaxed text-slate-500">
                                     {routine.description}
                                   </p>
                                 )}
@@ -1077,7 +1138,7 @@ export default function CuidadoPersonalPage() {
                             <div className="flex shrink-0 items-center gap-2">
                               <Button
                                 onClick={() => toggleRoutineActive(routine)}
-                                className="h-9 rounded-xl border border-white/[0.06] bg-white/[0.04] px-3 text-[9px] font-black uppercase tracking-widest text-slate-300 hover:bg-white/[0.08]"
+                                className="h-9 rounded-xl border border-white/[0.06] bg-white/[0.04] px-3 text-[9px] font-bold uppercase tracking-[0.08em] text-slate-300 hover:bg-white/[0.08]"
                               >
                                 {routine.active ? "Pausar" : "Activar"}
                               </Button>

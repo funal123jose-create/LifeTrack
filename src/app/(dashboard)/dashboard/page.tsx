@@ -230,124 +230,30 @@ const formatDateShort = (value?: string | null) => {
 }
 
 function DashboardBackground() {
-  const particles = Array.from({ length: 32 }, (_, i) => ({
-    id: i,
-    size: 2 + (i % 5) * 1.1,
-    left: `${3 + ((i * 13) % 94)}%`,
-    top: `${5 + ((i * 19) % 88)}%`,
-    duration: 8 + (i % 8),
-    delay: (i % 10) * 0.38,
-    x: (i % 2 === 0 ? 14 : -14) + (i % 5) * 3,
-    y: -14 - (i % 6) * 6,
-    opacity: 0.10 + (i % 5) * 0.035,
-  }))
-
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#02040a]">
-      {/* Dark premium base: más minimalista, menos saturado */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(59,130,246,0.105),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(249,115,22,0.075),transparent_32%),radial-gradient(circle_at_50%_92%,rgba(16,185,129,0.055),transparent_36%),linear-gradient(135deg,#02040a_0%,#050914_44%,#030305_100%)]" />
-
-      {/* Grid ultra sutil */}
-      <div className="absolute inset-0 opacity-[0.42] bg-[linear-gradient(rgba(255,255,255,0.032)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.032)_1px,transparent_1px)] bg-[size:82px_82px] [mask-image:radial-gradient(circle_at_center,black,transparent_78%)]" />
-
-      {/* Scanlines muy suaves */}
-      <div className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(180deg,transparent_0%,rgba(255,255,255,0.55)_50%,transparent_100%)] bg-[length:100%_10px]" />
-
-      {/* Glows ambientales, no invasivos */}
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden lifetrack-shell">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.060),transparent_34%),radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.07),transparent_24%),radial-gradient(circle_at_80%_18%,rgba(168,85,247,0.055),transparent_24%)]" />
+      <div className="absolute inset-0 opacity-[0.24] bg-[linear-gradient(rgba(255,255,255,0.028)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.024)_1px,transparent_1px)] bg-[size:86px_86px] [mask-image:radial-gradient(circle_at_center,black,transparent_76%)]" />
       <motion.div
-        animate={{ x: [0, 26, -14, 0], y: [0, -18, 14, 0], scale: [1, 1.08, 0.96, 1] }}
-        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-[5%] top-[14%] h-[28rem] w-[28rem] rounded-full bg-blue-500/[0.075] blur-3xl"
-      />
-      <motion.div
-        animate={{ x: [0, -22, 18, 0], y: [0, 18, -16, 0], scale: [1, 0.96, 1.1, 1] }}
+        animate={{ x: [0, 18, -10, 0], y: [0, -12, 10, 0], scale: [1, 1.05, 0.98, 1] }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute right-[7%] top-[18%] h-[28rem] w-[28rem] rounded-full bg-orange-500/[0.06] blur-3xl"
+        className="absolute left-[8%] top-[12%] h-[28rem] w-[28rem] rounded-full bg-blue-500/[0.085] blur-3xl"
       />
       <motion.div
-        animate={{ x: [0, 18, -18, 0], y: [0, -22, 14, 0], scale: [1, 1.12, 0.98, 1] }}
+        animate={{ x: [0, -16, 12, 0], y: [0, 14, -10, 0], scale: [1, 0.98, 1.06, 1] }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-[-5%] left-[42%] h-[30rem] w-[30rem] rounded-full bg-emerald-500/[0.045] blur-3xl"
-      />
-
-      {/* HUD rings minimalistas */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
-        className="absolute left-1/2 top-1/2 h-[960px] w-[960px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-slate-300/[0.045]"
+        className="absolute right-[8%] top-[18%] h-[25rem] w-[25rem] rounded-full bg-orange-500/[0.065] blur-3xl"
       />
       <motion.div
-        animate={{ rotate: -360 }}
-        transition={{ duration: 88, repeat: Infinity, ease: "linear" }}
-        className="absolute left-1/2 top-1/2 h-[690px] w-[690px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-blue-300/[0.04]"
+        animate={{ opacity: [0.16, 0.28, 0.16] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-0 top-[18%] h-px w-full bg-gradient-to-r from-transparent via-slate-300/20 to-transparent"
       />
-
-      {/* Barrido sutil */}
-      <motion.div
-        animate={{ y: ["-18%", "120%"] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
-        className="absolute left-0 top-0 h-52 w-full bg-gradient-to-b from-transparent via-slate-300/[0.026] to-transparent"
-      />
-
-      {/* Línea de pulso minimal */}
-      <motion.div
-        animate={{ x: ["-8%", "8%", "-8%"], opacity: [0.10, 0.24, 0.10] }}
-        transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-0 top-[23%] w-[120%]"
-      >
-        <svg viewBox="0 0 1600 180" className="h-[180px] w-full" preserveAspectRatio="none">
-          <path
-            d="M0 100 L140 100 L190 92 L230 108 L270 62 L315 140 L370 100 L520 100 L650 100 L700 95 L745 112 L790 60 L835 142 L890 100 L1040 100 L1110 100 L1150 92 L1190 108 L1240 58 L1288 142 L1340 100 L1600 100"
-            fill="none"
-            stroke="rgba(148,163,184,0.18)"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </motion.div>
-
-      {/* Partículas discretas tipo polvo digital */}
-      <div className="absolute inset-0">
-        {particles.map((p) => (
-          <motion.span
-            key={p.id}
-            className="absolute rounded-full bg-slate-200"
-            style={{
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              left: p.left,
-              top: p.top,
-              opacity: p.opacity,
-              boxShadow:
-                p.id % 3 === 0
-                  ? "0 0 14px rgba(59,130,246,0.42), 0 0 28px rgba(59,130,246,0.16)"
-                  : p.id % 3 === 1
-                    ? "0 0 14px rgba(249,115,22,0.32), 0 0 28px rgba(249,115,22,0.12)"
-                    : "0 0 14px rgba(16,185,129,0.30), 0 0 28px rgba(16,185,129,0.10)",
-            }}
-            animate={{
-              y: [0, p.y, 0],
-              x: [0, p.x, 0],
-              scale: [1, 1.25, 1],
-              opacity: [p.opacity * 0.45, p.opacity, p.opacity * 0.42],
-            }}
-            transition={{
-              duration: p.duration,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: p.delay,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Viñeta fuerte para mantener modo dark */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_12%,rgba(2,4,10,0.90)_100%)]" />
-      <div className="absolute inset-0 bg-[#02040a]/35" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_16%,rgba(5,7,12,0.86)_100%)]" />
     </div>
   )
 }
+
 
 export default function DashboardPage() {
   const [displayName, setDisplayName] = useState("Cargando...")
@@ -1594,669 +1500,993 @@ export default function DashboardPage() {
     visible: { y: 0, opacity: 1, filter: "blur(0px)" },
   }
 
+  const clampPct = (value: number) => Math.min(Math.max(Math.round(value || 0), 0), 100)
+
+  const profileImageSrc = "/images/jose-dashboard.png"
+
+  const weeklyWaterPct = weeklyHealthSummary
+    ? Math.min(Math.round((weeklyHealthSummary.total_water_liters / 14) * 100), 100)
+    : 0
+
+  const weeklyMealsPct = weeklyHealthSummary
+    ? Math.min(Math.round((weeklyHealthSummary.meals_count / 21) * 100), 100)
+    : 0
+
+  const caloriesBalancePct =
+    weeklyHealthSummary && weeklyHealthSummary.avg_calorie_target > 0
+      ? Math.min(
+          Math.round((weeklyHealthSummary.avg_daily_calories / weeklyHealthSummary.avg_calorie_target) * 100),
+          100
+        )
+      : 0
+
+  const weeklyMoodPct = weeklyPersonalCareSummary?.avg_mood_level
+    ? clampPct(weeklyPersonalCareSummary.avg_mood_level * 10)
+    : 0
+
+  const weeklyMotivationPct = weeklyPersonalCareSummary?.avg_motivation_level
+    ? clampPct(weeklyPersonalCareSummary.avg_motivation_level * 10)
+    : 0
+
+  const weeklySleepPct = weeklyPersonalCareSummary?.avg_sleep_quality
+    ? clampPct(weeklyPersonalCareSummary.avg_sleep_quality * 10)
+    : 0
+
+  const weeklyStressPct = weeklyPersonalCareSummary?.avg_stress_level
+    ? clampPct(weeklyPersonalCareSummary.avg_stress_level * 10)
+    : 0
+
+  const healthInsightSummary =
+    weeklyTrainingPct >= 80
+      ? "Constancia sólida: la rutina semanal viene muy bien."
+      : weeklyCompletedDays > 0
+        ? "Hay avance, pero todavía hay espacio para mejorar la constancia."
+        : "El foco inmediato es activar la rutina semanal."
+
+  const careerInsightSummary =
+    careerProfessionalEvents >= 3
+      ? "Buen nivel demostrable: estás convirtiendo avance en evidencia."
+      : weeklyCareerPct >= 50
+        ? "Hay avance operativo, pero aún puedes documentar más."
+        : "Tu principal foco debe ser cerrar subtareas y dejar evidencia."
+
+  const careInsightSummary =
+    weeklyPersonalCheckins >= 4
+      ? "Buen seguimiento personal: existe una base de autocuidado."
+      : weeklyPersonalCheckins > 0
+        ? "Hay seguimiento inicial, pero hace falta más constancia diaria."
+        : "Conviene empezar con check-ins simples y una rutina diaria."
+
+  const bar = (
+    value: number,
+    fillClassName: string,
+    heightClassName = "h-2.5"
+  ) => (
+    <div className={`${heightClassName} w-full overflow-hidden rounded-full bg-white/[0.06]`}>
+      <motion.div
+        initial={{ width: 0 }}
+        animate={{ width: `${clampPct(value)}%` }}
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className={`h-full rounded-full ${fillClassName}`}
+      />
+    </div>
+  )
+
+  const ring = (
+    value: number,
+    color: string,
+    size = "h-24 w-24",
+    inner = "h-[74px] w-[74px]",
+    label = `${clampPct(value)}%`
+  ) => (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.92, rotate: -8 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+      className={`relative grid ${size} shrink-0 place-items-center rounded-full shadow-[0_16px_34px_rgba(0,0,0,0.22)]`}
+      style={{
+        background: `conic-gradient(${color} ${clampPct(value) * 3.6}deg, rgba(255,255,255,0.08) 0deg)`,
+      }}
+    >
+      <div className="absolute inset-0 rounded-full opacity-35 blur-xl" style={{ backgroundColor: color }} />
+      <div className={`relative z-10 grid ${inner} place-items-center rounded-full bg-[#09111f] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-white/[0.06]`}>
+        <span className="whitespace-nowrap text-[clamp(0.9rem,1.6vw,1.45rem)] font-extrabold leading-none tracking-[-0.045em] text-white [overflow-wrap:normal]">{label}</span>
+      </div>
+    </motion.div>
+  )
+
+  const sectionHeader = (title: string, subtitle: string, accentClassName: string) => (
+    <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <div className="min-w-0">
+        <div className={`mb-2 inline-flex max-w-full items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold tracking-[0.14em] uppercase shadow-[0_10px_26px_rgba(0,0,0,0.12)] ${accentClassName}`}>
+          <Sparkles size={12} />
+          <span className="truncate">Dashboard analítico</span>
+        </div>
+        <motion.h2
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-5xl break-words text-balance text-[clamp(1.5rem,2.3vw,2.15rem)] font-extrabold tracking-[-0.055em] text-white"
+        >
+          {title}
+        </motion.h2>
+        <p className="mt-2 max-w-3xl break-words text-sm leading-6 text-slate-400">{subtitle}</p>
+      </div>
+    </div>
+  )
+
+  const kpiCard = (
+    title: string,
+    value: string,
+    helper: string,
+    Icon: any,
+    shellClassName: string,
+    iconClassName: string,
+    progress?: number
+  ) => (
+    <motion.div
+      whileHover={{ y: -4, scale: 1.01 }}
+      transition={{ type: "spring", stiffness: 280, damping: 22 }}
+      className={`group relative min-w-0 overflow-hidden rounded-[1.55rem] border p-5 shadow-[0_24px_55px_rgba(0,0,0,0.22)] transition-all ${shellClassName}`}
+    >
+      <div className="pointer-events-none absolute inset-0 opacity-80 bg-[radial-gradient(circle_at_100%_0%,rgba(255,255,255,0.28),transparent_25%),radial-gradient(circle_at_0%_100%,rgba(255,255,255,0.12),transparent_28%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent" />
+      <div className="relative z-10 mb-5 flex items-start justify-between gap-4">
+        <span className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${iconClassName}`}>
+          <Icon size={18} />
+        </span>
+        {typeof progress === "number" ? (
+          <span className="rounded-full border border-white/[0.08] bg-black/20 px-2.5 py-1 text-[11px] font-bold text-white/80">
+            {clampPct(progress)}%
+          </span>
+        ) : null}
+      </div>
+
+      <p className="relative z-10 break-words text-sm font-semibold text-white/82">{title}</p>
+      <p className="relative z-10 mt-2 break-words text-[clamp(1.9rem,3vw,2.35rem)] font-extrabold leading-none tracking-[-0.06em] text-white">{value}</p>
+      <p className="relative z-10 mt-2 min-h-[48px] break-words text-sm leading-6 text-white/70">{helper}</p>
+
+      {typeof progress === "number" ? (
+        <div className="relative z-10 mt-5">
+          {bar(progress, "bg-white/95")}
+        </div>
+      ) : null}
+    </motion.div>
+  )
+
+  const softMetric = (
+    title: string,
+    value: string,
+    helper: string,
+    Icon: any,
+    colorClasses: string
+  ) => (
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={{ type: "spring", stiffness: 320, damping: 24 }}
+      className="min-w-0 overflow-hidden rounded-[1.35rem] border border-white/[0.075] bg-white/[0.045] p-4 shadow-[0_12px_32px_rgba(0,0,0,0.14)] backdrop-blur-xl"
+    >
+      <div className="mb-3 flex items-center justify-between">
+        <span className={`flex h-10 w-10 items-center justify-center rounded-2xl border ${colorClasses}`}>
+          <Icon size={16} />
+        </span>
+      </div>
+      <p className="break-words text-[13px] font-semibold text-slate-400">{title}</p>
+      <p className="mt-1 break-words text-[clamp(1.55rem,2.5vw,1.95rem)] font-extrabold leading-none tracking-[-0.055em] text-white">{value}</p>
+      <p className="mt-2 break-words text-xs leading-5 text-slate-500">{helper}</p>
+    </motion.div>
+  )
+
+  const insightCard = (
+    title: string,
+    whatGood: string,
+    whatBad: string,
+    focus: string,
+    best: string,
+    recommendation: string,
+    Icon: any,
+    accentShell: string,
+    accentText: string
+  ) => (
+    <motion.div
+      whileHover={{ y: -4, scale: 1.01 }}
+      transition={{ type: "spring", stiffness: 280, damping: 22 }}
+      className={`overflow-hidden rounded-[1.55rem] border p-5 shadow-[0_18px_45px_rgba(0,0,0,0.16)] ${accentShell}`}
+    >
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <span className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${accentText}`}>
+            <Icon size={17} />
+          </span>
+          <div>
+            <p className="break-words text-lg font-bold tracking-[-0.03em] text-white">{title}</p>
+            <p className="text-xs text-slate-500">Lectura breve del desempeño actual</p>
+          </div>
+        </div>
+        <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">
+          Insight
+        </span>
+      </div>
+
+      <div className="space-y-3">
+        <div className="rounded-xl border border-emerald-400/12 bg-emerald-500/[0.06] p-3">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-300">Qué va bien</p>
+          <p className="mt-1 break-words text-sm leading-6 text-slate-300">{whatGood}</p>
+        </div>
+        <div className="rounded-xl border border-rose-400/12 bg-rose-500/[0.05] p-3">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-rose-300">Qué va mal</p>
+          <p className="mt-1 break-words text-sm leading-6 text-slate-300">{whatBad}</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-sky-300">En qué enfocarte</p>
+            <p className="mt-1 break-words text-sm leading-6 text-slate-300">{focus}</p>
+          </div>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-amber-300">Aspecto excelente</p>
+            <p className="mt-1 break-words text-sm leading-6 text-slate-300">{best}</p>
+          </div>
+        </div>
+        <div className="rounded-xl border border-white/[0.06] bg-black/20 p-3">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-violet-300">Recomendación útil</p>
+          <p className="mt-1 break-words text-sm leading-6 text-slate-300">{recommendation}</p>
+        </div>
+      </div>
+    </motion.div>
+  )
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#02040a] px-4 pb-12 pt-6 text-slate-100 antialiased selection:bg-slate-700/60 selection:text-white md:px-8">
+    <div
+      className="relative min-h-screen overflow-hidden bg-background px-2 pb-12 pt-4 text-slate-100 antialiased selection:bg-slate-700/60 selection:text-white md:px-4 [overflow-wrap:anywhere]"
+      style={{ fontFamily: "'Poppins', 'Nunito Sans', 'Inter', 'Manrope', system-ui, sans-serif" }}
+    >
       <DashboardBackground />
 
       <motion.div
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="relative z-10 mx-auto flex w-full max-w-[1480px] flex-col gap-6"
+        className="relative z-10 mx-auto flex w-full max-w-[1540px] flex-col gap-6"
       >
-        {/* HEADER PRINCIPAL */}
-        <motion.div variants={itemVariants} className="relative overflow-hidden rounded-[2rem] border border-white/[0.075] bg-[#070b14]/78 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.46)] backdrop-blur-2xl md:p-8">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(59,130,246,0.095),transparent_32%),radial-gradient(circle_at_85%_0%,rgba(249,115,22,0.075),transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.035),transparent_38%)]" />
-          <div className="absolute -right-24 -top-28 h-80 w-80 rounded-full bg-blue-500/[0.055] blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-slate-300/20 to-transparent" />
+        <motion.section
+          variants={itemVariants}
+          className="relative overflow-hidden rounded-[2rem] border border-white/[0.075] bg-[linear-gradient(135deg,rgba(10,17,30,0.96),rgba(8,16,30,0.92))] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.26)] backdrop-blur-2xl md:p-8"
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(59,130,246,0.17),transparent_25%),radial-gradient(circle_at_100%_0%,rgba(168,85,247,0.13),transparent_22%),radial-gradient(circle_at_78%_100%,rgba(249,115,22,0.10),transparent_28%)]" />
+          <div className="pointer-events-none absolute inset-0 opacity-[0.20] bg-[linear-gradient(rgba(255,255,255,0.028)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.024)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(circle_at_center,black,transparent_78%)]" />
 
-          <div className="relative flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
-            <div className="max-w-4xl space-y-4">
-              <div className="flex w-fit items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                <Sparkles size={14} className="animate-pulse" /> Centro de comando personal
+          <div className="relative grid gap-8 lg:grid-cols-[1.18fr_0.82fr] lg:items-center">
+            <div className="min-w-0 space-y-6">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-300">
+                  <Sparkles size={13} className="text-blue-300" />
+                  Panel personal
+                </span>
+                <span className="rounded-full border border-white/[0.06] bg-white/[0.025] px-3 py-1.5 text-xs text-slate-500">
+                  Semana {formatDateShort(getCurrentWeekStartString())} - {formatDateShort(getCurrentWeekEndString())}
+                </span>
               </div>
 
-              <div className="space-y-3">
-                <h2 className="text-4xl font-black uppercase leading-[0.9] tracking-tighter text-white md:text-7xl">
-                  Hola, <span className="bg-gradient-to-r from-slate-100 via-blue-200 to-slate-400 bg-clip-text text-transparent">{displayName}</span>
-                </h2>
-                <p className="max-w-3xl text-sm font-medium leading-relaxed text-slate-400 md:text-base">
-                  Panel limpio para ver lo importante: tu constancia en salud, tu avance profesional en Data & Carrera y tu cuidado personal, sin saturarte con métricas repetidas.
+              <div className="min-w-0 max-w-4xl">
+                <h1 className="break-words text-balance text-[2.35rem] font-extrabold leading-[0.94] tracking-[-0.08em] text-white md:text-[4.35rem]">
+                  Hola, <span className="bg-gradient-to-r from-slate-100 via-blue-200 to-sky-300 bg-clip-text text-transparent">{displayName}</span>
+                </h1>
+                <p className="mt-4 max-w-3xl break-words text-[15px] font-medium leading-7 text-slate-400 md:text-base">
+                  Este dashboard te ayuda a analizar tu avance general y tu desempeño por pilares: <span className="text-emerald-300">Salud</span>, <span className="text-amber-300">Data/Carrera</span> y <span className="text-purple-300">Cuidado Personal</span>. La idea es que entiendas rápido qué va bien, qué necesita atención y dónde enfocar tu siguiente acción.
                 </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-[1.25rem] border border-white/[0.075] bg-white/[0.045] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] backdrop-blur-xl">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Avance general</p>
+                  <div className="mt-3 flex items-center gap-3">
+                    {ring(globalProgress, "#60a5fa", "h-16 w-16", "h-[48px] w-[48px]", `${globalProgress}%`)}
+                    <p className="text-sm leading-6 text-slate-400">Promedio real de los tres pilares.</p>
+                  </div>
+                </div>
+
+                <div className="rounded-[1.25rem] border border-white/[0.075] bg-white/[0.045] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] backdrop-blur-xl">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Momento actual</p>
+                  <p className="mt-3 text-lg font-bold text-white">{healthInsightSummary}</p>
+                  <p className="mt-2 text-xs leading-5 text-slate-500">Resumen rápido del estado de tu sistema personal.</p>
+                </div>
+
+                <div className="rounded-[1.25rem] border border-white/[0.075] bg-white/[0.045] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] backdrop-blur-xl">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Acción rápida</p>
+                  <Button
+                    onClick={() => setIsPanelOpen(true)}
+                    className="mt-3 h-12 w-full rounded-2xl bg-white text-sm font-bold text-slate-950 transition hover:-translate-y-0.5 hover:bg-slate-100 active:scale-[0.98]"
+                  >
+                    <Plus size={17} />
+                    Registrar entrada
+                  </Button>
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row xl:flex-col">
-              <div className="grid grid-cols-2 gap-2 rounded-[1.35rem] sm:grid-cols-4 border border-white/[0.07] bg-black/25 p-2 backdrop-blur-xl">
-                <div className="rounded-2xl bg-blue-500/[0.08] px-4 py-3 text-center">
-                  <Layers3 className="mx-auto mb-1.5 text-blue-300" size={17} />
-                  <p className="text-[9px] font-black uppercase tracking-widest text-blue-300/80">Global</p>
-                  <p className="text-2xl font-black text-white">{globalProgress}%</p>
-                </div>
-                <div className="rounded-2xl bg-emerald-500/[0.08] px-4 py-3 text-center">
-                  <HeartPulse className="mx-auto mb-1.5 text-emerald-300" size={17} />
-                  <p className="text-[9px] font-black uppercase tracking-widest text-emerald-300/80">Salud</p>
-                  <p className="text-2xl font-black text-white">{loadingHealth ? "..." : `${healthProgress}%`}</p>
-                </div>
-                <div className="rounded-2xl bg-orange-500/[0.08] px-4 py-3 text-center">
-                  <BrainCircuit className="mx-auto mb-1.5 text-orange-300" size={17} />
-                  <p className="text-[9px] font-black uppercase tracking-widest text-orange-300/80">Carrera</p>
-                  <p className="text-2xl font-black text-white">{loadingProgress ? "..." : `${careerProgress}%`}</p>
-                </div>
-                <div className="rounded-2xl bg-purple-500/[0.08] px-4 py-3 text-center">
-                  <UserRound className="mx-auto mb-1.5 text-purple-300" size={17} />
-                  <p className="text-[9px] font-black uppercase tracking-widest text-purple-300/80">Cuidado</p>
-                  <p className="text-2xl font-black text-white">{loadingPersonalCare ? "..." : `${personalCareProgress}%`}</p>
+            <div className="flex flex-col gap-5 sm:flex-row lg:flex-col lg:items-end">
+              <div className="flex justify-center lg:w-full lg:justify-end">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(96,165,250,0.35),transparent_55%)] blur-3xl" />
+                  <div className="relative rounded-full bg-gradient-to-br from-white/35 via-blue-200/18 to-purple-200/24 p-[5px] shadow-[0_30px_70px_rgba(0,0,0,0.32)]">
+                    <img
+                      src={profileImageSrc}
+                      alt="Foto de perfil"
+                      className="h-48 w-48 rounded-full border border-white/[0.14] bg-[#09111f]/90 object-cover p-2 md:h-56 md:w-56"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <Button
-                onClick={() => setIsPanelOpen(true)}
-                className="h-14 rounded-2xl border border-white/[0.08] bg-white/[0.07] px-8 text-[11px] font-black uppercase tracking-widest text-white shadow-[0_18px_42px_rgba(0,0,0,0.30)] transition-all hover:-translate-y-0.5 hover:border-blue-300/20 hover:bg-blue-500/15 active:scale-[0.98]"
-              >
-                <Plus size={20} strokeWidth={3} />
-                Registrar Entrada
-              </Button>
+              <div className="grid w-full gap-3 sm:flex-1 sm:grid-cols-2 lg:w-[360px] lg:grid-cols-2">
+                <div className="rounded-[1.15rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Salud</p>
+                  <p className="mt-2 text-2xl font-extrabold tracking-[-0.05em] text-white">{healthProgress}%</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">{weeklyCompletedDays}/{weeklyPlannedDays} días de rutina</p>
+                </div>
+                <div className="rounded-[1.15rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Carrera</p>
+                  <p className="mt-2 text-2xl font-extrabold tracking-[-0.05em] text-white">{careerProgress}%</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">{completedCareerTasks}/{totalCareerTasks} subtareas</p>
+                </div>
+                <div className="rounded-[1.15rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Cuidado personal</p>
+                  <p className="mt-2 text-2xl font-extrabold tracking-[-0.05em] text-white">{personalCareProgress}%</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">{weeklyPersonalCheckins}/7 check-ins</p>
+                </div>
+                <div className="rounded-[1.15rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Status</p>
+                  <p className="mt-2 text-lg font-bold text-white">{personalCareIntensityLabel}</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">Intensidad actual del cuidado personal</p>
+                </div>
+              </div>
             </div>
           </div>
-        </motion.div>
+        </motion.section>
 
-        {/* VISTA GENERAL: SOLO LO ESENCIAL */}
-        <div className="grid gap-6 xl:grid-cols-3">
-          <motion.div variants={itemVariants}>
-            <Card className="relative h-full overflow-hidden rounded-[2.2rem] border border-emerald-300/[0.10] bg-white/[0.05] shadow-[0_28px_90px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(16,185,129,0.13),transparent_30%),radial-gradient(circle_at_86%_70%,rgba(59,130,246,0.07),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.025),transparent_42%)]" />
-              <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-emerald-400 via-cyan-400 to-blue-500" />
+        <motion.section variants={itemVariants} className="space-y-4">
+          {sectionHeader(
+            "Principales indicadores",
+            "Vista rápida del avance global y del desempeño por cada pilar principal.",
+            "border-blue-400/14 bg-blue-500/[0.07] text-blue-300"
+          )}
 
-              <CardHeader className="relative">
-                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                  <div>
-                    <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-white">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-500/10 text-emerald-300">
-                        <HeartPulse size={18} />
-                      </span>
-                      Salud Física
-                    </CardTitle>
-                    <p className="mt-2 text-xs font-medium text-slate-500">
-                      Constancia semanal, energía, peso e hidratación. Lo suficiente para saber si vas bien.
-                    </p>
-                  </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {kpiCard(
+              "Avance general",
+              `${globalProgress}%`,
+              "Promedio consolidado de Salud, Data/Carrera y Cuidado Personal.",
+              Gauge,
+              "border-blue-300/16 bg-gradient-to-br from-[#0f2145] via-[#1d4f96] to-[#3aa0ff]",
+              "border-white/18 bg-white/12 text-white",
+              globalProgress
+            )}
+            {kpiCard(
+              "Avance de Salud",
+              `${healthProgress}%`,
+              `${weeklyCompletedDays}/${weeklyPlannedDays} días de rutina completados esta semana.`,
+              HeartPulse,
+              "border-emerald-300/16 bg-gradient-to-br from-[#0f3328] via-[#0f8a61] to-[#34f5a2]",
+              "border-white/18 bg-white/12 text-white",
+              healthProgress
+            )}
+            {kpiCard(
+              "Avance de Data/Carrera",
+              `${careerProgress}%`,
+              `${completedCareerTasks}/${totalCareerTasks} subtareas completadas y ${activeProjects} proyectos activos.`,
+              BrainCircuit,
+              "border-orange-300/16 bg-gradient-to-br from-[#3b210d] via-[#b14d16] to-[#ff9f43]",
+              "border-white/18 bg-white/12 text-white",
+              careerProgress
+            )}
+            {kpiCard(
+              "Avance de Cuidado Personal",
+              `${personalCareProgress}%`,
+              `${weeklyPersonalCheckins}/7 check-ins y ${weeklyPersonalCompletedRoutines} rutinas completadas.`,
+              UserRound,
+              "border-purple-300/16 bg-gradient-to-br from-[#271447] via-[#7230bd] to-[#c084fc]",
+              "border-white/18 bg-white/12 text-white",
+              personalCareProgress
+            )}
+          </div>
+        </motion.section>
 
-                  <div className="rounded-2xl border border-emerald-300/14 bg-emerald-500/[0.08] px-4 py-3 text-right">
-                    <p className="text-4xl font-black tracking-tight text-emerald-200">
-                      {loadingHealth ? "..." : `${healthProgress}%`}
-                    </p>
-                    <p className="mt-1 text-[9px] font-black uppercase tracking-[0.24em] text-slate-500">
-                      avance salud
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
+        <motion.section variants={itemVariants} className="space-y-4">
+          {sectionHeader(
+            "Indicadores clave para el pilar de Salud",
+            "Lectura visual de tu constancia semanal, energía, alimentación, hidratación y progreso físico.",
+            "border-emerald-400/14 bg-emerald-500/[0.07] text-emerald-300"
+          )}
 
-              <CardContent className="relative space-y-5">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-emerald-300/15 bg-emerald-500/[0.08] text-emerald-300">
-                        <Dumbbell size={16} />
-                      </span>
-                      <span className="rounded-full border border-emerald-400/15 bg-emerald-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-emerald-300/80">
-                        semana
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Rutina semanal</p>
-                    <p className="mt-1 text-2xl font-black text-white">
-                      {weeklyHealthSummary ? `${weeklyCompletedDays}/${weeklyPlannedDays}` : `${completedHealthTasks}/${totalHealthTasks}`}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      {weeklyHealthSummary ? `${weeklyTrainingPct}% cumplido` : "Planificados vs cumplidos"}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-blue-300/15 bg-blue-500/[0.08] text-blue-300">
-                        <BatteryCharging size={16} />
-                      </span>
-                      <span className="rounded-full border border-white/[0.05] bg-slate-950/60 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-slate-500">
-                        energía
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Energía</p>
-                    <p className="mt-1 text-2xl font-black text-white">
-                      {weeklyHealthSummary && weeklyHealthSummary.avg_energy_level > 0
-                        ? `${weeklyHealthSummary.avg_energy_level.toFixed(1)}/10`
-                        : latestEnergyLevel !== null
-                          ? `${latestEnergyLevel}/10`
-                          : "—"}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      Promedio semanal o último registro
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-cyan-300/15 bg-cyan-500/[0.08] text-cyan-300">
-                        <Droplet size={16} />
-                      </span>
-                      <span className="rounded-full border border-cyan-400/15 bg-cyan-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-cyan-300/80">
-                        hoy
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Agua hoy</p>
-                    <p className="mt-1 text-2xl font-black text-white">{todayWaterLiters.toFixed(2)}L</p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      Semana: {weeklyHealthSummary ? `${weeklyHealthSummary.total_water_liters.toFixed(2)}L` : "—"}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-orange-300/15 bg-orange-500/[0.08] text-orange-300">
-                        <Scale size={16} />
-                      </span>
-                      <span className="rounded-full border border-white/[0.05] bg-slate-950/60 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-slate-500">
-                        físico
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Último peso</p>
-                    <p className="mt-1 text-2xl font-black text-white">
-                      {latestWeightKg !== null ? `${latestWeightKg} kg` : "—"}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      {bodyProgressCount} registros de progreso
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/30 p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Lectura rápida de salud</p>
-                    <ShieldCheck size={16} className="text-emerald-300" />
-                  </div>
-                  <p className="text-sm font-semibold leading-relaxed text-slate-400">
-                    {weeklyHealthSummary
-                      ? weeklyPlannedDays > 0
-                        ? weeklyCompletedDays === weeklyPlannedDays
-                          ? "Excelente semana: completaste todos los días de rutina planificados."
-                          : weeklyCompletedDays > 0
-                            ? `Tienes ${weeklyPlannedDays} días planificados y ${weeklyCompletedDays} cumplidos. El foco es mejorar constancia.`
-                            : `Tienes ${weeklyPlannedDays} días planificados. Aún falta marcar días completados.`
-                        : "Aún no hay días de rutina planificados para analizar cumplimiento."
-                      : "Registra comida, agua, rutina o progreso físico para activar una lectura semanal más útil."}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <Card className="relative h-full overflow-hidden rounded-[2.2rem] border border-orange-300/[0.10] bg-white/[0.05] shadow-[0_28px_90px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(249,115,22,0.14),transparent_30%),radial-gradient(circle_at_86%_70%,rgba(59,130,246,0.08),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.025),transparent_42%)]" />
-              <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-400 via-amber-400 to-blue-500" />
-
-              <CardHeader className="relative">
-                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                  <div>
-                    <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-white">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-orange-400/20 bg-orange-500/10 text-orange-300">
-                        <BrainCircuit size={18} />
-                      </span>
-                      Data & Carrera
-                    </CardTitle>
-                    <p className="mt-2 text-xs font-medium text-slate-500">
-                      Avance real de proyectos, productividad semanal y stack profesional usado.
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-orange-300/14 bg-orange-500/[0.08] px-4 py-3 text-right">
-                    <p className="text-4xl font-black tracking-tight text-orange-200">
-                      {loadingProgress ? "..." : `${careerProgress}%`}
-                    </p>
-                    <p className="mt-1 text-[9px] font-black uppercase tracking-[0.24em] text-slate-500">
-                      avance carrera
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="relative space-y-5">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-orange-300/15 bg-orange-500/[0.08] text-orange-300">
-                        <CheckCircle2 size={16} />
-                      </span>
-                      <span className="rounded-full border border-orange-400/15 bg-orange-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-orange-300/80">
-                        global
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Subtareas completadas</p>
-                    <p className="mt-1 text-2xl font-black text-white">{completedCareerTasks}/{totalCareerTasks}</p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      {weeklyCareerSummary ? `${totalCareerPct}% total` : "Avance general"}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-blue-300/15 bg-blue-500/[0.08] text-blue-300">
-                        <Rocket size={16} />
-                      </span>
-                      <span className="rounded-full border border-blue-400/15 bg-blue-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-blue-300/80">
-                        proyectos
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Proyectos activos</p>
-                    <p className="mt-1 text-2xl font-black text-white">{activeProjects}/{totalProjects}</p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      {completedProjects} completados
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-cyan-300/15 bg-cyan-500/[0.08] text-cyan-300">
-                        <TimerReset size={16} />
-                      </span>
-                      <span className="rounded-full border border-cyan-400/15 bg-cyan-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-cyan-300/80">
-                        semana
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Productividad semanal</p>
-                    <p className="mt-1 text-2xl font-black text-white">{weeklyCareerSummary ? `${weeklyCareerPct}%` : "—"}</p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      {weeklyCareerSummary ? `${weeklyCareerSummary.tasks_completed_week} tareas completadas` : "Sin datos semanales"}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-purple-300/15 bg-purple-500/[0.08] text-purple-300">
-                        <Cpu size={16} />
-                      </span>
-                      <span className="rounded-full border border-purple-400/15 bg-purple-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-purple-300/80">
-                        stack
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Skills usadas</p>
-                    <p className="mt-1 text-2xl font-black text-white">
-                      {careerSkillsSummary ? `${careerSkillsSummary.used_skills}/${careerSkillsSummary.total_skills}` : "—"}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      {careerSkillsSummary ? `${skillsUsagePct}% del catálogo` : "Sin resumen de skills"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/30 p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Lectura rápida de carrera</p>
-                    <Cpu size={16} className="text-orange-300" />
-                  </div>
-                  <p className="text-sm font-semibold leading-relaxed text-slate-400">
-                    {weeklyCareerActivity && weeklyCareerActivity.total_events > 0
-                      ? careerProfessionalEvents > 0
-                        ? `Esta semana registraste ${weeklyCareerActivity.total_events} movimientos: ${careerOperationalEvents} operativos y ${careerProfessionalEvents} profesionales. Último avance: ${lastCareerActivityLabel}.`
-                        : `Esta semana registraste ${weeklyCareerActivity.total_events} movimientos operativos. El siguiente foco es documentar subtareas, subir evidencias o asignar skills.`
-                      : weeklyCareerSummary
-                        ? weeklyCareerSummary.tasks_completed_week > 0
-                          ? `Esta semana cerraste ${weeklyCareerSummary.tasks_completed_week} tareas. Tu proyecto más fuerte es ${weeklyCareerSummary.top_project_title || "aún no definido"}.`
-                          : "Esta semana aún no registra tareas completadas. El foco debería ser cerrar al menos una subtarea documentada."
-                        : "Aún no hay resumen semanal de carrera. Registra proyectos y subtareas para activar este análisis."}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <Card className="relative h-full overflow-hidden rounded-[2.2rem] border border-purple-300/[0.10] bg-white/[0.05] shadow-[0_28px_90px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(168,85,247,0.14),transparent_30%),radial-gradient(circle_at_86%_70%,rgba(45,212,191,0.08),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.025),transparent_42%)]" />
-              <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-purple-400 via-cyan-400 to-orange-400" />
-
-              <CardHeader className="relative">
-                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center xl:flex-col xl:items-start 2xl:flex-row 2xl:items-center">
-                  <div>
-                    <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-white">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-400/20 bg-purple-500/10 text-purple-300">
-                        <UserRound size={18} />
-                      </span>
-                      Cuidado Personal
-                    </CardTitle>
-                    <p className="mt-2 text-xs font-medium text-slate-500">
-                      Check-ins, autocuidado, descanso, estrés y rutinas personales de la semana.
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-purple-300/14 bg-purple-500/[0.08] px-4 py-3 text-right">
-                    <p className="text-4xl font-black tracking-tight text-purple-200">
-                      {loadingPersonalCare ? "..." : `${personalCareProgress}%`}
-                    </p>
-                    <p className="mt-1 text-[9px] font-black uppercase tracking-[0.24em] text-slate-500">
-                      avance cuidado
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="relative space-y-5">
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-purple-300/15 bg-purple-500/[0.08] text-purple-300">
-                        <CalendarClock size={16} />
-                      </span>
-                      <span className="rounded-full border border-purple-400/15 bg-purple-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-purple-300/80">
-                        semana
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Check-ins</p>
-                    <p className="mt-1 text-2xl font-black text-white">{weeklyPersonalCheckins}/7</p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      {weeklyPersonalCheckinPct}% de seguimiento semanal
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-cyan-300/15 bg-cyan-500/[0.08] text-cyan-300">
-                        <CheckCircle2 size={16} />
-                      </span>
-                      <span className="rounded-full border border-cyan-400/15 bg-cyan-500/[0.07] px-2 py-1 text-[9px] font-black uppercase tracking-widest text-cyan-300/80">
-                        rutinas
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Rutinas completadas</p>
-                    <p className="mt-1 text-2xl font-black text-white">{weeklyPersonalCompletedRoutines}</p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      {weeklyPersonalActiveRoutines} activas · {weeklyPersonalRoutinePct}% semanal
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-emerald-300/15 bg-emerald-500/[0.08] text-emerald-300">
-                        <Sparkles size={16} />
-                      </span>
-                      <span className="rounded-full border border-white/[0.05] bg-slate-950/60 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-slate-500">
-                        ánimo
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Ánimo prom.</p>
-                    <p className="mt-1 text-2xl font-black text-white">
-                      {weeklyPersonalCareSummary && weeklyPersonalCareSummary.avg_mood_level > 0
-                        ? `${weeklyPersonalCareSummary.avg_mood_level.toFixed(1)}/10`
-                        : "—"}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      Motivación {weeklyPersonalCareSummary && weeklyPersonalCareSummary.avg_motivation_level > 0 ? `${weeklyPersonalCareSummary.avg_motivation_level.toFixed(1)}/10` : "—"}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/38 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-orange-300/15 bg-orange-500/[0.08] text-orange-300">
-                        <Flame size={16} />
-                      </span>
-                      <span className="rounded-full border border-white/[0.05] bg-slate-950/60 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-slate-500">
-                        estrés
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Estrés prom.</p>
-                    <p className="mt-1 text-2xl font-black text-white">
-                      {weeklyPersonalCareSummary && weeklyPersonalCareSummary.avg_stress_level > 0
-                        ? `${weeklyPersonalCareSummary.avg_stress_level.toFixed(1)}/10`
-                        : "—"}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      Sueño {weeklyPersonalCareSummary && weeklyPersonalCareSummary.avg_sleep_quality > 0 ? `${weeklyPersonalCareSummary.avg_sleep_quality.toFixed(1)}/10` : "—"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/30 p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Lectura rápida de cuidado personal</p>
-                    <ShieldCheck size={16} className="text-purple-300" />
-                  </div>
-                  <p className="text-sm font-semibold leading-relaxed text-slate-400">
-                    {weeklyPersonalCareSummary
-                      ? weeklyPersonalCheckins > 0 || weeklyPersonalCompletedRoutines > 0
-                        ? `Esta semana tienes ${weeklyPersonalCheckins} check-ins y ${weeklyPersonalCompletedRoutines} rutinas completadas. Intensidad: ${personalCareIntensityLabel.toLowerCase()}.`
-                        : "Aún no hay actividad de cuidado personal esta semana. Empieza con un check-in y una rutina simple."
-                      : "Registra un check-in o completa una rutina para activar el resumen semanal."}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* DETALLE ORDENADO POR PILAR */}
-        <div className="grid gap-6 xl:grid-cols-2">
-          <motion.div variants={itemVariants}>
-            <Card className="relative overflow-hidden rounded-[2rem] border border-emerald-300/[0.09] bg-[#070b14]/72 shadow-[0_24px_74px_rgba(0,0,0,0.30)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(16,185,129,0.09),transparent_32%)]" />
-              <CardHeader className="relative">
-                <CardTitle className="flex items-center gap-2 text-lg font-black tracking-tight text-white">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-500/10 text-emerald-300">
-                    <LineChart size={17} />
-                  </span>
-                  Salud: tendencia útil
-                </CardTitle>
-                <p className="text-xs font-medium text-slate-500">
-                  Solo indicadores accionables para decidir si debes ajustar rutina, hidratación o energía.
-                </p>
-              </CardHeader>
-
-              <CardContent className="relative space-y-4">
-                <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/30 p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Cumplimiento de rutina</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-300">
-                      {weeklyHealthSummary ? `${weeklyTrainingPct}%` : "—"}
-                    </p>
-                  </div>
-                  <div className="h-3 overflow-hidden rounded-full border border-white/[0.04] bg-slate-950 p-[2px]">
-                    <motion.div
-                      initial={false}
-                      animate={{ width: weeklyHealthSummary ? `${weeklyTrainingPct}%` : `${healthProgress}%` }}
-                      transition={{ duration: 0.7, ease: "easeOut" }}
-                      className="h-full rounded-full bg-gradient-to-r from-emerald-600 via-cyan-400 to-blue-300 shadow-[0_0_14px_rgba(16,185,129,0.38)]"
-                    />
-                  </div>
-                  <p className="mt-3 text-xs font-medium leading-relaxed text-slate-500">
-                    Planificados: {weeklyHealthSummary ? weeklyPlannedDays : plannedWorkoutDays} ·
-                    Cumplidos: {weeklyHealthSummary ? weeklyCompletedDays : completedHealthTasks} ·
-                    Días con actividad: {weeklyHealthSummary ? `${weeklyHealthSummary.active_days}` : "—"}
-                  </p>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/[0.06] bg-slate-950/30 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Calorías promedio</p>
-                    <p className="mt-2 text-xl font-black text-white">
-                      {weeklyHealthSummary ? Math.round(weeklyHealthSummary.avg_daily_calories).toLocaleString("es-PE") : "—"} kcal
-                    </p>
-                    <p className="mt-1 text-xs font-medium text-slate-600">
-                      Meta: {weeklyHealthSummary ? Math.round(weeklyHealthSummary.avg_calorie_target).toLocaleString("es-PE") : "—"} kcal
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/[0.06] bg-slate-950/30 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Comidas hoy</p>
-                    <p className="mt-2 text-xl font-black text-white">{todayMealCount}</p>
-                    <p className="mt-1 text-xs font-medium text-slate-600">
-                      Semana: {weeklyHealthSummary ? `${weeklyHealthSummary.meals_count} comidas` : "—"}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <Card className="relative overflow-hidden rounded-[2rem] border border-orange-300/[0.09] bg-[#070b14]/72 shadow-[0_24px_74px_rgba(0,0,0,0.30)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(249,115,22,0.10),transparent_32%)]" />
-              <CardHeader className="relative">
-                <CardTitle className="flex items-center gap-2 text-lg font-black tracking-tight text-white">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-2xl border border-orange-400/20 bg-orange-500/10 text-orange-300">
-                    <Database size={17} />
-                  </span>
-                  Carrera: ejecución y stack
-                </CardTitle>
-                <p className="text-xs font-medium text-slate-500">
-                  Métricas que te dicen si estás avanzando y qué habilidades estás realmente usando.
-                </p>
-              </CardHeader>
-
-              <CardContent className="relative space-y-4">
-                <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/30 p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Avance de subtareas</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-orange-300">
-                      {weeklyCareerSummary ? `${totalCareerPct}%` : `${careerProgress}%`}
-                    </p>
-                  </div>
-                  <div className="h-3 overflow-hidden rounded-full border border-white/[0.04] bg-slate-950 p-[2px]">
-                    <motion.div
-                      initial={false}
-                      animate={{ width: weeklyCareerSummary ? `${totalCareerPct}%` : `${careerProgress}%` }}
-                      transition={{ duration: 0.7, ease: "easeOut" }}
-                      className="h-full rounded-full bg-gradient-to-r from-orange-600 via-amber-400 to-yellow-200 shadow-[0_0_14px_rgba(249,115,22,0.42)]"
-                    />
-                  </div>
-                  <p className="mt-3 text-xs font-medium leading-relaxed text-slate-500">
-                    Completadas: {completedCareerTasks}/{totalCareerTasks} · En curso: {weeklyCareerSummary?.in_progress_tasks ?? "—"} · Pendientes: {weeklyCareerSummary?.pending_tasks ?? "—"}
-                  </p>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/[0.06] bg-slate-950/30 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Actividad semanal</p>
-                    <p className="mt-2 text-xl font-black text-white">{weeklyCareerActivity ? weeklyCareerActivity.total_events : "—"}</p>
-                    <p className="mt-1 text-xs font-medium text-slate-600">
-                      {careerActivityLabel} · {careerOperationalEvents} operativos · {careerProfessionalEvents} profesionales
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/[0.06] bg-slate-950/30 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Skill dominante</p>
-                    <p className="mt-2 truncate text-xl font-black text-white">{topSkillLabel}</p>
-                    <p className="mt-1 text-xs font-medium text-slate-600">
-                      {topSkillCategoryLabel}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-[1.5rem] border border-orange-300/10 bg-orange-500/[0.045] p-4">
-                  <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+            <Card className="overflow-hidden rounded-[1.8rem] border border-emerald-300/[0.14] bg-[linear-gradient(135deg,rgba(6,18,24,0.94),rgba(9,42,36,0.92))] shadow-[0_24px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+              <CardHeader className="pb-3">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-300/18 bg-emerald-500/10 text-emerald-300">
+                      <HeartPulse size={18} />
+                    </span>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-orange-200/80">Actividad profesional demostrable</p>
-                      <p className="mt-1 text-xs font-medium leading-relaxed text-slate-600">
-                        Documentación, evidencias y skills aplicadas esta semana.
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-orange-300/14 bg-black/24 px-4 py-2 text-right">
-                      <p className="text-2xl font-black text-orange-100">{careerProfessionalEvents}</p>
-                      <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-600">{careerProfessionalActivityPct}% del total</p>
+                      <CardTitle className="text-xl font-bold tracking-[-0.03em] text-white">Resumen integral de Salud</CardTitle>
+                      <p className="mt-1 text-sm text-slate-500">No solo números: combina avance, hábitos y contexto semanal.</p>
                     </div>
                   </div>
+                  {ring(healthProgress, "#34d399")}
+                </div>
+              </CardHeader>
 
-                  <div className="grid gap-3 md:grid-cols-3">
-                    {professionalActivityBreakdown.map((item) => {
-                      const Icon = item.icon
-
-                      return (
-                        <div key={item.label} className={`rounded-2xl border ${item.tone} p-3`}>
-                          <div className="mb-2 flex items-center justify-between">
-                            <Icon size={15} />
-                            <span className="text-xl font-black">{item.value}</span>
-                          </div>
-                          <p className="text-[9px] font-black uppercase tracking-widest">{item.label}</p>
-                          <p className="mt-1 text-[10px] font-medium text-slate-600">{item.helper}</p>
-                        </div>
-                      )
-                    })}
+              <CardContent className="min-w-0 space-y-6">
+                <div className="rounded-[1.35rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-white">Cumplimiento semanal de rutina</p>
+                      <p className="mt-1 text-xs text-slate-500">Estado principal para entender constancia física.</p>
+                    </div>
+                    <span className="rounded-full border border-emerald-300/12 bg-emerald-500/[0.07] px-3 py-1 text-xs font-bold text-emerald-300">
+                      {weeklyTrainingPct}%
+                    </span>
                   </div>
 
-                  <div className="mt-4 rounded-2xl border border-white/[0.05] bg-black/20 p-3">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Última actividad</p>
-                    <p className="mt-1 text-sm font-bold text-slate-300">{lastCareerActivityLabel}</p>
-                    <p className="mt-1 line-clamp-2 text-xs font-medium text-slate-600">{lastCareerActivityText}</p>
+                  {bar(weeklyTrainingPct, "bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400", "h-3")}
+                  <div className="mt-3 grid gap-2 text-sm text-slate-400 sm:grid-cols-3">
+                    <p>Planificados: <span className="font-semibold text-white">{weeklyPlannedDays}</span></p>
+                    <p>Cumplidos: <span className="font-semibold text-white">{weeklyCompletedDays}</span></p>
+                    <p>Días activos: <span className="font-semibold text-white">{weeklyHealthSummary?.active_days || 0}</span></p>
                   </div>
                 </div>
 
-                {topCareerSkills.length > 0 && (
-                  <div className="rounded-[1.5rem] border border-white/[0.06] bg-slate-950/30 p-4">
-                    <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Stack más usado</p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-[1.35rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <p className="text-sm font-bold text-white">Mini lectura de hábitos</p>
+                      <LineChart size={16} className="text-emerald-300" />
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Agua semanal</span>
+                          <span>{weeklyHealthSummary ? `${weeklyHealthSummary.total_water_liters.toFixed(2)}L` : "—"}</span>
+                        </div>
+                        {bar(weeklyWaterPct, "bg-gradient-to-r from-cyan-500 to-sky-400")}
+                      </div>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Comidas registradas</span>
+                          <span>{weeklyHealthSummary ? `${weeklyHealthSummary.meals_count}` : `${todayMealCount} hoy`}</span>
+                        </div>
+                        {bar(weeklyMealsPct, "bg-gradient-to-r from-orange-500 to-amber-400")}
+                      </div>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Calorías vs meta</span>
+                          <span>
+                            {weeklyHealthSummary
+                              ? `${Math.round(weeklyHealthSummary.avg_daily_calories).toLocaleString("es-PE")} / ${Math.round(weeklyHealthSummary.avg_calorie_target).toLocaleString("es-PE")}`
+                              : "—"}
+                          </span>
+                        </div>
+                        {bar(caloriesBalancePct, "bg-gradient-to-r from-violet-500 to-fuchsia-400")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.35rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <p className="text-sm font-bold text-white">Indicadores circulares</p>
+                      <Orbit size={16} className="text-cyan-300" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
+                        {ring(
+                          weeklyHealthSummary?.avg_energy_level
+                            ? weeklyHealthSummary.avg_energy_level * 10
+                            : latestEnergyLevel !== null ? latestEnergyLevel * 10 : 0,
+                          "#60a5fa",
+                          "h-16 w-16",
+                          "h-[46px] w-[46px]",
+                          weeklyHealthSummary?.avg_energy_level
+                            ? `${weeklyHealthSummary.avg_energy_level.toFixed(1)}`
+                            : latestEnergyLevel !== null ? `${latestEnergyLevel}` : "—"
+                        )}
+                        <p className="mt-2 text-xs font-bold text-slate-300">Energía</p>
+                      </div>
+                      <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
+                        {ring(weeklyTrainingPct, "#34d399", "h-16 w-16", "h-[46px] w-[46px]", `${weeklyTrainingPct}%`)}
+                        <p className="mt-2 text-xs font-bold text-slate-300">Rutina</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-[1.35rem] border border-emerald-300/12 bg-emerald-500/[0.05] p-4">
+                  <div className="mb-2 flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-emerald-300" />
+                    <p className="text-sm font-bold text-white">Interpretación rápida del pilar Salud</p>
+                  </div>
+                  <p className="text-sm leading-6 text-slate-300">{healthInsightSummary}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {softMetric(
+                "Rutina semanal",
+                `${weeklyHealthSummary ? weeklyCompletedDays : completedHealthTasks}/${weeklyHealthSummary ? weeklyPlannedDays : totalHealthTasks}`,
+                `${weeklyTrainingPct}% completado`,
+                Dumbbell,
+                "border-emerald-300/15 bg-emerald-500/10 text-emerald-300"
+              )}
+              {softMetric(
+                "Agua hoy",
+                `${todayWaterLiters.toFixed(2)}L`,
+                weeklyHealthSummary ? `Semana ${weeklyHealthSummary.total_water_liters.toFixed(2)}L` : "Registro diario",
+                Droplet,
+                "border-cyan-300/15 bg-cyan-500/10 text-cyan-300"
+              )}
+              {softMetric(
+                "Energía",
+                weeklyHealthSummary && weeklyHealthSummary.avg_energy_level > 0
+                  ? `${weeklyHealthSummary.avg_energy_level.toFixed(1)}/10`
+                  : latestEnergyLevel !== null ? `${latestEnergyLevel}/10` : "—",
+                "Promedio semanal o último registro",
+                BatteryCharging,
+                "border-blue-300/15 bg-blue-500/10 text-blue-300"
+              )}
+              {softMetric(
+                "Último peso",
+                latestWeightKg !== null ? `${latestWeightKg} kg` : "—",
+                `${bodyProgressCount} registros físicos`,
+                Scale,
+                "border-amber-300/15 bg-amber-500/10 text-amber-300"
+              )}
+              {softMetric(
+                "Comidas",
+                `${todayMealCount}`,
+                weeklyHealthSummary ? `${weeklyHealthSummary.meals_count} registradas esta semana` : "Conteo diario",
+                Flame,
+                "border-rose-300/15 bg-rose-500/10 text-rose-300"
+              )}
+              {softMetric(
+                "Calorías promedio",
+                weeklyHealthSummary ? `${Math.round(weeklyHealthSummary.avg_daily_calories).toLocaleString("es-PE")} kcal` : "—",
+                weeklyHealthSummary ? `Meta ${Math.round(weeklyHealthSummary.avg_calorie_target).toLocaleString("es-PE")} kcal` : "Sin meta semanal",
+                Gauge,
+                "border-violet-300/15 bg-violet-500/10 text-violet-300"
+              )}
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.section variants={itemVariants} className="space-y-4">
+          {sectionHeader(
+            "Indicadores clave para el pilar de Data/Carrera",
+            "Vista profesional para entender productividad, ejecución, skills utilizadas y evidencia real del avance.",
+            "border-amber-400/14 bg-amber-500/[0.07] text-amber-300"
+          )}
+
+          <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+            <Card className="overflow-hidden rounded-[1.8rem] border border-orange-300/[0.14] bg-[linear-gradient(135deg,rgba(27,16,8,0.94),rgba(55,27,10,0.92))] shadow-[0_24px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+              <CardHeader className="pb-3">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-amber-300/18 bg-amber-500/10 text-amber-300">
+                      <Database size={18} />
+                    </span>
+                    <div>
+                      <CardTitle className="text-xl font-bold tracking-[-0.03em] text-white">Resumen integral de Data/Carrera</CardTitle>
+                      <p className="mt-1 text-sm text-slate-500">Proyectos, subtareas, actividad profesional y stack usado.</p>
+                    </div>
+                  </div>
+                  {ring(careerProgress, "#f59e0b")}
+                </div>
+              </CardHeader>
+
+              <CardContent className="min-w-0 space-y-6">
+                <div className="rounded-[1.35rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-white">Avance de subtareas</p>
+                      <p className="mt-1 text-xs text-slate-500">La base operativa del progreso profesional.</p>
+                    </div>
+                    <span className="rounded-full border border-amber-300/12 bg-amber-500/[0.07] px-3 py-1 text-xs font-bold text-amber-300">
+                      {weeklyCareerSummary ? `${totalCareerPct}%` : `${careerProgress}%`}
+                    </span>
+                  </div>
+
+                  {bar(weeklyCareerSummary ? totalCareerPct : careerProgress, "bg-gradient-to-r from-amber-500 via-orange-400 to-yellow-300", "h-3")}
+                  <div className="mt-3 grid gap-2 text-sm text-slate-400 sm:grid-cols-3">
+                    <p>Completadas: <span className="font-semibold text-white">{completedCareerTasks}</span></p>
+                    <p>En curso: <span className="font-semibold text-white">{weeklyCareerSummary?.in_progress_tasks ?? 0}</span></p>
+                    <p>Pendientes: <span className="font-semibold text-white">{weeklyCareerSummary?.pending_tasks ?? 0}</span></p>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-[1.35rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <p className="text-sm font-bold text-white">Pulso semanal</p>
+                      <BarChart2 size={16} className="text-amber-300" />
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Productividad semanal</span>
+                          <span>{weeklyCareerPct}%</span>
+                        </div>
+                        {bar(weeklyCareerPct, "bg-gradient-to-r from-sky-500 to-blue-400")}
+                      </div>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Uso del stack</span>
+                          <span>{skillsUsagePct}%</span>
+                        </div>
+                        {bar(skillsUsagePct, "bg-gradient-to-r from-violet-500 to-fuchsia-400")}
+                      </div>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Actividad demostrable</span>
+                          <span>{careerProfessionalActivityPct}%</span>
+                        </div>
+                        {bar(careerProfessionalActivityPct, "bg-gradient-to-r from-emerald-500 to-teal-400")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.35rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <p className="text-sm font-bold text-white">Actividad profesional demostrable</p>
+                      <span className="rounded-full border border-white/[0.08] bg-black/20 px-3 py-1 text-xs font-bold text-white">
+                        {careerProfessionalEvents}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      {professionalActivityBreakdown.map((item) => {
+                        const Icon = item.icon
+                        return (
+                          <div key={item.label} className={`rounded-2xl border p-3 ${item.tone}`}>
+                            <div className="mb-2 flex items-center justify-between">
+                              <Icon size={14} />
+                              <span className="text-lg font-extrabold">{item.value}</span>
+                            </div>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.1em]">{item.label}</p>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-[1.35rem] border border-amber-300/12 bg-amber-500/[0.05] p-4">
+                  <div className="mb-2 flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-amber-300" />
+                    <p className="text-sm font-bold text-white">Interpretación rápida de Data/Carrera</p>
+                  </div>
+                  <p className="text-sm leading-6 text-slate-300">{careerInsightSummary}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {softMetric(
+                  "Subtareas",
+                  `${completedCareerTasks}/${totalCareerTasks}`,
+                  `${totalCareerPct}% de avance total`,
+                  CheckCircle2,
+                  "border-amber-300/15 bg-amber-500/10 text-amber-300"
+                )}
+                {softMetric(
+                  "Proyectos activos",
+                  `${activeProjects}/${totalProjects}`,
+                  `${completedProjects} completados`,
+                  Layers3,
+                  "border-orange-300/15 bg-orange-500/10 text-orange-300"
+                )}
+                {softMetric(
+                  "Productividad semanal",
+                  `${weeklyCareerPct}%`,
+                  weeklyCareerSummary ? `${weeklyCareerSummary.tasks_completed_week} tareas completadas` : "Semana actual",
+                  TrendingUp,
+                  "border-blue-300/15 bg-blue-500/10 text-blue-300"
+                )}
+                {softMetric(
+                  "Skills usadas",
+                  careerSkillsSummary ? `${careerSkillsSummary.used_skills}/${careerSkillsSummary.total_skills}` : "—",
+                  `${skillsUsagePct}% del catálogo aplicado`,
+                  Cpu,
+                  "border-purple-300/15 bg-purple-500/10 text-purple-300"
+                )}
+              </div>
+
+              <Card className="rounded-[1.4rem] border border-white/[0.065] bg-white/[0.035]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-bold tracking-[-0.03em] text-white">Último movimiento</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-slate-300">{lastCareerActivityLabel}</p>
+                    <span className="rounded-full border border-white/[0.06] px-2.5 py-1 text-[11px] text-slate-500">
+                      {weeklyCareerActivity?.last_event_at ? formatDateShort(weeklyCareerActivity.last_event_at.slice(0, 10)) : "Sin fecha"}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-6 text-slate-500">{lastCareerActivityText}</p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-xl border border-white/[0.05] bg-black/20 p-3">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Eventos totales</p>
+                      <p className="mt-2 text-2xl font-extrabold text-white">{weeklyCareerActivity?.total_events || 0}</p>
+                    </div>
+                    <div className="rounded-xl border border-white/[0.05] bg-black/20 p-3">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Intensidad</p>
+                      <p className="mt-2 text-lg font-bold text-white">{careerActivityLabel}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {topCareerSkills.length > 0 && (
+                <Card className="rounded-[1.4rem] border border-white/[0.065] bg-white/[0.035]">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-bold tracking-[-0.03em] text-white">Stack más usado</CardTitle>
+                  </CardHeader>
+                  <CardContent>
                     <div className="flex flex-wrap gap-2">
                       {topCareerSkills.map((skill) => (
                         <span
                           key={skill.skill_id}
-                          className="inline-flex items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.06] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-orange-100/85"
+                          className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.025] px-3 py-1.5 text-xs font-medium text-slate-300"
                         >
-                          <span
-                            className="h-2 w-2 rounded-full"
-                            style={{ backgroundColor: skill.color || "#f97316" }}
-                          />
+                          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: skill.color || "#f59e0b" }} />
                           {skill.name}
                         </span>
                       ))}
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* SIGUIENTE ACCIÓN */}
-        <motion.div variants={itemVariants} className="relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.045] p-6 shadow-[0_24px_74px_rgba(0,0,0,0.32)] backdrop-blur-2xl">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.10),transparent_30%),radial-gradient(circle_at_82%_80%,rgba(249,115,22,0.10),transparent_34%)]" />
-
-          <div className="relative grid gap-5 xl:grid-cols-3">
-            <div className="xl:col-span-1">
-              <div className="flex w-fit items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.32em] text-slate-300">
-                <Target size={13} /> Prioridad
-              </div>
-              <h3 className="mt-4 text-2xl font-black tracking-tight text-white">Qué mirar primero</h3>
-              <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">
-                El dashboard ya no intenta mostrar todo. Te deja una lectura clara: salud para constancia y carrera para ejecución técnica.
-              </p>
-            </div>
-
-            <div className="grid gap-3 xl:col-span-2 md:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-emerald-300/10 bg-emerald-500/[0.055] p-4">
-                <div className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-200/85">
-                  <HeartPulse size={14} />
-                  Salud
-                </div>
-                <p className="text-sm font-bold leading-relaxed text-slate-300">
-                  {weeklyTrainingPct >= 80
-                    ? "Mantén la rutina y enfócate en consistencia de agua y energía."
-                    : "Tu foco debería ser completar más días de rutina antes de obsesionarte con métricas secundarias."}
-                </p>
-              </div>
-
-              <div className="rounded-[1.5rem] border border-orange-300/10 bg-orange-500/[0.055] p-4">
-                <div className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-orange-200/85">
-                  <BrainCircuit size={14} />
-                  Data & Carrera
-                </div>
-                <p className="text-sm font-bold leading-relaxed text-slate-300">
-                  {careerProfessionalEvents > 0
-                    ? `Buen avance profesional: esta semana tienes ${careerProfessionalEvents} eventos demostrables entre skills, documentación y evidencias.`
-                    : weeklyCareerSummary && weeklyCareerSummary.tasks_completed_week > 0
-                      ? "Vas avanzando. El siguiente paso es documentar subtareas y evidencias para subir valor de portafolio."
-                      : "Cierra al menos una subtarea y documenta qué skill usaste para que tu avance sea demostrable."}
-                </p>
-              </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
-        </motion.div>
+        </motion.section>
+
+        <motion.section variants={itemVariants} className="space-y-4">
+          {sectionHeader(
+            "Indicadores clave para el pilar de Cuidado Personal",
+            "Seguimiento del bienestar diario mediante check-ins, rutinas, ánimo, estrés, descanso y reflexiones.",
+            "border-purple-400/14 bg-purple-500/[0.07] text-purple-300"
+          )}
+
+          <div className="grid gap-5 xl:grid-cols-[1.02fr_0.98fr]">
+            <Card className="overflow-hidden rounded-[1.8rem] border border-purple-300/[0.14] bg-[linear-gradient(135deg,rgba(19,11,30,0.94),rgba(47,18,66,0.92))] shadow-[0_24px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+              <CardHeader className="pb-3">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-purple-300/18 bg-purple-500/10 text-purple-300">
+                      <UserRound size={18} />
+                    </span>
+                    <div>
+                      <CardTitle className="text-xl font-bold tracking-[-0.03em] text-white">Resumen integral de Cuidado Personal</CardTitle>
+                      <p className="mt-1 text-sm text-slate-500">Autocuidado, constancia emocional y hábitos personales.</p>
+                    </div>
+                  </div>
+                  {ring(personalCareProgress, "#c084fc")}
+                </div>
+              </CardHeader>
+
+              <CardContent className="min-w-0 space-y-6">
+                <div className="rounded-[1.35rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-white">Seguimiento semanal de autocuidado</p>
+                      <p className="mt-1 text-xs text-slate-500">Mezcla de check-ins, rutinas y consistencia personal.</p>
+                    </div>
+                    <span className="rounded-full border border-purple-300/12 bg-purple-500/[0.07] px-3 py-1 text-xs font-bold text-purple-300">
+                      {personalCareScore}%
+                    </span>
+                  </div>
+
+                  {bar(personalCareScore, "bg-gradient-to-r from-purple-500 via-fuchsia-400 to-pink-300", "h-3")}
+                  <div className="mt-3 grid gap-2 text-sm text-slate-400 sm:grid-cols-3">
+                    <p>Check-ins: <span className="font-semibold text-white">{weeklyPersonalCheckins}</span></p>
+                    <p>Rutinas: <span className="font-semibold text-white">{weeklyPersonalCompletedRoutines}</span></p>
+                    <p>Intensidad: <span className="font-semibold text-white">{personalCareIntensityLabel}</span></p>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-[1.35rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <p className="text-sm font-bold text-white">Lectura emocional</p>
+                      <Activity size={16} className="text-purple-300" />
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Ánimo</span>
+                          <span>{weeklyPersonalCareSummary?.avg_mood_level ? `${weeklyPersonalCareSummary.avg_mood_level.toFixed(1)}/10` : "—"}</span>
+                        </div>
+                        {bar(weeklyMoodPct, "bg-gradient-to-r from-emerald-500 to-teal-400")}
+                      </div>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Motivación</span>
+                          <span>{weeklyPersonalCareSummary?.avg_motivation_level ? `${weeklyPersonalCareSummary.avg_motivation_level.toFixed(1)}/10` : "—"}</span>
+                        </div>
+                        {bar(weeklyMotivationPct, "bg-gradient-to-r from-sky-500 to-blue-400")}
+                      </div>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Estrés</span>
+                          <span>{weeklyPersonalCareSummary?.avg_stress_level ? `${weeklyPersonalCareSummary.avg_stress_level.toFixed(1)}/10` : "—"}</span>
+                        </div>
+                        {bar(weeklyStressPct, "bg-gradient-to-r from-rose-500 to-pink-400")}
+                      </div>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
+                          <span>Sueño</span>
+                          <span>{weeklyPersonalCareSummary?.avg_sleep_quality ? `${weeklyPersonalCareSummary.avg_sleep_quality.toFixed(1)}/10` : "—"}</span>
+                        </div>
+                        {bar(weeklySleepPct, "bg-gradient-to-r from-violet-500 to-indigo-400")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.35rem] border border-white/[0.065] bg-white/[0.035] p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <p className="text-sm font-bold text-white">Indicadores circulares</p>
+                      <Orbit size={16} className="text-fuchsia-300" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
+                        {ring(weeklyPersonalCheckinPct, "#c084fc", "h-16 w-16", "h-[46px] w-[46px]", `${weeklyPersonalCheckins}`)}
+                        <p className="mt-2 text-xs font-bold text-slate-300">Check-ins</p>
+                      </div>
+                      <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
+                        {ring(weeklyPersonalRoutinePct, "#f472b6", "h-16 w-16", "h-[46px] w-[46px]", `${weeklyPersonalCompletedRoutines}`)}
+                        <p className="mt-2 text-xs font-bold text-slate-300">Rutinas</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 rounded-2xl border border-white/[0.05] bg-black/20 p-3">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Bloque reflexivo</p>
+                      <div className="mt-3 grid grid-cols-3 gap-3 text-center">
+                        <div>
+                          <p className="text-xl font-extrabold text-white">{weeklyPersonalCareSummary?.reflection_days || 0}</p>
+                          <p className="text-[11px] text-slate-500">Reflexiones</p>
+                        </div>
+                        <div>
+                          <p className="text-xl font-extrabold text-white">{weeklyPersonalCareSummary?.gratitude_days || 0}</p>
+                          <p className="text-[11px] text-slate-500">Gratitud</p>
+                        </div>
+                        <div>
+                          <p className="text-xl font-extrabold text-white">{weeklyPersonalCareSummary?.improvement_days || 0}</p>
+                          <p className="text-[11px] text-slate-500">Mejoras</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-[1.35rem] border border-purple-300/12 bg-purple-500/[0.05] p-4">
+                  <div className="mb-2 flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-purple-300" />
+                    <p className="text-sm font-bold text-white">Interpretación rápida del Cuidado Personal</p>
+                  </div>
+                  <p className="text-sm leading-6 text-slate-300">{careInsightSummary}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {softMetric(
+                "Check-ins",
+                `${weeklyPersonalCheckins}/7`,
+                `${weeklyPersonalCheckinPct}% de seguimiento semanal`,
+                CalendarClock,
+                "border-purple-300/15 bg-purple-500/10 text-purple-300"
+              )}
+              {softMetric(
+                "Rutinas completadas",
+                `${weeklyPersonalCompletedRoutines}`,
+                `${weeklyPersonalActiveRoutines} rutinas activas`,
+                CheckCircle2,
+                "border-fuchsia-300/15 bg-fuchsia-500/10 text-fuchsia-300"
+              )}
+              {softMetric(
+                "Ánimo promedio",
+                weeklyPersonalCareSummary?.avg_mood_level ? `${weeklyPersonalCareSummary.avg_mood_level.toFixed(1)}/10` : "—",
+                personalCareIntensityLabel,
+                Activity,
+                "border-emerald-300/15 bg-emerald-500/10 text-emerald-300"
+              )}
+              {softMetric(
+                "Estrés promedio",
+                weeklyPersonalCareSummary?.avg_stress_level ? `${weeklyPersonalCareSummary.avg_stress_level.toFixed(1)}/10` : "—",
+                weeklyPersonalCareSummary?.avg_sleep_quality ? `Sueño ${weeklyPersonalCareSummary.avg_sleep_quality.toFixed(1)}/10` : "Sin sueño registrado",
+                Waves,
+                "border-rose-300/15 bg-rose-500/10 text-rose-300"
+              )}
+              {softMetric(
+                "Motivación",
+                weeklyPersonalCareSummary?.avg_motivation_level ? `${weeklyPersonalCareSummary.avg_motivation_level.toFixed(1)}/10` : "—",
+                "Promedio semanal",
+                Rocket,
+                "border-blue-300/15 bg-blue-500/10 text-blue-300"
+              )}
+              {softMetric(
+                "Reflexiones",
+                `${weeklyPersonalCareSummary?.reflection_days || 0}`,
+                `${weeklyPersonalCareSummary?.gratitude_days || 0} gratitud · ${weeklyPersonalCareSummary?.improvement_days || 0} mejoras`,
+                Star,
+                "border-amber-300/15 bg-amber-500/10 text-amber-300"
+              )}
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.section variants={itemVariants} className="space-y-4">
+          {sectionHeader(
+            "Análisis inteligente por pilar",
+            "Interpretación breve para que el dashboard no solo muestre números, sino también contexto y foco de mejora.",
+            "border-sky-400/14 bg-sky-500/[0.07] text-sky-300"
+          )}
+
+          <div className="grid gap-4 xl:grid-cols-3">
+            {insightCard(
+              "Salud",
+              weeklyCompletedDays > 0
+                ? `Ya existe actividad real: ${weeklyCompletedDays} de ${weeklyPlannedDays} días completados.`
+                : "Tienes una base de planificación creada para empezar a medir constancia.",
+              weeklyTrainingPct < 50
+                ? "El cumplimiento de rutina aún es bajo y eso limita el avance global."
+                : "Todavía puedes seguir empujando consistencia en agua, comida o energía.",
+              "Completar más días de rutina y sostener hidratación diaria.",
+              latestWeightKg !== null
+                ? `Ya cuentas con referencia física: último peso ${latestWeightKg} kg.`
+                : "La estructura semanal de salud ya está activa.",
+              "Haz que el siguiente objetivo sea cerrar la semana con más días marcados y al menos un registro físico extra.",
+              HeartPulse,
+              "border-emerald-300/12 bg-emerald-500/[0.05]",
+              "border-white/18 bg-white/12 text-white"
+            )}
+
+            {insightCard(
+              "Data/Carrera",
+              completedCareerTasks > 0
+                ? `Se observa ejecución real: ${completedCareerTasks} subtareas completadas y ${activeProjects} proyectos activos.`
+                : "Ya tienes estructura de proyectos y tareas lista para medir progreso profesional.",
+              careerProfessionalEvents === 0
+                ? "Aún falta transformar avance en evidencia profesional más visible."
+                : "Todavía puedes equilibrar mejor actividad operativa con actividad demostrable.",
+              "Cerrar subtareas y documentar skills, evidencias y documentación del trabajo realizado.",
+              topCareerSkills.length > 0
+                ? `Tu stack ya muestra uso real; skill dominante actual: ${topSkillLabel}.`
+                : "Tu tablero ya diferencia avance operativo y avance demostrable.",
+              "Si completas una tarea, documenta inmediatamente qué skill usaste o qué evidencia generaste.",
+              BrainCircuit,
+              "border-amber-300/12 bg-amber-500/[0.05]",
+              "border-white/18 bg-white/12 text-white"
+            )}
+
+            {insightCard(
+              "Cuidado Personal",
+              weeklyPersonalCheckins > 0
+                ? `Ya comenzaste seguimiento emocional con ${weeklyPersonalCheckins} check-ins registrados.`
+                : "El pilar ya está conectado y listo para captar hábitos personales.",
+              weeklyPersonalCheckins < 3
+                ? "La constancia de check-ins aún es baja y eso reduce la calidad del análisis."
+                : "Aún se puede mejorar la regularidad entre check-ins y rutinas personales.",
+              "Mantener check-ins más frecuentes y reforzar rutinas activas de cuidado.",
+              weeklyPersonalCareSummary?.avg_mood_level
+                ? `Tu ánimo promedio actual se sitúa en ${weeklyPersonalCareSummary.avg_mood_level.toFixed(1)}/10.`
+                : "Ya puedes medir varias dimensiones: ánimo, estrés, motivación, sueño y reflexión.",
+              "Haz un check-in corto cada día y registra al menos una reflexión o mejora para enriquecer el análisis.",
+              UserRound,
+              "border-purple-300/12 bg-purple-500/[0.05]",
+              "border-white/18 bg-white/12 text-white"
+            )}
+          </div>
+        </motion.section>
 
         <RegistrationPanel open={isPanelOpen} setOpen={setIsPanelOpen} />
       </motion.div>

@@ -5,11 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Tipografía - Asegúrate de que Geist Sans esté bien importada en tu layout.tsx */
-  --font-sans: var(--font-sans);
-  --font-heading: var(--font-heading);
+  --font-sans: var(--font-manrope);
+  --font-heading: var(--font-manrope);
+  --font-mono: var(--font-geist-mono);
 
-  /* Variables de UI */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -30,8 +29,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Bordes Redondeados más modernos (shadcn default es un poco cuadrado) */
-  --radius: 0.8rem;
+  --radius: 0.75rem;
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -39,112 +37,100 @@
 }
 
 :root {
-  /* Paleta Base para LifeTrack */
-  --brand-navy: #0B1F3A;
-  --brand-electric: #2563EB;
-  --brand-orange: #F97316;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 
-  /* MODO CLARO - Sofisticado, minimalista, limpio */
-  --background: #FFFFFF;
-  --foreground: #09090B;
-  
-  --card: #FFFFFF;
-  --card-foreground: #09090B;
-  
-  --popover: #FFFFFF;
-  --popover-foreground: #09090B;
-  
-  --primary: #0F172A; /* Slate oscuro para botones principales en claro */
-  --primary-foreground: #F8FAFC;
-  
-  --secondary: #F1F5F9;
-  --secondary-foreground: #0F172A;
-  
-  --muted: #F8FAFC;
-  --muted-foreground: #64748B;
-  
-  --accent: #E2E8F0;
-  --accent-foreground: #0F172A;
-  
-  --destructive: #EF4444;
-  --destructive-foreground: #F8FAFC;
-  
-  --border: #E2E8F0;
-  --input: #E2E8F0;
-  --ring: #2563EB;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  --primary: #0f172a;
+  --primary-foreground: #f8fafc;
+
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0f172a;
 }
 
 .dark {
-  /* Paleta Base para LifeTrack */
-  --brand-navy: #0B1F3A;
-  --brand-electric: #3B82F6; /* Azul eléctrico un poco más brillante para oscuro */
-  --brand-orange: #FB923C;
+  --background: #080c14;
+  --foreground: #f8fafc;
 
-  /* MODO OSCURO - Profundo, sutil, minimalista */
-  --background: #09090B; /* Slate muy oscuro (casi negro) */
-  --foreground: #F8FAFC;
-  
-  --card: #111114; /* Un tono más claro que el fondo para las tarjetas */
-  --card-foreground: #F8FAFC;
-  
-  --popover: #111114;
-  --popover-foreground: #F8FAFC;
-  
-  --primary: #3B82F6; /* Azul eléctrico como color primario en oscuro */
-  --primary-foreground: #FFFFFF;
-  
-  --secondary: #1E293B;
-  --secondary-foreground: #F8FAFC;
-  
-  --muted: #1A1A1E;
-  --muted-foreground: #94A3B8;
-  
-  --accent: #1E293B;
-  --accent-foreground: #F8FAFC;
-  
-  --destructive: #F87171;
-  --destructive-foreground: #09090B;
-  
-  --border: #1F1F23; /* Bordes extremadamente sutiles */
-  --input: #1F1F23;
-  --ring: #3B82F6;
+  --card: #0d131f;
+  --card-foreground: #f8fafc;
+
+  --popover: #0d131f;
+  --popover-foreground: #f8fafc;
+
+  --primary: #f8fafc;
+  --primary-foreground: #080c14;
+
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
+
+  --destructive: #f87171;
+  --destructive-foreground: #080c14;
+
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #38bdf8;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+@utility lifetrack-shell {
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.03), transparent 50%),
+    #080c14;
 }
 
-/* --- DETALLES DE INTERFAZ CIBERNÉTICA EN SINTAXIS TAILWIND v4 --- */
-@utility custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(249, 115, 22, 0.25) transparent;
+@utility lifetrack-card {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(13, 19, 31, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(16px);
+}
 
-  &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
+@utility lifetrack-card-soft {
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: rgba(15, 23, 42, 0.3);
+}
 
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
+body {
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+}
 
-  &::-webkit-scrollbar-thumb {
-    background: rgba(249, 115, 22, 0.25);
-    border-radius: 99px;
-    border: 1px solid transparent;
-    background-clip: padding-box;
-    transition: background 0.2s ease;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(249, 115, 22, 0.55);
-    border-radius: 99px;
-    border: 1px solid transparent;
-    background-clip: padding-box;
-  }
+/* Scrollbar minimalista */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
 }

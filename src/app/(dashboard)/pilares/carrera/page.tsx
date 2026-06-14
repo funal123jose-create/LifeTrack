@@ -575,7 +575,7 @@ function RichTaskDocumentEditor({
     editorProps: {
       attributes: {
         class:
-          "custom-scrollbar min-h-[1200px] w-full px-7 py-8 text-[15px] leading-8 text-slate-200 outline-none md:px-10 md:py-10",
+          "custom-scrollbar min-h-[1200px] w-full px-7 py-8 text-[15px] leading-8 text-slate-200 outline-none md:px-10 md:py-10 [font-family:Poppins,Nunito_Sans,Inter,Manrope,system-ui,sans-serif]",
       },
     },
     onUpdate: ({ editor }) => {
@@ -632,17 +632,17 @@ function RichTaskDocumentEditor({
 
   if (!editor) {
     return (
-      <div className="flex min-h-[720px] items-center justify-center rounded-[1.8rem] border border-white/[0.06] bg-black/24 text-[10px] font-black uppercase tracking-[0.32em] text-slate-600">
+      <div className="flex min-h-[720px] items-center justify-center rounded-[1.8rem] border border-white/[0.06] bg-black/24 text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-600">
         Inicializando editor enriquecido...
       </div>
     )
   }
 
   const toolbarButton = (active: boolean) =>
-    `rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-wider transition-all ${
+    `rounded-xl border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.08em] transition-all ${
       active
         ? "border-orange-300/30 bg-orange-500/[0.16] text-orange-100 shadow-[0_0_18px_rgba(249,115,22,0.10)]"
-        : "border-white/[0.06] bg-black/24 text-slate-400 hover:border-orange-300/22 hover:bg-orange-500/[0.08] hover:text-orange-100"
+        : "border-white/[0.06] bg-black/24 text-slate-400 hover:border-orange-300/28 hover:bg-orange-500/[0.10] hover:text-orange-100"
     }`
 
   const setLink = () => {
@@ -824,7 +824,7 @@ function RichTaskDocumentEditor({
   }
 
   return (
-    <div className="relative flex h-[calc(92vh-260px)] min-h-[680px] flex-col overflow-hidden rounded-[2rem] border border-white/[0.07] bg-[#080b12]/72 shadow-[0_24px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+    <div className="relative flex h-[calc(92vh-260px)] min-h-[680px] flex-col overflow-hidden rounded-[2rem] border border-white/[0.07] bg-[linear-gradient(135deg,rgba(8,11,18,0.80),rgba(18,13,10,0.52))] shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(249,115,22,0.065),transparent_30%),radial-gradient(circle_at_90%_10%,rgba(59,130,246,0.055),transparent_32%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-orange-300/35 to-transparent" />
 
@@ -882,7 +882,7 @@ function RichTaskDocumentEditor({
             type="button"
             onClick={() => imageInputRef.current?.click()}
             disabled={uploadingImage || disabled}
-            className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-wider transition-all ${
+            className={`rounded-xl border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.08em] transition-all ${
               uploadingImage
                 ? "cursor-not-allowed border-orange-300/20 bg-orange-500/[0.10] text-orange-200/70"
                 : "border-white/[0.06] bg-black/24 text-slate-400 hover:border-cyan-300/24 hover:bg-cyan-500/[0.08] hover:text-cyan-100"
@@ -904,7 +904,7 @@ function RichTaskDocumentEditor({
             type="button"
             onClick={() => documentInputRef.current?.click()}
             disabled={uploadingDocument || disabled}
-            className={`rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-wider transition-all ${
+            className={`rounded-xl border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.08em] transition-all ${
               uploadingDocument
                 ? "cursor-not-allowed border-orange-300/20 bg-orange-500/[0.10] text-orange-200/70"
                 : "border-white/[0.06] bg-black/24 text-slate-400 hover:border-emerald-300/24 hover:bg-emerald-500/[0.08] hover:text-emerald-100"
@@ -917,7 +917,7 @@ function RichTaskDocumentEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
-            className="rounded-xl border border-white/[0.06] bg-black/24 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-slate-400 transition-all hover:border-rose-300/22 hover:bg-rose-500/[0.08] hover:text-rose-100"
+            className="rounded-xl border border-white/[0.06] bg-black/24 px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.08em] text-slate-400 transition-all hover:border-rose-300/22 hover:bg-rose-500/[0.08] hover:text-rose-100"
           >
             <Eraser size={14} />
           </button>
@@ -927,7 +927,7 @@ function RichTaskDocumentEditor({
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-1.5 rounded-2xl border border-white/[0.06] bg-black/24 px-3 py-2">
               <Palette size={13} className="text-orange-300" />
-              <span className="mr-1 text-[9px] font-black uppercase tracking-widest text-slate-500">Texto</span>
+              <span className="mr-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-500">Texto</span>
               {textColors.map((color) => (
                 <button
                   key={color.value}
@@ -941,7 +941,7 @@ function RichTaskDocumentEditor({
               <button
                 type="button"
                 onClick={() => editor.chain().focus().unsetColor().run()}
-                className="ml-1 rounded-lg border border-white/[0.06] px-2 py-1 text-[8px] font-black uppercase tracking-wider text-slate-500 hover:text-white"
+                className="ml-1 rounded-lg border border-white/[0.06] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-slate-500 hover:text-white"
               >
                 reset
               </button>
@@ -949,7 +949,7 @@ function RichTaskDocumentEditor({
 
             <div className="flex items-center gap-1.5 rounded-2xl border border-white/[0.06] bg-black/24 px-3 py-2">
               <Highlighter size={13} className="text-yellow-300" />
-              <span className="mr-1 text-[9px] font-black uppercase tracking-widest text-slate-500">Resaltar</span>
+              <span className="mr-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-500">Resaltar</span>
               {highlightColors.map((color) => (
                 <button
                   key={color.value}
@@ -963,14 +963,14 @@ function RichTaskDocumentEditor({
               <button
                 type="button"
                 onClick={() => editor.chain().focus().unsetHighlight().run()}
-                className="ml-1 rounded-lg border border-white/[0.06] px-2 py-1 text-[8px] font-black uppercase tracking-wider text-slate-500 hover:text-white"
+                className="ml-1 rounded-lg border border-white/[0.06] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-slate-500 hover:text-white"
               >
                 reset
               </button>
             </div>
           </div>
 
-          <div className="rounded-full border border-orange-300/10 bg-orange-500/[0.05] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.22em] text-orange-200/70">
+          <div className="rounded-full border border-orange-300/10 bg-orange-500/[0.05] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.14em] text-orange-200/70">
             Editor enriquecido · texto, color, imágenes y referencias
           </div>
         </div>
@@ -988,8 +988,8 @@ function RichTaskDocumentEditor({
           [&_.ProseMirror_h1]:mb-6
           [&_.ProseMirror_h1]:mt-2
           [&_.ProseMirror_h1]:text-4xl
-          [&_.ProseMirror_h1]:font-black
-          [&_.ProseMirror_h1]:tracking-tight
+          [&_.ProseMirror_h1]:font-extrabold
+          [&_.ProseMirror_h1]:tracking-[-0.035em]
           [&_.ProseMirror_h1]:text-white
           md:[&_.ProseMirror_h1]:text-5xl
           [&_.ProseMirror_h2]:mb-4
@@ -998,13 +998,13 @@ function RichTaskDocumentEditor({
           [&_.ProseMirror_h2]:border-orange-300/30
           [&_.ProseMirror_h2]:pl-4
           [&_.ProseMirror_h2]:text-xl
-          [&_.ProseMirror_h2]:font-black
+          [&_.ProseMirror_h2]:font-extrabold
           [&_.ProseMirror_h2]:uppercase
           [&_.ProseMirror_h2]:tracking-[0.16em]
           [&_.ProseMirror_h2]:text-orange-100
           [&_.ProseMirror_h3]:mt-8
           [&_.ProseMirror_h3]:text-lg
-          [&_.ProseMirror_h3]:font-black
+          [&_.ProseMirror_h3]:font-extrabold
           [&_.ProseMirror_h3]:text-slate-100
           [&_.ProseMirror_ul]:my-4
           [&_.ProseMirror_ul]:list-disc
@@ -1050,7 +1050,7 @@ function RichTaskDocumentEditor({
         <div className="relative border-t border-white/[0.06] bg-black/18 px-6 py-6 md:px-10 md:py-8">
         <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-center">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.26em] text-emerald-200/85">
+            <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-emerald-200/85">
               <Paperclip size={14} className="text-emerald-300" />
               Referencias / documentos adjuntos
             </div>
@@ -1063,7 +1063,7 @@ function RichTaskDocumentEditor({
             type="button"
             onClick={() => documentInputRef.current?.click()}
             disabled={uploadingDocument || disabled}
-            className="flex w-fit items-center gap-2 rounded-2xl border border-emerald-300/14 bg-emerald-500/[0.10] px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-emerald-100 transition-all hover:-translate-y-0.5 hover:bg-emerald-500/[0.16] disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex w-fit items-center gap-2 rounded-2xl border border-emerald-300/14 bg-emerald-500/[0.10] px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.10em] text-emerald-100 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-500/[0.16] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {uploadingDocument ? <UploadCloud size={15} className="animate-pulse" /> : <Paperclip size={15} />}
             {uploadingDocument ? "Subiendo..." : "Adjuntar documento"}
@@ -1071,13 +1071,13 @@ function RichTaskDocumentEditor({
         </div>
 
         {loadingReferenceAssets ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-black/24 p-5 text-center text-[10px] font-black uppercase tracking-[0.25em] text-slate-600">
+          <div className="rounded-2xl border border-white/[0.06] bg-black/24 p-5 text-center text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-600">
             Cargando referencias...
           </div>
         ) : referenceAssets.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/[0.06] bg-black/24 p-7 text-center">
             <FileArchive size={30} className="mx-auto mb-3 text-slate-600" />
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-600">
+            <p className="break-words text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
               Sin documentos adjuntos todavía
             </p>
             <p className="mt-2 text-xs font-medium text-slate-700">
@@ -1092,7 +1092,7 @@ function RichTaskDocumentEditor({
               return (
                 <div
                   key={asset.id}
-                  className={`group/file relative overflow-hidden rounded-2xl border ${visual.border} ${visual.bg} p-4 transition-all hover:-translate-y-0.5 hover:border-emerald-300/24 hover:bg-white/[0.055]`}
+                  className={`group/file relative overflow-hidden rounded-2xl border ${visual.border} ${visual.bg} p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-300/24 hover:bg-white/[0.055]`}
                 >
                   <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-white/[0.035]" />
                   <div className="relative flex items-start gap-3">
@@ -1102,15 +1102,15 @@ function RichTaskDocumentEditor({
 
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className={`rounded-lg border ${visual.border} bg-black/24 px-2 py-1 text-[8px] font-black uppercase tracking-wider ${visual.accent}`}>
+                        <span className={`rounded-lg border ${visual.border} bg-black/24 px-2 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] ${visual.accent}`}>
                           {visual.label}
                         </span>
-                        <span className="text-[9px] font-black uppercase tracking-wider text-slate-600">
+                        <span className="break-words text-[9px] font-bold uppercase tracking-[0.08em] text-slate-600">
                           {formatAssetSize(asset.file_size)}
                         </span>
                       </div>
 
-                      <p className="mt-2 truncate text-sm font-black text-slate-100" title={asset.file_name}>
+                      <p className="mt-2 truncate text-sm font-extrabold text-slate-100" title={asset.file_name}>
                         {asset.file_name}
                       </p>
                       <p className="mt-1 text-[10px] font-medium text-slate-600">
@@ -1122,7 +1122,7 @@ function RichTaskDocumentEditor({
                           href={asset.file_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300/14 bg-cyan-500/[0.09] px-3 py-2 text-[9px] font-black uppercase tracking-wider text-cyan-100 transition-all hover:bg-cyan-500/[0.14]"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300/14 bg-cyan-500/[0.09] px-3 py-2 text-[9px] font-extrabold uppercase tracking-[0.08em] text-cyan-100 transition-all hover:bg-cyan-500/[0.14]"
                         >
                           <ExternalLink size={12} />
                           Abrir
@@ -1131,7 +1131,7 @@ function RichTaskDocumentEditor({
                         <a
                           href={asset.file_url}
                           download={asset.file_name}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.07] bg-black/24 px-3 py-2 text-[9px] font-black uppercase tracking-wider text-slate-300 transition-all hover:bg-white/[0.06] hover:text-white"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.07] bg-black/24 px-3 py-2 text-[9px] font-extrabold uppercase tracking-[0.08em] text-slate-300 transition-all hover:bg-white/[0.06] hover:text-white"
                         >
                           <Download size={12} />
                           Descargar
@@ -1140,7 +1140,7 @@ function RichTaskDocumentEditor({
                         <button
                           type="button"
                           onClick={() => handleDeleteReferenceAsset(asset)}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-rose-300/12 bg-rose-500/[0.08] px-3 py-2 text-[9px] font-black uppercase tracking-wider text-rose-200 transition-all hover:bg-rose-500/[0.13]"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-rose-300/12 bg-rose-500/[0.08] px-3 py-2 text-[9px] font-extrabold uppercase tracking-[0.08em] text-rose-200 transition-all hover:bg-rose-500/[0.13]"
                         >
                           <Trash2 size={12} />
                           Eliminar
@@ -1293,6 +1293,811 @@ interface Project {
   end_date: string | null
   project_tasks: Task[]
   project_skills: ProjectSkillLink[]
+}
+
+
+// --- EXPORTACIÓN PROFESIONAL DEL CASO TÉCNICO ---
+// Esta capa no modifica la lógica existente del módulo. Solo toma el caso técnico ya cargado
+// desde selectedCaseStudy y genera una versión imprimible/exportable en HTML/PDF desde el navegador.
+const escapeCaseStudyText = (value?: string | number | null) => {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+}
+
+const formatCaseStudyDate = (value?: string | null) => {
+  if (!value) return "No definido"
+
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return value
+
+  return parsed.toLocaleDateString("es-PE", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  })
+}
+
+const renderCaseStudyPlainSection = (label: string, value?: string | null) => {
+  const safeValue = String(value || "").trim()
+  if (!safeValue) return ""
+
+  return `
+    <section class="doc-section">
+      <h4>${escapeCaseStudyText(label)}</h4>
+      <p>${escapeCaseStudyText(safeValue).replace(/\n/g, "<br />")}</p>
+    </section>
+  `
+}
+
+const renderCaseStudySkillPills = (skills?: ProjectCaseStudySkill[]) => {
+  const safeSkills = Array.isArray(skills) ? skills : []
+  if (safeSkills.length === 0) return `<p class="muted">Sin skills registradas.</p>`
+
+  return `
+    <div class="pill-grid">
+      ${safeSkills
+        .map((skill) => `<span class="pill">${escapeCaseStudyText(skill.name)}</span>`)
+        .join("")}
+    </div>
+  `
+}
+
+const renderCaseStudyAssetList = (assets?: ProjectCaseStudyAsset[]) => {
+  const safeAssets = Array.isArray(assets) ? assets : []
+  if (safeAssets.length === 0) return ""
+
+  return `
+    <section class="evidence-block">
+      <h4>Evidencias adjuntas</h4>
+      <div class="evidence-list">
+        ${safeAssets
+          .map((asset) => `
+            <a class="evidence-item" href="${escapeCaseStudyText(asset.file_url)}" target="_blank" rel="noopener noreferrer">
+              <span class="evidence-type">${escapeCaseStudyText(asset.asset_type || "archivo")}</span>
+              <strong>${escapeCaseStudyText(asset.file_name || "Evidencia")}</strong>
+              <small>${escapeCaseStudyText(asset.mime_type || "Tipo no identificado")}</small>
+            </a>
+          `)
+          .join("")}
+      </div>
+    </section>
+  `
+}
+
+const renderCaseStudyTaskDocumentation = (doc?: ProjectCaseStudyTaskDoc | null) => {
+  if (!doc) return `<p class="muted">Subtarea sin documentación detallada.</p>`
+
+  if (doc.document_content_html && doc.document_content_html.trim().length > 0) {
+    return `<div class="rich-document">${doc.document_content_html}</div>`
+  }
+
+  const fallbackSections = [
+    renderCaseStudyPlainSection("Objetivo", doc.objective),
+    renderCaseStudyPlainSection("Proceso realizado / bitácora", doc.content),
+    renderCaseStudyPlainSection("Notas técnicas", doc.technical_notes),
+    renderCaseStudyPlainSection("Problemas encontrados", doc.challenges),
+    renderCaseStudyPlainSection("Solución aplicada", doc.solution),
+    renderCaseStudyPlainSection("Aprendizajes", doc.learnings),
+    renderCaseStudyPlainSection("Resultado final", doc.result_summary),
+    renderCaseStudyPlainSection("Links / referencias", doc.reference_links),
+  ].filter(Boolean)
+
+  if (fallbackSections.length === 0) {
+    return `<p class="muted">Subtarea sin documentación detallada.</p>`
+  }
+
+  return fallbackSections.join("")
+}
+
+const generateCaseStudyExportHtml = (caseStudy: ProjectCaseStudyDetail) => {
+  const plannedStack = (caseStudy.project_stack || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  const appliedStack = (caseStudy.task_stack || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  const tasks = Array.isArray(caseStudy.tasks_json) ? caseStudy.tasks_json : []
+  const generatedAt = new Date().toLocaleString("es-PE", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+
+  const metrics = [
+    ["Score profesional", `${Number(caseStudy.professional_score || 0).toFixed(1)}%`],
+    ["Tareas", `${Number(caseStudy.completed_tasks || 0)} / ${Number(caseStudy.total_tasks || 0)}`],
+    ["Documentación", `${Number(caseStudy.documentation_percentage || 0)}%`],
+    ["Skills aplicadas", `${Number(caseStudy.total_task_skills || 0)}`],
+    ["Evidencias", `${Number(caseStudy.total_assets || 0)}`],
+    ["Imágenes", `${Number(caseStudy.total_images || 0)}`],
+    ["Documentos", `${Number(caseStudy.total_documents || 0)}`],
+    ["Cobertura skills", `${Number(caseStudy.skill_coverage_percentage || 0)}%`],
+  ]
+
+  return `<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${escapeCaseStudyText(caseStudy.project_title || "Caso técnico LifeTrack")}</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --ink: #101827;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --card: #ffffff;
+      --orange: #ea580c;
+      --amber: #f59e0b;
+      --cyan: #0891b2;
+      --emerald: #059669;
+      --dark: #0f172a;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Poppins, Inter, Manrope, "Segoe UI", Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    .print-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 22px;
+      background: rgba(15, 23, 42, 0.94);
+      color: white;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(14px);
+    }
+
+    .print-toolbar strong {
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .print-toolbar button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, var(--orange), var(--amber));
+      color: #111827;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(234, 88, 12, .22);
+    }
+
+    .page {
+      width: min(1080px, calc(100% - 32px));
+      margin: 30px auto 70px;
+    }
+
+    .cover {
+      overflow: hidden;
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(249,115,22,.18), transparent 32%),
+        radial-gradient(circle at 88% 12%, rgba(8,145,178,.18), transparent 34%),
+        linear-gradient(135deg, #111827, #020617 78%);
+      color: white;
+      padding: 44px;
+      box-shadow: 0 28px 80px rgba(15,23,42,.20);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 999px;
+      padding: 8px 13px;
+      color: #fed7aa;
+      background: rgba(249,115,22,.08);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 22px 0 14px;
+      font-size: clamp(38px, 6vw, 68px);
+      line-height: .96;
+      letter-spacing: -.06em;
+    }
+
+    .cover-summary {
+      max-width: 850px;
+      color: #cbd5e1;
+      font-size: 15px;
+    }
+
+    .meta-grid, .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .meta-card, .metric-card, .stack-card, .task-card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--card);
+      padding: 20px;
+      box-shadow: 0 16px 42px rgba(15,23,42,.05);
+      break-inside: avoid;
+    }
+
+    .cover .meta-card {
+      border-color: rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      box-shadow: none;
+    }
+
+    .label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .cover .label { color: #94a3b8; }
+
+    .value {
+      margin: 8px 0 0;
+      font-size: 21px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+    }
+
+    .section {
+      margin-top: 34px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 23px;
+      letter-spacing: -.035em;
+    }
+
+    .section-subtitle {
+      margin: -7px 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metric-card strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -.05em;
+    }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .pill-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      border: 1px solid rgba(234,88,12,.20);
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: rgba(249,115,22,.07);
+      color: #9a3412;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .pill.cyan {
+      border-color: rgba(8,145,178,.22);
+      background: rgba(8,145,178,.07);
+      color: #155e75;
+    }
+
+    .task-card {
+      margin-top: 18px;
+      padding: 28px;
+    }
+
+    .task-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+    }
+
+    .step {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+    }
+
+    .status {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(5,150,105,.10);
+      color: #047857;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 12px 0 0;
+      font-size: 27px;
+      line-height: 1.15;
+      letter-spacing: -.045em;
+    }
+
+    h3 {
+      margin: 26px 0 10px;
+      color: var(--orange);
+      font-size: 15px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .doc-section h4, .evidence-block h4, .rich-document h2 {
+      margin: 24px 0 8px;
+      border-left: 4px solid var(--orange);
+      padding-left: 12px;
+      color: #9a3412;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .rich-document h1 {
+      color: var(--ink);
+      font-size: 30px;
+      letter-spacing: -.045em;
+    }
+
+    .rich-document p, .doc-section p {
+      margin: 10px 0;
+      color: #334155;
+    }
+
+    .rich-document img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      margin: 18px 0;
+    }
+
+    .rich-document pre {
+      overflow-x: auto;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+    }
+
+    .rich-document blockquote {
+      border-left: 4px solid var(--amber);
+      margin-left: 0;
+      padding: 12px 18px;
+      background: #fff7ed;
+      color: #7c2d12;
+    }
+
+    .evidence-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .evidence-item {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      color: var(--ink);
+      text-decoration: none;
+      background: #f8fafc;
+    }
+
+    .evidence-type {
+      display: inline-block;
+      margin-bottom: 7px;
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: rgba(8,145,178,.10);
+      color: #155e75;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+    }
+
+    .evidence-item strong {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .evidence-item small {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .muted { color: var(--muted); }
+
+    .footer-note {
+      margin-top: 34px;
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 820px) {
+      .cover { padding: 28px; border-radius: 26px; }
+      .meta-grid, .metric-grid, .stack-grid, .evidence-list { grid-template-columns: 1fr; }
+      .task-head { flex-direction: column; }
+      .print-toolbar { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 12mm;
+      }
+
+      * {
+        print-color-adjust: exact !important;
+        -webkit-print-color-adjust: exact !important;
+      }
+
+      html,
+      body {
+        width: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 11.2pt !important;
+        line-height: 1.48 !important;
+      }
+
+      .print-toolbar {
+        display: none !important;
+      }
+
+      .page {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .cover {
+        margin: 0 0 10mm !important;
+        padding: 20mm 16mm !important;
+        border-radius: 16px !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      h1 {
+        margin: 12px 0 10px !important;
+        font-size: 30pt !important;
+        line-height: 1.02 !important;
+        letter-spacing: -0.045em !important;
+      }
+
+      h2,
+      .section-title {
+        font-size: 18pt !important;
+        line-height: 1.18 !important;
+        margin-top: 0 !important;
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      h3,
+      .doc-section h4,
+      .evidence-block h4,
+      .rich-document h2 {
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      .section {
+        margin-top: 10mm !important;
+        page-break-inside: auto;
+        break-inside: auto;
+      }
+
+      .meta-grid,
+      .metric-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        margin-top: 14px !important;
+      }
+
+      .stack-grid,
+      .evidence-list {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+
+      .meta-card,
+      .metric-card,
+      .stack-card,
+      .task-card,
+      .evidence-item {
+        box-shadow: none !important;
+        border-color: #cbd5e1 !important;
+        background: #ffffff !important;
+      }
+
+      .meta-card,
+      .metric-card,
+      .stack-card {
+        padding: 12px !important;
+        border-radius: 14px !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .task-card {
+        margin-top: 9mm !important;
+        padding: 15mm 12mm !important;
+        border-radius: 16px !important;
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+      }
+
+      .task-head {
+        display: block !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 12px !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .step,
+      .status,
+      .pill,
+      .evidence-type {
+        border-color: #fed7aa !important;
+        background: #fff7ed !important;
+        color: #9a3412 !important;
+      }
+
+      .pill-grid {
+        gap: 6px !important;
+      }
+
+      .pill {
+        padding: 5px 8px !important;
+        font-size: 8.5pt !important;
+      }
+
+      .value,
+      .metric-card strong {
+        font-size: 17pt !important;
+      }
+
+      .label {
+        font-size: 7.8pt !important;
+        letter-spacing: .10em !important;
+      }
+
+      .cover-summary,
+      .section-subtitle,
+      .rich-document p,
+      .doc-section p,
+      .muted {
+        font-size: 10.5pt !important;
+        color: #334155 !important;
+      }
+
+      .rich-document {
+        overflow: visible !important;
+      }
+
+      .rich-document h1 {
+        font-size: 20pt !important;
+        line-height: 1.15 !important;
+        color: #0f172a !important;
+      }
+
+      .rich-document img {
+        display: block !important;
+        max-width: 100% !important;
+        max-height: 150mm !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 10px auto !important;
+        border-radius: 10px !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .rich-document pre {
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
+        overflow: visible !important;
+        border-radius: 10px !important;
+        background: #0f172a !important;
+        color: #e2e8f0 !important;
+        page-break-inside: auto;
+        break-inside: auto;
+      }
+
+      .rich-document blockquote {
+        background: #fff7ed !important;
+        color: #7c2d12 !important;
+      }
+
+      .doc-section,
+      .evidence-block {
+        page-break-inside: auto;
+        break-inside: auto;
+      }
+
+      .evidence-item,
+      .evidence-item strong,
+      .evidence-item small,
+      a {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+      }
+
+      .footer-note {
+        margin-top: 8mm !important;
+        font-size: 9pt !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="print-toolbar">
+    <strong>LifeTrack · Caso técnico exportable</strong>
+    <button onclick="window.print()">Imprimir / Guardar como PDF</button>
+  </div>
+
+  <main class="page">
+    <section class="cover">
+      <span class="eyebrow">Caso técnico profesional · Portafolio</span>
+      <h1>${escapeCaseStudyText(caseStudy.project_title || "Proyecto LifeTrack")}</h1>
+      <p class="cover-summary">
+        ${escapeCaseStudyText(caseStudy.project_description || caseStudy.project_summary || "Caso técnico generado desde LifeTrack con subtareas, documentación, skills y evidencias registradas.")}
+      </p>
+
+      <div class="meta-grid">
+        <div class="meta-card"><p class="label">Estado</p><p class="value">${escapeCaseStudyText(caseStudy.project_status || "No definido")}</p></div>
+        <div class="meta-card"><p class="label">Prioridad</p><p class="value">${escapeCaseStudyText(caseStudy.project_priority || "No definida")}</p></div>
+        <div class="meta-card"><p class="label">Inicio</p><p class="value">${escapeCaseStudyText(formatCaseStudyDate(caseStudy.start_date))}</p></div>
+        <div class="meta-card"><p class="label">Generado</p><p class="value">${escapeCaseStudyText(generatedAt)}</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Resumen ejecutivo</h2>
+      <p class="section-subtitle">Indicadores principales del proyecto consolidado como evidencia profesional.</p>
+      <div class="metric-grid">
+        ${metrics.map(([label, value]) => `
+          <div class="metric-card">
+            <p class="label">${escapeCaseStudyText(label)}</p>
+            <strong>${escapeCaseStudyText(value)}</strong>
+          </div>
+        `).join("")}
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Stack tecnológico</h2>
+      <p class="section-subtitle">Comparación entre el stack planificado del proyecto y el stack realmente aplicado en subtareas.</p>
+      <div class="stack-grid">
+        <div class="stack-card">
+          <h3>Stack planificado</h3>
+          <div class="pill-grid">
+            ${plannedStack.length === 0 ? `<p class="muted">Sin stack planificado.</p>` : plannedStack.map((item) => `<span class="pill">${escapeCaseStudyText(item)}</span>`).join("")}
+          </div>
+        </div>
+        <div class="stack-card">
+          <h3>Stack aplicado</h3>
+          <div class="pill-grid">
+            ${appliedStack.length === 0 ? `<p class="muted">Sin stack aplicado.</p>` : appliedStack.map((item) => `<span class="pill cyan">${escapeCaseStudyText(item)}</span>`).join("")}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Desarrollo documentado por subtareas</h2>
+      <p class="section-subtitle">Detalle del proceso técnico registrado dentro del módulo Data & Carrera.</p>
+
+      ${tasks.length === 0 ? `<div class="task-card"><p class="muted">Este proyecto todavía no tiene subtareas registradas.</p></div>` : tasks.map((task, index) => `
+        <article class="task-card">
+          <div class="task-head">
+            <div>
+              <span class="step">Subtarea ${index + 1}</span>
+              <h2>${escapeCaseStudyText(task.task_title || "Subtarea")}</h2>
+            </div>
+            <div>
+              <span class="status">${escapeCaseStudyText(task.task_status || "Sin estado")}</span>
+            </div>
+          </div>
+
+          <section>
+            <h3>Skills aplicadas</h3>
+            ${renderCaseStudySkillPills(task.skills)}
+          </section>
+
+          <section>
+            <h3>Documentación técnica</h3>
+            ${renderCaseStudyTaskDocumentation(task.documentation)}
+          </section>
+
+          ${renderCaseStudyAssetList(task.assets)}
+        </article>
+      `).join("")}
+    </section>
+
+    <p class="footer-note">
+      Documento generado desde LifeTrack Personal OS. Este caso técnico consolida información registrada en proyectos, subtareas, documentación, skills y evidencias del módulo Data & Carrera.
+    </p>
+  </main>
+</body>
+</html>`
 }
 
 export default function DataCarreraPage() {
@@ -1862,6 +2667,25 @@ export default function DataCarreraPage() {
     }
   }, [supabase])
 
+  const handleExportCaseStudy = useCallback(() => {
+    if (!selectedCaseStudy) {
+      alert("Primero carga el caso técnico del proyecto.")
+      return
+    }
+
+    const exportWindow = window.open("", "_blank")
+
+    if (!exportWindow) {
+      alert("El navegador bloqueó la ventana de exportación. Permite ventanas emergentes para LifeTrack e inténtalo nuevamente.")
+      return
+    }
+
+    exportWindow.document.open()
+    exportWindow.document.write(generateCaseStudyExportHtml(selectedCaseStudy))
+    exportWindow.document.close()
+    exportWindow.focus()
+  }, [selectedCaseStudy])
+
   useEffect(() => {
     fetchCareerSkills()
     fetchProjects()
@@ -2265,7 +3089,7 @@ export default function DataCarreraPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col gap-6 overflow-x-hidden bg-[#02040a] px-4 pb-12 pt-6 font-sans text-slate-100 antialiased selection:bg-orange-500/[0.10] selection:text-orange-100 md:px-8">
+    <div className="relative flex min-h-screen flex-col gap-6 overflow-x-hidden bg-[#02040a] px-4 pb-12 pt-6 font-sans text-slate-100 antialiased selection:bg-orange-500/[0.10] selection:text-orange-100 md:px-8 [overflow-wrap:anywhere]" style={{ fontFamily: "'Poppins', 'Nunito Sans', 'Inter', 'Manrope', system-ui, sans-serif" }}>
       <CyberBackground />
 
       {/* HEADER PRINCIPAL */}
@@ -2275,40 +3099,40 @@ export default function DataCarreraPage() {
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="relative z-10 space-y-4"
       >
-        <Link href="/pilares" className="group flex w-fit items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.018] px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-orange-400/30 hover:bg-orange-500/[0.06] hover:text-orange-300">
+        <Link href="/pilares" className="group flex w-fit items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.018] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-orange-400/35 hover:bg-orange-500/[0.08] hover:text-orange-200">
           <ChevronLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1.5" /> [ VOLVER A PILARES ]
         </Link>
 
-        <div className="relative overflow-hidden rounded-[2rem] border border-white/[0.075] bg-[#080b12]/72 p-6 shadow-[0_24px_75px_rgba(0,0,0,0.38)] backdrop-blur-2xl md:p-8">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(249,115,22,0.075),transparent_28%),radial-gradient(circle_at_80%_0%,rgba(251,191,36,0.045),transparent_28%)]" />
+        <div className="relative overflow-hidden rounded-[2rem] border border-orange-300/[0.10] bg-[linear-gradient(135deg,rgba(18,13,10,0.92),rgba(8,11,18,0.76))] p-6 shadow-[0_28px_80px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:p-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(249,115,22,0.12),transparent_28%),radial-gradient(circle_at_80%_0%,rgba(251,191,36,0.075),transparent_28%),radial-gradient(circle_at_92%_80%,rgba(59,130,246,0.045),transparent_30%)]" />
           <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-orange-500/[0.055] blur-3xl" />
           <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-orange-300/35 to-transparent" />
 
-          <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="space-y-3">
-              <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.045] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.42em] text-orange-200/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+          <div className="relative flex min-w-0 flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0 space-y-3">
+              <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.045] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.20em] text-orange-200/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                 <BrainCircuit size={14} className="animate-spin text-amber-300 [animation-duration:7s]" /> MATRIX CENTRAL TERMINAL
               </div>
-              <h2 className="max-w-5xl text-4xl font-black uppercase leading-[0.9] tracking-tighter md:text-7xl">
+              <h2 className="max-w-5xl text-4xl font-extrabold uppercase leading-[0.9] tracking-[-0.035em]er md:text-7xl">
                 Pilar <span className="bg-gradient-to-r from-orange-300 via-amber-200 to-slate-100 bg-clip-text text-transparent">Data & Carrera</span>
               </h2>
-              <p className="max-w-2xl text-xs font-medium leading-relaxed text-slate-400 md:text-sm">
+              <p className="max-w-2xl break-words text-xs font-medium leading-relaxed text-slate-400 md:text-sm">
                 Centro visual para controlar proyectos, avances y subtareas con una experiencia tipo dashboard premium.
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 rounded-2xl border border-white/[0.06] bg-black/24 p-2 backdrop-blur-xl">
-              <div className="rounded-xl bg-[#080b12]/68 px-4 py-3 text-center">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Nodos</p>
-                <p className="text-2xl font-black text-white">{projects.length}</p>
+            <div className="grid min-w-0 grid-cols-3 gap-2 rounded-2xl border border-white/[0.07] bg-black/24 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl">
+              <div className="min-w-0 rounded-xl bg-[#080b12]/68 px-4 py-3 text-center">
+                <p className="break-words text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">Nodos</p>
+                <p className="break-words text-2xl font-extrabold text-white">{projects.length}</p>
               </div>
-              <div className="rounded-xl bg-orange-500/[0.07] px-4 py-3 text-center">
-                <p className="text-[9px] font-black uppercase tracking-widest text-orange-300/80">Activos</p>
-                <p className="text-2xl font-black text-orange-300">{projects.filter(p => p.status === 'En curso').length}</p>
+              <div className="min-w-0 rounded-xl bg-orange-500/[0.08] px-4 py-3 text-center">
+                <p className="break-words text-[9px] font-bold uppercase tracking-[0.10em] text-orange-300/80">Activos</p>
+                <p className="break-words text-2xl font-extrabold text-orange-300">{projects.filter(p => p.status === 'En curso').length}</p>
               </div>
-              <div className="rounded-xl bg-emerald-500/[0.07] px-4 py-3 text-center">
-                <p className="text-[9px] font-black uppercase tracking-widest text-emerald-300/80">Completados</p>
-                <p className="text-2xl font-black text-emerald-300">{projects.filter(p => p.status === 'Completado').length}</p>
+              <div className="min-w-0 rounded-xl bg-emerald-500/[0.08] px-4 py-3 text-center">
+                <p className="break-words text-[9px] font-bold uppercase tracking-[0.10em] text-emerald-300/80">Completados</p>
+                <p className="break-words text-2xl font-extrabold text-emerald-300">{projects.filter(p => p.status === 'Completado').length}</p>
               </div>
             </div>
           </div>
@@ -2322,13 +3146,13 @@ export default function DataCarreraPage() {
         transition={{ duration: 0.62, ease: "easeOut", delay: 0.08 }}
         className="relative z-10"
       >
-        <Card className="group relative overflow-hidden rounded-[1.75rem] border border-white/[0.08] bg-[#080b12]/72 shadow-[0_20px_65px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+        <Card className="group relative overflow-hidden rounded-[1.75rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(8,11,18,0.80),rgba(18,13,10,0.52))] shadow-[0_22px_68px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(249,115,22,0.060),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.045),transparent_35%)] opacity-90" />
           <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-50 transition-all duration-700 group-hover:opacity-100" />
           <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-orange-500/[0.055] blur-3xl transition-all duration-700 group-hover:bg-orange-400/[0.10]" />
 
           <CardHeader className="relative pb-3">
-            <CardTitle className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-slate-300">
+            <CardTitle className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-slate-300">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-orange-400/20 bg-orange-500/[0.055] shadow-[0_0_22px_rgba(249,115,22,0.15)]">
                 <FolderPlus size={16} className="animate-pulse text-orange-300" />
               </span>
@@ -2338,7 +3162,7 @@ export default function DataCarreraPage() {
           <CardContent className="relative">
             <form onSubmit={handleCreateProject} className="grid items-end gap-4 md:grid-cols-4">
               <div className="space-y-2 md:col-span-1">
-                <label className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400">⚡ Identificador</label>
+                <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">⚡ Identificador</label>
                 <Input
                   placeholder="Ej. Dashboard Core Analytics"
                   value={newTitle}
@@ -2347,7 +3171,7 @@ export default function DataCarreraPage() {
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400">⚙️ Enfoque Técnico / Stacks</label>
+                <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">⚙️ Enfoque Técnico / Stacks</label>
                 <Input
                   placeholder="Ej. Power BI, Modelado Estrella, DAX Avanzado, SQL Server"
                   value={newDescription}
@@ -2357,7 +3181,7 @@ export default function DataCarreraPage() {
               </div>
               <Button
                 type="submit"
-                className="h-12 rounded-2xl border border-orange-300/14 bg-orange-500/[0.12] text-[10px] font-black uppercase tracking-widest text-orange-100 shadow-[0_14px_34px_rgba(0,0,0,0.26)] transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-300/24 hover:bg-orange-500/[0.18] active:scale-[0.98]"
+                className="h-12 rounded-2xl border border-orange-300/14 bg-orange-500/[0.12] text-[10px] font-extrabold uppercase tracking-[0.10em] text-orange-100 shadow-[0_14px_34px_rgba(0,0,0,0.26)] transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-300/24 hover:bg-orange-500/[0.18] active:scale-[0.98]"
               >
                 Desplegar Nodo
               </Button>
@@ -2376,7 +3200,7 @@ export default function DataCarreraPage() {
               <div className="h-20 w-20 animate-ping rounded-full border border-orange-500/25 [animation-duration:2s]" />
               <div className="absolute h-32 w-32 animate-pulse rounded-full border border-amber-400/10" />
             </div>
-            <div className="animate-pulse text-[10px] font-black uppercase tracking-[0.45em] text-orange-300/75">Sincronizando Matriz Cuántica...</div>
+            <div className="animate-pulse text-[10px] font-extrabold uppercase tracking-[0.45em] text-orange-300/75">Sincronizando Matriz Cuántica...</div>
           </div>
         ) : (
           <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-3 lg:grid-cols-6">
@@ -2391,9 +3215,9 @@ export default function DataCarreraPage() {
                         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-black/25">
                           <col.icon size={13} className={`${col.color} shrink-0`} />
                         </span>
-                        <span className="truncate text-[9px] font-black uppercase tracking-[0.15em] text-slate-300">{col.label}</span>
+                        <span className="truncate text-[9px] font-extrabold uppercase tracking-[0.15em] text-slate-300">{col.label}</span>
                       </div>
-                      <span className={`rounded-lg border border-white/5 bg-black/42 px-2 py-1 font-mono text-[9px] font-black ${col.color}`}>{filtered.length}</span>
+                      <span className={`rounded-lg border border-white/5 bg-black/42 px-2 py-1 font-mono text-[9px] font-extrabold ${col.color}`}>{filtered.length}</span>
                     </div>
                   </div>
 
@@ -2405,7 +3229,7 @@ export default function DataCarreraPage() {
                   >
                     <AnimatePresence mode="popLayout">
                       {filtered.length === 0 ? (
-                        <div className="flex h-28 items-center justify-center rounded-2xl border border-dashed border-white/[0.04] bg-white/[0.015] text-[9px] font-black uppercase tracking-[0.3em] text-slate-700">
+                        <div className="flex h-28 items-center justify-center rounded-2xl border border-dashed border-white/[0.04] bg-white/[0.015] text-[9px] font-extrabold uppercase tracking-[0.3em] text-slate-700">
                           [ vacío ]
                         </div>
                       ) : (
@@ -2437,7 +3261,7 @@ export default function DataCarreraPage() {
                               <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-orange-400/0 to-transparent transition-all duration-500 group-hover/card:via-orange-300/35" />
 
                               <div className="relative z-10 flex items-center justify-between">
-                                <span className={`rounded-lg border px-2 py-1 text-[8px] font-black uppercase tracking-wider ${
+                                <span className={`rounded-lg border px-2 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] ${
                                   project.priority === 'Alta' ? 'border-red-400/25 bg-red-500/10 text-red-300 shadow-[0_0_14px_rgba(239,68,68,0.16)]' :
                                     project.priority === 'Media' ? 'border-amber-400/25 bg-amber-500/10 text-amber-300 shadow-[0_0_14px_rgba(245,158,11,0.12)]' :
                                       'border-blue-400/25 bg-blue-500/10 text-blue-300 shadow-[0_0_14px_rgba(59,130,246,0.12)]'
@@ -2448,7 +3272,7 @@ export default function DataCarreraPage() {
                               </div>
 
                               <div className="relative z-10 mt-4 space-y-2">
-                                <h4 className="line-clamp-2 text-sm font-black tracking-tight text-slate-100 transition-colors duration-300 group-hover/card:text-orange-300">
+                                <h4 className="line-clamp-2 text-sm font-extrabold tracking-[-0.035em] text-slate-100 transition-colors duration-300 group-hover/card:text-orange-300">
                                   {project.title}
                                 </h4>
                                 <p className="line-clamp-2 text-[10px] font-medium leading-relaxed text-slate-500 transition-colors duration-300 group-hover/card:text-slate-300">
@@ -2459,13 +3283,13 @@ export default function DataCarreraPage() {
                                   {getProjectSkills(project).slice(0, 3).map((skill) => (
                                     <span
                                       key={skill.id}
-                                      className="rounded-full border border-orange-300/10 bg-orange-500/[0.055] px-2 py-0.5 text-[7px] font-black uppercase tracking-wider text-orange-200/80"
+                                      className="rounded-full border border-orange-300/10 bg-orange-500/[0.055] px-2 py-0.5 text-[7px] font-extrabold uppercase tracking-[0.08em] text-orange-200/80"
                                     >
                                       {skill.name}
                                     </span>
                                   ))}
                                   {getProjectSkills(project).length > 3 && (
-                                    <span className="rounded-full border border-white/[0.06] bg-white/[0.035] px-2 py-0.5 text-[7px] font-black uppercase tracking-wider text-slate-400">
+                                    <span className="rounded-full border border-white/[0.06] bg-white/[0.035] px-2 py-0.5 text-[7px] font-extrabold uppercase tracking-[0.08em] text-slate-400">
                                       +{getProjectSkills(project).length - 3}
                                     </span>
                                   )}
@@ -2473,7 +3297,7 @@ export default function DataCarreraPage() {
                               </div>
 
                               <div className="relative z-10 mt-4 space-y-2 pt-1">
-                                <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-slate-500">
+                                <div className="flex justify-between text-[8px] font-extrabold uppercase tracking-[0.10em] text-slate-500">
                                   <span>PROGRESO NODO</span>
                                   <span className={pct === 100 ? "text-emerald-300" : "text-orange-300"}>{pct}%</span>
                                 </div>
@@ -2489,10 +3313,10 @@ export default function DataCarreraPage() {
 
                               <div className={`relative z-10 mt-3 rounded-2xl border ${scoreTone.border} ${scoreTone.bg} p-3`}>
                                 <div className="mb-2 flex items-center justify-between">
-                                  <span className="text-[8px] font-black uppercase tracking-[0.18em] text-slate-500">
+                                  <span className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">
                                     Score profesional
                                   </span>
-                                  <span className={`text-[10px] font-black ${scoreTone.text}`}>
+                                  <span className={`text-[10px] font-extrabold ${scoreTone.text}`}>
                                     {scoreValue.toFixed(1)}%
                                   </span>
                                 </div>
@@ -2506,7 +3330,7 @@ export default function DataCarreraPage() {
                                   />
                                 </div>
 
-                                <div className="mt-2 grid grid-cols-2 gap-1.5 text-[7px] font-black uppercase tracking-wider text-slate-500">
+                                <div className="mt-2 grid grid-cols-2 gap-1.5 text-[7px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
                                   <span>Doc {score?.documentation_percentage ?? 0}%</span>
                                   <span>Skills {score?.skill_coverage_percentage ?? 0}%</span>
                                   <span>Evid {score?.evidence_coverage_percentage ?? 0}%</span>
@@ -2547,11 +3371,11 @@ export default function DataCarreraPage() {
                 <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-orange-300/18 to-transparent" />
 
                 <div className="mr-4 flex-1 space-y-3">
-                  <span className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-orange-200/85">
+                  <span className="flex items-center gap-2 text-[9px] font-extrabold uppercase tracking-[0.3em] text-orange-200/85">
                     <Sparkles size={12} className="animate-pulse text-amber-300" /> MATRIX REQUIREMENT CONTROL PANEL
                   </span>
                   <input
-                    className="w-full border-b border-transparent bg-transparent pb-1 text-2xl font-black tracking-tight text-white outline-none transition-all hover:border-white/10 focus:border-orange-400/50 md:text-4xl"
+                    className="w-full border-b border-transparent bg-transparent pb-1 text-2xl font-extrabold tracking-[-0.035em] text-white outline-none transition-all hover:border-white/10 focus:border-orange-400/50 md:text-4xl"
                     value={selectedProject.title}
                     onChange={(e) => {
                       setSelectedProject({ ...selectedProject, title: e.target.value })
@@ -2593,7 +3417,7 @@ export default function DataCarreraPage() {
                       <div className="pointer-events-none absolute right-0 top-0 h-44 w-44 rounded-full bg-orange-500/[0.045] blur-3xl" />
                       <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
                         <div>
-                          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-orange-200/85">
+                          <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-orange-200/85">
                             <Activity size={14} className="text-orange-300" />
                             Score profesional del proyecto
                           </div>
@@ -2603,10 +3427,10 @@ export default function DataCarreraPage() {
                         </div>
 
                         <div className="min-w-[190px] rounded-2xl border border-white/[0.06] bg-black/28 p-4 text-right">
-                          <p className={`text-4xl font-black tracking-tight ${scoreTone.text}`}>
+                          <p className={`text-4xl font-extrabold tracking-[-0.035em] ${scoreTone.text}`}>
                             {scoreValue.toFixed(1)}%
                           </p>
-                          <p className="mt-1 text-[9px] font-black uppercase tracking-[0.25em] text-slate-500">
+                          <p className="mt-1 text-[9px] font-extrabold uppercase tracking-[0.16em] text-slate-500">
                             {scoreTone.label}
                           </p>
                         </div>
@@ -2630,10 +3454,10 @@ export default function DataCarreraPage() {
                         ].map((metric) => (
                           <div key={metric.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
                             <div className="flex items-center justify-between">
-                              <span className="text-[8px] font-black uppercase tracking-[0.18em] text-slate-500">
+                              <span className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">
                                 {metric.label}
                               </span>
-                              <span className="text-[10px] font-black text-slate-200">
+                              <span className="text-[10px] font-extrabold text-slate-200">
                                 {Number(metric.value).toFixed(1)}%
                               </span>
                             </div>
@@ -2668,7 +3492,7 @@ export default function DataCarreraPage() {
 
                       <div className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
                         <div>
-                          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-cyan-200/85">
+                          <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-cyan-200/85">
                             <Database size={14} className="text-cyan-300" />
                             Resumen técnico del proyecto
                           </div>
@@ -2682,17 +3506,17 @@ export default function DataCarreraPage() {
                             type="button"
                             onClick={() => fetchProjectCaseStudy(selectedProject.id)}
                             disabled={loadingCaseStudy}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-cyan-300/14 bg-cyan-500/[0.10] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-cyan-100 transition-all hover:-translate-y-0.5 hover:bg-cyan-500/[0.16] disabled:cursor-not-allowed disabled:opacity-60"
+                            className="inline-flex items-center gap-2 rounded-2xl border border-cyan-300/14 bg-cyan-500/[0.10] px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.10em] text-cyan-100 transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-500/[0.16] disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             <BookOpen size={14} />
                             {loadingCaseStudy ? "Cargando..." : "Ver caso técnico"}
                           </button>
 
                           <div className={`w-fit rounded-2xl border ${scoreTone.border} ${scoreTone.bg} px-4 py-3 text-right`}>
-                            <p className={`text-2xl font-black ${scoreTone.text}`}>
+                            <p className={`text-2xl font-extrabold ${scoreTone.text}`}>
                               {(technicalSummary?.professional_score ?? 0).toFixed(1)}%
                             </p>
-                            <p className="mt-1 text-[8px] font-black uppercase tracking-[0.22em] text-slate-500">
+                            <p className="mt-1 text-[8px] font-extrabold uppercase tracking-[0.14em] text-slate-500">
                               madurez técnica
                             </p>
                           </div>
@@ -2707,8 +3531,8 @@ export default function DataCarreraPage() {
                           { label: "Evidencias", value: technicalSummary?.total_assets ?? 0, detail: `${technicalSummary?.total_images ?? 0} imágenes · ${technicalSummary?.total_documents ?? 0} docs` },
                         ].map((item) => (
                           <div key={item.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
-                            <p className="text-[8px] font-black uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
-                            <p className="mt-2 text-2xl font-black text-slate-100">{item.value}</p>
+                            <p className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
+                            <p className="mt-2 text-2xl font-extrabold text-slate-100">{item.value}</p>
                             <p className="mt-1 text-[9px] font-medium text-slate-600">{item.detail}</p>
                           </div>
                         ))}
@@ -2716,7 +3540,7 @@ export default function DataCarreraPage() {
 
                       <div className="relative mt-5 grid gap-4 lg:grid-cols-2">
                         <div className="rounded-2xl border border-orange-300/10 bg-orange-500/[0.045] p-4">
-                          <div className="mb-3 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.22em] text-orange-200/85">
+                          <div className="mb-3 flex items-center gap-2 text-[9px] font-extrabold uppercase tracking-[0.14em] text-orange-200/85">
                             <Layers3 size={13} />
                             Stack planificado del proyecto
                           </div>
@@ -2726,7 +3550,7 @@ export default function DataCarreraPage() {
                           ) : (
                             <div className="flex flex-wrap gap-2">
                               {plannedStack.map((skill) => (
-                                <span key={skill} className="rounded-full border border-orange-300/12 bg-black/24 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-orange-100/85">
+                                <span key={skill} className="rounded-full border border-orange-300/12 bg-black/24 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-orange-100/85">
                                   {skill}
                                 </span>
                               ))}
@@ -2735,7 +3559,7 @@ export default function DataCarreraPage() {
                         </div>
 
                         <div className="rounded-2xl border border-cyan-300/10 bg-cyan-500/[0.045] p-4">
-                          <div className="mb-3 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.22em] text-cyan-200/85">
+                          <div className="mb-3 flex items-center gap-2 text-[9px] font-extrabold uppercase tracking-[0.14em] text-cyan-200/85">
                             <Cpu size={13} />
                             Stack aplicado en subtareas
                           </div>
@@ -2745,7 +3569,7 @@ export default function DataCarreraPage() {
                           ) : (
                             <div className="flex flex-wrap gap-2">
                               {appliedStack.map((skill) => (
-                                <span key={skill} className="rounded-full border border-cyan-300/12 bg-black/24 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-cyan-100/85">
+                                <span key={skill} className="rounded-full border border-cyan-300/12 bg-black/24 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-cyan-100/85">
                                   {skill}
                                 </span>
                               ))}
@@ -2762,7 +3586,7 @@ export default function DataCarreraPage() {
                     <div className="pointer-events-none absolute right-0 top-0 h-36 w-36 rounded-full bg-orange-500/[0.045] blur-3xl" />
 
                     <div className="relative space-y-2">
-                      <label className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400">📊 Estado Macro</label>
+                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">📊 Estado Macro</label>
                       <select
                         className="h-12 w-full cursor-pointer rounded-2xl border border-white/10 bg-black/42 px-3 text-xs font-bold text-slate-200 outline-none transition-all focus:border-orange-400/60 focus:ring-2 focus:ring-orange-500/10"
                         value={selectedProject.status}
@@ -2777,7 +3601,7 @@ export default function DataCarreraPage() {
                     </div>
 
                     <div className="relative space-y-2">
-                      <label className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400">⚠️ Prioridad Crítica</label>
+                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">⚠️ Prioridad Crítica</label>
                       <select
                         className="h-12 w-full cursor-pointer rounded-2xl border border-white/10 bg-black/42 px-3 text-xs font-bold text-slate-200 outline-none transition-all focus:border-orange-400/60 focus:ring-2 focus:ring-orange-500/10"
                         value={selectedProject.priority}
@@ -2796,7 +3620,7 @@ export default function DataCarreraPage() {
 
                   <div className="space-y-5 md:col-span-2">
                     <div className="space-y-2">
-                      <label className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400">🛠️ Enfoque Stack Completo</label>
+                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">🛠️ Enfoque Stack Completo</label>
                       <Input
                         value={selectedProject.description || ""}
                         placeholder="Arquitectura de datos, tecnologías y stacks aplicados..."
@@ -2809,7 +3633,7 @@ export default function DataCarreraPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400">📜 Resumen de Criterio / Entregables Técnicos</label>
+                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">📜 Resumen de Criterio / Entregables Técnicos</label>
                       <Textarea
                         placeholder="Detalla las especificaciones del entregable, lógica de negocio DAX, modelos de datos, etc..."
                         className="custom-scrollbar min-h-[112px] rounded-2xl border-white/10 bg-black/25 text-xs font-medium leading-relaxed text-slate-200 transition-all placeholder:text-slate-700 focus:border-orange-400/60 focus:ring-2 focus:ring-orange-500/10"
@@ -2827,7 +3651,7 @@ export default function DataCarreraPage() {
                 <div className="space-y-5 border-t border-white/[0.06] pt-6">
                   <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
                     <div>
-                      <label className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-orange-200/85">
+                      <label className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.2em] text-orange-200/85">
                         <Tags size={15} className="animate-pulse" /> // STACK & SKILLS DEL PROYECTO
                       </label>
                       <p className="mt-2 text-xs font-medium leading-relaxed text-slate-500">
@@ -2835,7 +3659,7 @@ export default function DataCarreraPage() {
                       </p>
                     </div>
 
-                    <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.055] px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-orange-200/80">
+                    <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.055] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.10em] text-orange-200/80">
                       <Database size={12} />
                       {getProjectSkills(selectedProject).length} skills vinculadas
                     </div>
@@ -2846,7 +3670,7 @@ export default function DataCarreraPage() {
                       <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-full bg-orange-500/[0.055] blur-3xl" />
                       <div className="relative flex items-center justify-between">
                         <div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-slate-400">Stack seleccionado</p>
+                          <p className="break-words text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Stack seleccionado</p>
                           <p className="mt-1 text-xs font-medium text-slate-500">Skills activas en este nodo de proyecto.</p>
                         </div>
                         <Cpu size={18} className="text-orange-300" />
@@ -2855,7 +3679,7 @@ export default function DataCarreraPage() {
                       <div className="relative mt-5 flex min-h-[92px] flex-wrap content-start gap-2 rounded-2xl border border-white/[0.045] bg-black/24 p-3">
                         {getProjectSkills(selectedProject).length === 0 ? (
                           <div className="flex w-full items-center justify-center rounded-xl border border-dashed border-white/[0.04] bg-white/[0.015] px-4 py-8 text-center">
-                            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-700">
+                            <span className="break-words text-[9px] font-bold uppercase tracking-[0.16em] text-slate-700">
                               [ Sin skills vinculadas ]
                             </span>
                           </div>
@@ -2865,7 +3689,7 @@ export default function DataCarreraPage() {
                               key={skill.id}
                               type="button"
                               onClick={() => handleToggleProjectSkill(skill)}
-                              className="group/selected inline-flex items-center gap-2 rounded-full border border-orange-300/16 bg-orange-500/[0.10] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-orange-100 transition-all hover:-translate-y-0.5 hover:border-rose-300/30 hover:bg-rose-500/10 hover:text-rose-200"
+                              className="group/selected inline-flex items-center gap-2 rounded-full border border-orange-300/16 bg-orange-500/[0.10] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-orange-100 transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-300/30 hover:bg-rose-500/10 hover:text-rose-200"
                               title="Quitar skill del proyecto"
                             >
                               <span className="h-2 w-2 rounded-full bg-orange-300 shadow-[0_0_12px_rgba(251,191,36,0.65)]" />
@@ -2881,7 +3705,7 @@ export default function DataCarreraPage() {
                       <div className="pointer-events-none absolute left-0 top-0 h-32 w-32 rounded-full bg-blue-500/[0.040] blur-3xl" />
                       <div className="relative flex items-center justify-between gap-3">
                         <div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-slate-400">Catálogo de skills</p>
+                          <p className="break-words text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Catálogo de skills</p>
                           <p className="mt-1 text-xs font-medium text-slate-500">Haz clic para asociar o quitar tecnologías.</p>
                         </div>
                         <Layers3 size={18} className="text-amber-300" />
@@ -2889,11 +3713,11 @@ export default function DataCarreraPage() {
 
                       <div className="custom-scrollbar relative mt-5 max-h-[300px] space-y-4 overflow-y-auto pr-1">
                         {loadingSkills ? (
-                          <div className="rounded-2xl border border-white/[0.045] bg-black/24 p-5 text-center text-[9px] font-black uppercase tracking-[0.25em] text-slate-600">
+                          <div className="rounded-2xl border border-white/[0.045] bg-black/24 p-5 text-center text-[9px] font-extrabold uppercase tracking-[0.16em] text-slate-600">
                             Sincronizando skills...
                           </div>
                         ) : careerSkills.length === 0 ? (
-                          <div className="rounded-2xl border border-dashed border-white/[0.045] bg-black/24 p-5 text-center text-[9px] font-black uppercase tracking-[0.25em] text-slate-700">
+                          <div className="rounded-2xl border border-dashed border-white/[0.045] bg-black/24 p-5 text-center text-[9px] font-extrabold uppercase tracking-[0.16em] text-slate-700">
                             No hay skills creadas en Supabase
                           </div>
                         ) : (
@@ -2901,7 +3725,7 @@ export default function DataCarreraPage() {
                             <div key={category} className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <span className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
-                                <span className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-500">{category}</span>
+                                <span className="break-words text-[8px] font-bold uppercase tracking-[0.16em] text-slate-500">{category}</span>
                                 <span className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
                               </div>
 
@@ -2914,7 +3738,7 @@ export default function DataCarreraPage() {
                                       key={skill.id}
                                       type="button"
                                       onClick={() => handleToggleProjectSkill(skill)}
-                                      className={`group/skill inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[9px] font-black uppercase tracking-wider transition-all duration-300 ${
+                                      className={`group/skill inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] transition-all duration-300 ${
                                         isSelected
                                           ? 'border-emerald-300/24 bg-emerald-500/[0.11] text-emerald-100 shadow-[0_0_18px_rgba(16,185,129,0.10)]'
                                           : 'border-white/[0.065] bg-black/24 text-slate-400 hover:-translate-y-0.5 hover:border-orange-300/24 hover:bg-orange-500/[0.085] hover:text-orange-100'
@@ -2944,7 +3768,7 @@ export default function DataCarreraPage() {
                 {/* SUBTAREAS & MICRO KANBAN INTERNO */}
                 <div className="space-y-5 border-t border-white/[0.06] pt-6">
                   <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                    <label className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-orange-200/85">
+                    <label className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.2em] text-orange-200/85">
                       <ListTodo size={15} className="animate-pulse" /> // MATRIZ DE MICRO-SUBTAREAS
                     </label>
 
@@ -2956,7 +3780,7 @@ export default function DataCarreraPage() {
                         onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
                         className="h-9 border-0 bg-transparent text-xs font-bold text-white placeholder:text-slate-600 focus-visible:ring-0"
                       />
-                      <Button onClick={handleAddTask} className="h-9 shrink-0 rounded-xl border border-orange-300/14 bg-orange-500/[0.12] px-4 text-[10px] font-black uppercase tracking-wider text-orange-100 shadow-lg shadow-black/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-500/[0.18]">
+                      <Button onClick={handleAddTask} className="h-9 shrink-0 rounded-xl border border-orange-300/14 bg-orange-500/[0.12] px-4 text-[10px] font-extrabold uppercase tracking-[0.08em] text-orange-100 shadow-lg shadow-black/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-500/[0.18]">
                         <Plus size={14} className="mr-1" /> Insertar
                       </Button>
                     </div>
@@ -2973,7 +3797,7 @@ export default function DataCarreraPage() {
                               <span className="flex h-7 w-7 items-center justify-center rounded-xl border border-white/[0.06] bg-black/30">
                                 <col.icon size={12} className={`${col.color} shrink-0`} />
                               </span>
-                              <span className="truncate text-[9px] font-black uppercase tracking-wider text-slate-400">{col.label}</span>
+                              <span className="truncate text-[9px] font-extrabold uppercase tracking-[0.08em] text-slate-400">{col.label}</span>
                             </div>
                             <span className="rounded-lg border border-white/5 bg-black/42 px-2 py-1 font-mono text-[9px] font-bold text-slate-400">{tasksInCol.length}</span>
                           </div>
@@ -2982,7 +3806,7 @@ export default function DataCarreraPage() {
                             <AnimatePresence mode="popLayout">
                               {tasksInCol.length === 0 ? (
                                 <div className="flex h-full items-center justify-center rounded-2xl border border-dashed border-white/[0.04] bg-white/[0.015] p-4 text-center">
-                                  <span className="text-[8px] font-bold uppercase tracking-widest text-slate-700">[ Vacío ]</span>
+                                  <span className="text-[8px] font-bold uppercase tracking-[0.10em] text-slate-700">[ Vacío ]</span>
                                 </div>
                               ) : (
                                 tasksInCol.map((task) => (
@@ -3007,7 +3831,7 @@ export default function DataCarreraPage() {
                                           return (
                                             <span
                                               key={link.id}
-                                              className="inline-flex max-w-[92px] items-center gap-1 rounded-lg border border-cyan-300/12 bg-cyan-500/[0.075] px-2 py-1 text-[7px] font-black uppercase tracking-wider text-cyan-100/85"
+                                              className="inline-flex max-w-[92px] items-center gap-1 rounded-lg border border-cyan-300/12 bg-cyan-500/[0.075] px-2 py-1 text-[7px] font-extrabold uppercase tracking-[0.08em] text-cyan-100/85"
                                               title={skill.name}
                                             >
                                               <span
@@ -3020,7 +3844,7 @@ export default function DataCarreraPage() {
                                         })}
 
                                         {task.task_skills.length > 3 && (
-                                          <span className="inline-flex items-center rounded-lg border border-white/[0.06] bg-black/28 px-2 py-1 text-[7px] font-black uppercase tracking-wider text-slate-400">
+                                          <span className="inline-flex items-center rounded-lg border border-white/[0.06] bg-black/28 px-2 py-1 text-[7px] font-extrabold uppercase tracking-[0.08em] text-slate-400">
                                             +{task.task_skills.length - 3}
                                           </span>
                                         )}
@@ -3029,7 +3853,7 @@ export default function DataCarreraPage() {
 
                                     <div className="mt-2 flex items-center justify-between border-t border-white/[0.05] pt-2">
                                       <select
-                                        className="max-w-[122px] cursor-pointer rounded-lg border border-white/10 bg-[#02040a] px-1.5 py-1 text-[9px] font-black uppercase text-slate-400 outline-none transition-all focus:border-orange-400/50"
+                                        className="max-w-[122px] cursor-pointer rounded-lg border border-white/10 bg-[#02040a] px-1.5 py-1 text-[9px] font-extrabold uppercase text-slate-400 outline-none transition-all focus:border-orange-400/50"
                                         value={task.status}
                                         onChange={(e) => handleUpdateTaskStatus(task.id, e.target.value as TaskStatus)}
                                       >
@@ -3093,14 +3917,14 @@ export default function DataCarreraPage() {
                     <div className="relative flex shrink-0 flex-col gap-4 border-b border-white/[0.065] bg-[#080b12]/74 p-6 backdrop-blur-xl md:p-8">
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 flex-1 space-y-3">
-                          <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.06] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.28em] text-orange-200/85">
+                          <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.06] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.16em] text-orange-200/85">
                             <BookOpen size={13} className="animate-pulse text-amber-300" />
                             TASK DOCUMENTATION NODE
                           </div>
 
                           <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-slate-500">Subtarea documental</p>
-                            <h3 className="mt-1 line-clamp-2 text-2xl font-black tracking-tight text-white md:text-4xl">
+                            <p className="break-words text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">Subtarea documental</p>
+                            <h3 className="mt-1 line-clamp-2 text-2xl font-extrabold tracking-[-0.035em] text-white md:text-4xl">
                               {selectedTaskForDoc.title}
                             </h3>
                             <p className="mt-2 text-xs font-medium leading-relaxed text-slate-500">
@@ -3114,7 +3938,7 @@ export default function DataCarreraPage() {
                             type="button"
                             onClick={handleSaveTaskDocumentation}
                             disabled={savingTaskDoc || loadingTaskDoc}
-                            className="flex items-center gap-2 rounded-xl border border-emerald-300/14 bg-emerald-500/[0.10] px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-emerald-100 transition-all hover:bg-emerald-500/[0.16] disabled:cursor-not-allowed disabled:opacity-55"
+                            className="flex items-center gap-2 rounded-xl border border-emerald-300/14 bg-emerald-500/[0.10] px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.10em] text-emerald-100 transition-all hover:bg-emerald-500/[0.16] disabled:cursor-not-allowed disabled:opacity-55"
                           >
                             <Save size={14} />
                             {savingTaskDoc ? "Guardando..." : "Guardar"}
@@ -3139,7 +3963,7 @@ export default function DataCarreraPage() {
                       {loadingTaskDoc || !taskDoc ? (
                         <div className="flex min-h-[720px] flex-col items-center justify-center gap-4">
                           <Activity className="animate-spin text-orange-400 drop-shadow-[0_0_16px_rgba(249,115,22,0.55)]" size={40} />
-                          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-orange-300/75">
+                          <p className="break-words text-[10px] font-bold uppercase tracking-[0.35em] text-orange-300/75">
                             Sincronizando documentación...
                           </p>
                         </div>
@@ -3148,7 +3972,7 @@ export default function DataCarreraPage() {
                           <div className="mb-5 rounded-[1.6rem] border border-white/[0.06] bg-[#080b12]/60 p-5 shadow-[0_14px_42px_rgba(0,0,0,0.22)] backdrop-blur-xl">
                             <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
                               <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200/80">
+                                <p className="break-words text-[10px] font-bold uppercase tracking-[0.16em] text-orange-200/80">
                                   Editor enriquecido tipo Notion
                                 </p>
                                 <p className="mt-2 max-w-3xl text-xs font-medium leading-relaxed text-slate-500">
@@ -3156,7 +3980,7 @@ export default function DataCarreraPage() {
                                 </p>
                               </div>
 
-                              <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.055] px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-orange-200/80">
+                              <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.055] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.10em] text-orange-200/80">
                                 <BookOpen size={12} />
                                 Documento vivo
                               </div>
@@ -3166,7 +3990,7 @@ export default function DataCarreraPage() {
                           <div className="mb-5 overflow-hidden rounded-[1.6rem] border border-white/[0.06] bg-[#080b12]/60 p-5 shadow-[0_14px_42px_rgba(0,0,0,0.22)] backdrop-blur-xl">
                             <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
                               <div>
-                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.26em] text-cyan-200/85">
+                                <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-cyan-200/85">
                                   <Tags size={14} className="text-cyan-300" />
                                   Skills aplicadas en esta subtarea
                                 </div>
@@ -3175,19 +3999,19 @@ export default function DataCarreraPage() {
                                 </p>
                               </div>
 
-                              <div className="flex w-fit items-center gap-2 rounded-full border border-cyan-300/12 bg-cyan-500/[0.055] px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-cyan-200/80">
+                              <div className="flex w-fit items-center gap-2 rounded-full border border-cyan-300/12 bg-cyan-500/[0.055] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.10em] text-cyan-200/80">
                                 <Cpu size={12} />
                                 {selectedTaskSkillLinks.length} skills
                               </div>
                             </div>
 
                             {loadingTaskSkills ? (
-                              <div className="mt-4 rounded-2xl border border-white/[0.06] bg-black/24 p-4 text-center text-[10px] font-black uppercase tracking-[0.25em] text-slate-600">
+                              <div className="mt-4 rounded-2xl border border-white/[0.06] bg-black/24 p-4 text-center text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-600">
                                 Sincronizando skills de subtarea...
                               </div>
                             ) : taskSkillCatalog.length === 0 ? (
                               <div className="mt-4 rounded-2xl border border-dashed border-white/[0.06] bg-black/24 p-5 text-center">
-                                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-600">
+                                <p className="break-words text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
                                   Aún no tienes skills registradas
                                 </p>
                                 <p className="mt-2 text-xs font-medium text-slate-700">
@@ -3205,7 +4029,7 @@ export default function DataCarreraPage() {
                                       key={skill.id}
                                       type="button"
                                       onClick={() => handleToggleTaskSkill(skill)}
-                                      className={`group/skill inline-flex items-center gap-2 rounded-2xl border px-3 py-2 text-[10px] font-black uppercase tracking-wider transition-all ${
+                                      className={`group/skill inline-flex items-center gap-2 rounded-2xl border px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.08em] transition-all ${
                                         isSelected
                                           ? "border-cyan-300/30 bg-cyan-500/[0.14] text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.10)]"
                                           : isProjectSkill
@@ -3272,12 +4096,12 @@ export default function DataCarreraPage() {
                     <div className="relative flex shrink-0 flex-col gap-4 border-b border-white/[0.065] bg-[#080b12]/74 p-6 backdrop-blur-xl md:p-8">
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 flex-1">
-                          <div className="flex w-fit items-center gap-2 rounded-full border border-cyan-300/12 bg-cyan-500/[0.06] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.28em] text-cyan-200/85">
+                          <div className="flex w-fit items-center gap-2 rounded-full border border-cyan-300/12 bg-cyan-500/[0.06] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.16em] text-cyan-200/85">
                             <BookOpen size={13} className="text-cyan-300" />
                             Caso técnico consolidado
                           </div>
 
-                          <h3 className="mt-4 line-clamp-2 text-2xl font-black tracking-tight text-white md:text-5xl">
+                          <h3 className="mt-4 line-clamp-2 text-2xl font-extrabold tracking-[-0.035em] text-white md:text-5xl">
                             {selectedCaseStudy.project_title}
                           </h3>
 
@@ -3287,6 +4111,15 @@ export default function DataCarreraPage() {
                         </div>
 
                         <div className="flex items-center gap-2 rounded-2xl border border-white/[0.06] bg-black/34 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                          <button
+                            type="button"
+                            onClick={handleExportCaseStudy}
+                            className="inline-flex items-center gap-2 rounded-xl border border-orange-300/14 bg-orange-500/[0.12] px-3 py-2.5 text-[9px] font-extrabold uppercase tracking-[0.10em] text-orange-100 transition-all duration-200 hover:bg-orange-500/[0.20] hover:text-white"
+                            title="Abrir versión imprimible para guardar como PDF"
+                          >
+                            <Download size={15} />
+                            Exportar
+                          </button>
                           <button
                             type="button"
                             onClick={() => setSelectedCaseStudy(null)}
@@ -3309,7 +4142,7 @@ export default function DataCarreraPage() {
                             <div className={`relative overflow-hidden rounded-[1.8rem] border ${scoreTone.border} ${scoreTone.bg} p-5`}>
                               <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
                                 <div>
-                                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-orange-200/85">
+                                  <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-orange-200/85">
                                     <Activity size={14} className="text-orange-300" />
                                     Resumen ejecutivo del caso
                                   </div>
@@ -3319,10 +4152,10 @@ export default function DataCarreraPage() {
                                 </div>
 
                                 <div className="rounded-2xl border border-white/[0.06] bg-black/28 p-4 text-right">
-                                  <p className={`text-4xl font-black tracking-tight ${scoreTone.text}`}>
+                                  <p className={`text-4xl font-extrabold tracking-[-0.035em] ${scoreTone.text}`}>
                                     {selectedCaseStudy.professional_score.toFixed(1)}%
                                   </p>
-                                  <p className="mt-1 text-[9px] font-black uppercase tracking-[0.25em] text-slate-500">
+                                  <p className="mt-1 text-[9px] font-extrabold uppercase tracking-[0.16em] text-slate-500">
                                     score profesional
                                   </p>
                                 </div>
@@ -3336,8 +4169,8 @@ export default function DataCarreraPage() {
                                   { label: "Evidencias", value: selectedCaseStudy.total_assets, detail: `${selectedCaseStudy.total_images} imágenes · ${selectedCaseStudy.total_documents} docs` },
                                 ].map((metric) => (
                                   <div key={metric.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
-                                    <p className="text-[8px] font-black uppercase tracking-[0.18em] text-slate-500">{metric.label}</p>
-                                    <p className="mt-2 text-2xl font-black text-slate-100">{metric.value}</p>
+                                    <p className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">{metric.label}</p>
+                                    <p className="mt-2 text-2xl font-extrabold text-slate-100">{metric.value}</p>
                                     <p className="mt-1 text-[9px] font-medium text-slate-600">{metric.detail}</p>
                                   </div>
                                 ))}
@@ -3345,12 +4178,12 @@ export default function DataCarreraPage() {
 
                               <div className="mt-5 grid gap-4 lg:grid-cols-2">
                                 <div className="rounded-2xl border border-orange-300/10 bg-black/24 p-4">
-                                  <p className="mb-3 text-[9px] font-black uppercase tracking-[0.22em] text-orange-200/85">Stack planificado</p>
+                                  <p className="mb-3 text-[9px] font-extrabold uppercase tracking-[0.14em] text-orange-200/85">Stack planificado</p>
                                   <div className="flex flex-wrap gap-2">
                                     {plannedStack.length === 0 ? (
                                       <span className="text-xs text-slate-600">Sin stack planificado.</span>
                                     ) : plannedStack.map((skill) => (
-                                      <span key={skill} className="rounded-full border border-orange-300/12 bg-orange-500/[0.06] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-orange-100/85">
+                                      <span key={skill} className="rounded-full border border-orange-300/12 bg-orange-500/[0.06] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-orange-100/85">
                                         {skill}
                                       </span>
                                     ))}
@@ -3358,12 +4191,12 @@ export default function DataCarreraPage() {
                                 </div>
 
                                 <div className="rounded-2xl border border-cyan-300/10 bg-black/24 p-4">
-                                  <p className="mb-3 text-[9px] font-black uppercase tracking-[0.22em] text-cyan-200/85">Stack aplicado</p>
+                                  <p className="mb-3 text-[9px] font-extrabold uppercase tracking-[0.14em] text-cyan-200/85">Stack aplicado</p>
                                   <div className="flex flex-wrap gap-2">
                                     {appliedStack.length === 0 ? (
                                       <span className="text-xs text-slate-600">Sin stack aplicado en subtareas.</span>
                                     ) : appliedStack.map((skill) => (
-                                      <span key={skill} className="rounded-full border border-cyan-300/12 bg-cyan-500/[0.06] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-cyan-100/85">
+                                      <span key={skill} className="rounded-full border border-cyan-300/12 bg-cyan-500/[0.06] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-cyan-100/85">
                                         {skill}
                                       </span>
                                     ))}
@@ -3375,7 +4208,7 @@ export default function DataCarreraPage() {
                         })()}
 
                         <div className="rounded-[1.8rem] border border-white/[0.06] bg-[#080b12]/68 p-5">
-                          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-orange-200/85">
+                          <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-orange-200/85">
                             <ListTodo size={14} className="text-orange-300" />
                             Desarrollo por subtareas
                           </div>
@@ -3383,7 +4216,7 @@ export default function DataCarreraPage() {
                           <div className="mt-5 space-y-5">
                             {selectedCaseStudy.tasks_json.length === 0 ? (
                               <div className="rounded-2xl border border-dashed border-white/[0.06] bg-black/24 p-7 text-center">
-                                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-600">
+                                <p className="break-words text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
                                   Este proyecto aún no tiene subtareas registradas.
                                 </p>
                               </div>
@@ -3400,23 +4233,23 @@ export default function DataCarreraPage() {
                                     <div className="relative flex flex-col justify-between gap-3 md:flex-row md:items-start">
                                       <div>
                                         <div className="flex flex-wrap items-center gap-2">
-                                          <span className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-[8px] font-black uppercase tracking-wider text-slate-400">
+                                          <span className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] text-slate-400">
                                             Paso {index + 1}
                                           </span>
-                                          <span className={`rounded-xl border px-2.5 py-1 text-[8px] font-black uppercase tracking-wider ${getTaskStatusTone(task.task_status)}`}>
+                                          <span className={`rounded-xl border px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] ${getTaskStatusTone(task.task_status)}`}>
                                             {task.task_status}
                                           </span>
                                         </div>
-                                        <h4 className="mt-3 text-xl font-black tracking-tight text-white">
+                                        <h4 className="mt-3 text-xl font-extrabold tracking-[-0.035em] text-white">
                                           {task.task_title}
                                         </h4>
                                       </div>
 
                                       <div className="flex flex-wrap gap-2">
-                                        <span className="rounded-xl border border-cyan-300/10 bg-cyan-500/[0.06] px-2.5 py-1 text-[8px] font-black uppercase tracking-wider text-cyan-100">
+                                        <span className="rounded-xl border border-cyan-300/10 bg-cyan-500/[0.06] px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] text-cyan-100">
                                           {task.skills?.length || 0} skills
                                         </span>
-                                        <span className="rounded-xl border border-emerald-300/10 bg-emerald-500/[0.06] px-2.5 py-1 text-[8px] font-black uppercase tracking-wider text-emerald-100">
+                                        <span className="rounded-xl border border-emerald-300/10 bg-emerald-500/[0.06] px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] text-emerald-100">
                                           {task.total_assets || 0} evidencias
                                         </span>
                                       </div>
@@ -3427,7 +4260,7 @@ export default function DataCarreraPage() {
                                         {task.skills.map((skill) => (
                                           <span
                                             key={`${task.task_id}-${skill.skill_id}`}
-                                            className="rounded-full border border-cyan-300/12 bg-cyan-500/[0.055] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-cyan-100/85"
+                                            className="rounded-full border border-cyan-300/12 bg-cyan-500/[0.055] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-cyan-100/85"
                                           >
                                             {skill.name}
                                           </span>
@@ -3439,31 +4272,31 @@ export default function DataCarreraPage() {
                                       <div className="relative mt-5 rounded-2xl border border-white/[0.06] bg-[#080b12]/70 p-5">
                                         {docHtml ? (
                                           <div
-                                            className="rich-task-editor prose prose-invert max-w-none text-sm text-slate-300 [&_h1]:text-3xl [&_h1]:font-black [&_h1]:text-white [&_h2]:mt-8 [&_h2]:border-l [&_h2]:border-orange-300/30 [&_h2]:pl-4 [&_h2]:text-lg [&_h2]:font-black [&_h2]:uppercase [&_h2]:tracking-[0.14em] [&_h2]:text-orange-100 [&_p]:my-3 [&_a]:text-cyan-300 [&_img]:my-5 [&_img]:max-h-[520px] [&_img]:w-full [&_img]:rounded-2xl [&_img]:border [&_img]:border-white/[0.08] [&_img]:object-contain"
+                                            className="rich-task-editor prose prose-invert max-w-none text-sm text-slate-300 [&_h1]:text-3xl [&_h1]:font-extrabold [&_h1]:text-white [&_h2]:mt-8 [&_h2]:border-l [&_h2]:border-orange-300/30 [&_h2]:pl-4 [&_h2]:text-lg [&_h2]:font-extrabold [&_h2]:uppercase [&_h2]:tracking-[0.14em] [&_h2]:text-orange-100 [&_p]:my-3 [&_a]:text-cyan-300 [&_img]:my-5 [&_img]:max-h-[520px] [&_img]:w-full [&_img]:rounded-2xl [&_img]:border [&_img]:border-white/[0.08] [&_img]:object-contain"
                                             dangerouslySetInnerHTML={{ __html: docHtml }}
                                           />
                                         ) : (
                                           <div className="space-y-4 text-sm leading-7 text-slate-300">
-                                            {doc.objective && <p><span className="font-black text-orange-200">Objetivo:</span> {doc.objective}</p>}
-                                            {doc.content && <p><span className="font-black text-orange-200">Proceso:</span> {doc.content}</p>}
-                                            {doc.technical_notes && <p><span className="font-black text-orange-200">Notas técnicas:</span> {doc.technical_notes}</p>}
-                                            {doc.challenges && <p><span className="font-black text-orange-200">Problemas:</span> {doc.challenges}</p>}
-                                            {doc.solution && <p><span className="font-black text-orange-200">Solución:</span> {doc.solution}</p>}
-                                            {doc.learnings && <p><span className="font-black text-orange-200">Aprendizajes:</span> {doc.learnings}</p>}
-                                            {doc.result_summary && <p><span className="font-black text-orange-200">Resultado:</span> {doc.result_summary}</p>}
-                                            {doc.reference_links && <p><span className="font-black text-orange-200">Referencias:</span> {doc.reference_links}</p>}
+                                            {doc.objective && <p><span className="font-extrabold text-orange-200">Objetivo:</span> {doc.objective}</p>}
+                                            {doc.content && <p><span className="font-extrabold text-orange-200">Proceso:</span> {doc.content}</p>}
+                                            {doc.technical_notes && <p><span className="font-extrabold text-orange-200">Notas técnicas:</span> {doc.technical_notes}</p>}
+                                            {doc.challenges && <p><span className="font-extrabold text-orange-200">Problemas:</span> {doc.challenges}</p>}
+                                            {doc.solution && <p><span className="font-extrabold text-orange-200">Solución:</span> {doc.solution}</p>}
+                                            {doc.learnings && <p><span className="font-extrabold text-orange-200">Aprendizajes:</span> {doc.learnings}</p>}
+                                            {doc.result_summary && <p><span className="font-extrabold text-orange-200">Resultado:</span> {doc.result_summary}</p>}
+                                            {doc.reference_links && <p><span className="font-extrabold text-orange-200">Referencias:</span> {doc.reference_links}</p>}
                                           </div>
                                         )}
                                       </div>
                                     ) : (
-                                      <div className="relative mt-5 rounded-2xl border border-dashed border-white/[0.06] bg-black/20 p-5 text-[10px] font-black uppercase tracking-[0.22em] text-slate-600">
+                                      <div className="relative mt-5 rounded-2xl border border-dashed border-white/[0.06] bg-black/20 p-5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-600">
                                         Subtarea sin documentación detallada todavía.
                                       </div>
                                     )}
 
                                     {task.assets && task.assets.length > 0 && (
                                       <div className="relative mt-5">
-                                        <p className="mb-3 text-[9px] font-black uppercase tracking-[0.22em] text-emerald-200/85">
+                                        <p className="mb-3 text-[9px] font-extrabold uppercase tracking-[0.14em] text-emerald-200/85">
                                           Evidencias adjuntas
                                         </p>
                                         <div className="grid gap-3 md:grid-cols-2">
@@ -3476,14 +4309,14 @@ export default function DataCarreraPage() {
                                                 href={asset.file_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className={`group/evidence rounded-2xl border ${visual.border} ${visual.bg} p-4 transition-all hover:-translate-y-0.5 hover:bg-white/[0.055]`}
+                                                className={`group/evidence rounded-2xl border ${visual.border} ${visual.bg} p-4 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/[0.055]`}
                                               >
                                                 <div className="flex items-center gap-3">
                                                   <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${visual.border} bg-black/28 ${visual.accent}`}>
                                                     <FileArchive size={17} />
                                                   </div>
                                                   <div className="min-w-0 flex-1">
-                                                    <p className="truncate text-sm font-black text-slate-100">{asset.file_name}</p>
+                                                    <p className="truncate text-sm font-extrabold text-slate-100">{asset.file_name}</p>
                                                     <p className="mt-1 text-[9px] font-medium text-slate-600">{formatAssetSize(asset.file_size)}</p>
                                                   </div>
                                                   <ExternalLink size={13} className="text-slate-500 transition-colors group-hover/evidence:text-cyan-300" />

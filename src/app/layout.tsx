@@ -1,36 +1,39 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import type { Metadata } from "next"
+import { Manrope, Geist_Mono } from "next/font/google"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
 
-const geistSans = Geist({
-  variable: "--font-sans", // Cambiado para coincidir con tu globals.css
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
-});
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-mono", // Cambiado para coincidir con tu globals.css
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-});
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   title: "LifeTrack Personal | Gestión de Progreso",
   description: "Plataforma para medir y mejorar el progreso en salud, carrera y crecimiento personal.",
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}
+        className={`${manrope.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased selection:bg-blue-500/20`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
@@ -38,5 +41,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
