@@ -24,19 +24,27 @@ import Highlight from "@tiptap/extension-highlight"
 import TiptapLink from "@tiptap/extension-link"
 import Underline from "@tiptap/extension-underline"
 import TiptapImage from "@tiptap/extension-image"
-import type { Database as SupabaseDatabase, Json } from "@/types/database"
+import type { Database as SupabaseDatabase } from "@/types/database"
 import {
   buildRichDocumentSeed,
   formatAssetSize,
+  getCaseStudyDocHasContent,
   getAssetVisual,
+  getScoreTone,
+  getTaskStatusTone,
   mapCareerSkill,
   mapSkillLink,
+  splitStack,
   toOptionalString,
   toRequiredString,
   type CareerSkill,
   type PriorityLevel,
   type ProjectSkillLink,
   type ProjectStatus,
+  type ProjectCaseStudyAsset,
+  type ProjectCaseStudySkill,
+  type ProjectCaseStudyTask,
+  type ProjectCaseStudyTaskDoc,
   type ProjectTaskAsset,
   type ProjectTaskDoc,
   type ProjectTaskSkillLink,
@@ -1120,55 +1128,6 @@ interface ProjectTechnicalSummary {
   professional_score: number
 }
 
-interface ProjectCaseStudySkill {
-  skill_id: string
-  name: string
-  category: string | null
-  color: string | null
-  icon: string | null
-  proficiency_level?: string | null
-  notes?: string | null
-}
-
-interface ProjectCaseStudyAsset {
-  asset_id: string
-  asset_type: "image" | "document" | "link"
-  section_key: string
-  file_name: string
-  file_path: string
-  file_url: string
-  mime_type: string | null
-  file_size: number | null
-  created_at: string
-}
-
-interface ProjectCaseStudyTaskDoc {
-  doc_id?: string | null
-  title?: string | null
-  objective?: string | null
-  content?: string | null
-  technical_notes?: string | null
-  challenges?: string | null
-  solution?: string | null
-  learnings?: string | null
-  result_summary?: string | null
-  reference_links?: string | null
-  document_content_html?: string | null
-  document_content_json?: Json | null
-}
-
-interface ProjectCaseStudyTask {
-  task_id: string
-  task_title: string
-  task_status: string
-  documentation: ProjectCaseStudyTaskDoc
-  skills: ProjectCaseStudySkill[]
-  assets: ProjectCaseStudyAsset[]
-  total_assets: number
-  total_images: number
-  total_documents: number
-}
-
 interface ProjectCaseStudyDetail extends ProjectTechnicalSummary {
   project_stack_json: ProjectCaseStudySkill[]
   tasks_json: ProjectCaseStudyTask[]
@@ -2053,79 +2012,6 @@ export default function DataCarreraPage() {
   const getProjectTechnicalSummary = (project?: Project | null) => {
     if (!project) return null
     return technicalSummaries[project.id] || null
-  }
-
-  const splitStack = (stack?: string | null) => {
-    return (stack || "")
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean)
-  }
-
-  const getCaseStudyDocHasContent = (doc?: ProjectCaseStudyTaskDoc | null) => {
-    if (!doc) return false
-    return Boolean(
-      doc.document_content_html ||
-      doc.objective ||
-      doc.content ||
-      doc.technical_notes ||
-      doc.challenges ||
-      doc.solution ||
-      doc.learnings ||
-      doc.result_summary ||
-      doc.reference_links
-    )
-  }
-
-  const getTaskStatusTone = (status?: string | null) => {
-    const normalized = String(status || "").toUpperCase()
-
-    if (normalized === "COMPLETADO") return "border-emerald-300/16 bg-emerald-500/[0.08] text-emerald-200"
-    if (normalized === "EN CURSO") return "border-blue-300/16 bg-blue-500/[0.08] text-blue-200"
-    if (normalized === "ARCHIVADO") return "border-zinc-300/10 bg-zinc-500/[0.06] text-zinc-300"
-    return "border-slate-300/10 bg-slate-500/[0.06] text-slate-300"
-  }
-
-  const getScoreTone = (score?: number | null) => {
-    const safeScore = Number(score || 0)
-
-    if (safeScore >= 80) {
-      return {
-        label: "Excelente",
-        text: "text-emerald-200",
-        border: "border-emerald-300/20",
-        bg: "bg-emerald-500/[0.10]",
-        gradient: "from-emerald-500 via-teal-300 to-lime-300",
-      }
-    }
-
-    if (safeScore >= 55) {
-      return {
-        label: "Sólido",
-        text: "text-cyan-200",
-        border: "border-cyan-300/20",
-        bg: "bg-cyan-500/[0.10]",
-        gradient: "from-cyan-500 via-blue-300 to-sky-300",
-      }
-    }
-
-    if (safeScore >= 30) {
-      return {
-        label: "En construcción",
-        text: "text-orange-200",
-        border: "border-orange-300/20",
-        bg: "bg-orange-500/[0.10]",
-        gradient: "from-orange-600 via-amber-400 to-yellow-200",
-      }
-    }
-
-    return {
-      label: "Inicial",
-      text: "text-slate-300",
-      border: "border-white/[0.08]",
-      bg: "bg-white/[0.035]",
-      gradient: "from-slate-600 via-slate-400 to-slate-300",
-    }
   }
 
   const groupedCareerSkills = careerSkills.reduce<Record<string, CareerSkill[]>>((acc, skill) => {
