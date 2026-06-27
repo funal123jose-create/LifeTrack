@@ -1,14 +1,15 @@
-function getRequiredPublicEnv(name: "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_ANON_KEY") {
-  const value = process.env[name]
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`)
-  }
+if (!supabaseUrl) {
+  throw new Error("Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL")
+}
 
-  return value
+if (!supabaseAnonKey) {
+  throw new Error("Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY")
 }
 
 export const publicEnv = {
-  supabaseUrl: getRequiredPublicEnv("NEXT_PUBLIC_SUPABASE_URL"),
-  supabaseAnonKey: getRequiredPublicEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+  supabaseUrl,
+  supabaseAnonKey,
 }
