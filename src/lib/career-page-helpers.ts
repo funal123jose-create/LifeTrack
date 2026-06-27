@@ -1,4 +1,5 @@
-import type { ProjectStatus, ProjectTaskDoc } from "@/lib/career"
+import type { CareerSkill, ProjectSkillLink, ProjectStatus, ProjectTaskDoc } from "@/lib/career"
+import type { Project } from "@/lib/career-page-models"
 
 type TaskDocumentSeed = {
   title?: string | null
@@ -31,4 +32,23 @@ export const sanitizeStatusForDB = (status: string): ProjectStatus => {
   if (lower === "cancelado") return "Cancelado"
 
   return "Backlog"
+}
+
+export const getProjectSkillLinks = (project?: Project | null): ProjectSkillLink[] => {
+  return project?.project_skills || []
+}
+
+export const getProjectSkills = (project?: Project | null): CareerSkill[] => {
+  return getProjectSkillLinks(project)
+    .map((link) => link.career_skills)
+    .filter((skill): skill is CareerSkill => Boolean(skill))
+}
+
+export const groupCareerSkills = (skills: CareerSkill[]): Record<string, CareerSkill[]> => {
+  return skills.reduce<Record<string, CareerSkill[]>>((acc, skill) => {
+    const category = skill.category || "General"
+    if (!acc[category]) acc[category] = []
+    acc[category].push(skill)
+    return acc
+  }, {})
 }

@@ -18,7 +18,13 @@ import { RichTaskDocumentEditor } from "@/components/career/rich-task-document-e
 import Link from "next/link"
 import { cardVariants, containerVariants, macroColumns, microColumns } from "@/lib/career-page-config"
 import { generateCaseStudyExportHtml } from "@/lib/career-export"
-import { buildEmptyTaskDoc, sanitizeStatusForDB } from "@/lib/career-page-helpers"
+import {
+  buildEmptyTaskDoc,
+  getProjectSkillLinks,
+  getProjectSkills,
+  groupCareerSkills,
+  sanitizeStatusForDB,
+} from "@/lib/career-page-helpers"
 import type {
   Project,
   ProjectCaseStudyDetail,
@@ -86,16 +92,6 @@ export default function DataCarreraPage() {
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<ProjectCaseStudyDetail | null>(null)
   const [loadingCaseStudy, setLoadingCaseStudy] = useState(false)
 
-  const getProjectSkillLinks = (project?: Project | null) => {
-    return project?.project_skills || []
-  }
-
-  const getProjectSkills = (project?: Project | null) => {
-    return getProjectSkillLinks(project)
-      .map((link) => link.career_skills)
-      .filter((skill): skill is CareerSkill => Boolean(skill))
-  }
-
   const getProjectScore = (project?: Project | null) => {
     if (!project) return null
     return projectScores[project.id] || null
@@ -106,12 +102,7 @@ export default function DataCarreraPage() {
     return technicalSummaries[project.id] || null
   }
 
-  const groupedCareerSkills = careerSkills.reduce<Record<string, CareerSkill[]>>((acc, skill) => {
-    const category = skill.category || "General"
-    if (!acc[category]) acc[category] = []
-    acc[category].push(skill)
-    return acc
-  }, {})
+  const groupedCareerSkills = groupCareerSkills(careerSkills)
 
   const selectedProjectSkillIds = new Set(
     getProjectSkillLinks(selectedProject).map((link) => link.skill_id)
