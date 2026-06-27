@@ -31,41 +31,8 @@ import {
   ArrowLeft,
   type LucideIcon,
 } from "lucide-react"
-
-const getLocalDateString = () => {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, "0")
-  const day = String(now.getDate()).padStart(2, "0")
-  return `${year}-${month}-${day}`
-}
-
-const formatDateToLocalString = (date: Date) => {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  return `${year}-${month}-${day}`
-}
-
-const getCurrentWeekStartString = () => {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-
-  const day = today.getDay()
-  const diffToMonday = day === 0 ? -6 : 1 - day
-
-  const monday = new Date(today)
-  monday.setDate(today.getDate() + diffToMonday)
-
-  return formatDateToLocalString(monday)
-}
-
-const getCurrentWeekEndString = () => {
-  const monday = new Date(`${getCurrentWeekStartString()}T00:00:00`)
-  monday.setDate(monday.getDate() + 6)
-
-  return formatDateToLocalString(monday)
-}
+import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
+import { getErrorMessage } from "@/lib/errors"
 
 type PersonalCareRoutine = {
   id: string
@@ -155,8 +122,6 @@ const DEFAULT_ROUTINES: RoutineTemplate[] = [
     description: "Tomar unos minutos para respirar, desconectar o bajar revoluciones.",
   },
 ]
-
-const getErrorMessage = (error: unknown) => (error instanceof Error ? error.message : "Error desconocido")
 
 const categoryStyles: Record<string, { label: string; icon: LucideIcon; className: string }> = {
   skincare: {
