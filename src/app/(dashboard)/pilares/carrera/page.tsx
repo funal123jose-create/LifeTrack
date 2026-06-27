@@ -18,6 +18,7 @@ import { RichTaskDocumentEditor } from "@/components/career/rich-task-document-e
 import Link from "next/link"
 import { cardVariants, containerVariants, macroColumns, microColumns } from "@/lib/career-page-config"
 import { generateCaseStudyExportHtml } from "@/lib/career-export"
+import { buildEmptyTaskDoc, sanitizeStatusForDB } from "@/lib/career-page-helpers"
 import type {
   Project,
   ProjectCaseStudyDetail,
@@ -122,37 +123,12 @@ export default function DataCarreraPage() {
 
   const taskSkillCatalog = careerSkills
 
-  const buildEmptyTaskDoc = (task?: Task | null): ProjectTaskDoc => ({
-    title: task?.title || "",
-    objective: "",
-    content: "",
-    technical_notes: "",
-    challenges: "",
-    solution: "",
-    learnings: "",
-    result_summary: "",
-    reference_links: "",
-    document_content_json: null,
-    document_content_html: "",
-  })
-
   const updateTaskDocRichContent = (json: RichEditorJSON, html: string) => {
     setTaskDoc((prev) => ({
       ...(prev || buildEmptyTaskDoc(selectedTaskForDoc)),
       document_content_json: json,
       document_content_html: html,
     }))
-  }
-
-  const sanitizeStatusForDB = (status: string): string => {
-    const lower = status.toLowerCase().trim();
-    if (lower === 'backlog') return 'Backlog';
-    if (lower === 'en planeación' || lower === 'en planeacion' || lower === 'planeación' || lower === 'planeacion') return 'En planeación';
-    if (lower === 'en curso') return 'En curso';
-    if (lower === 'en pausa') return 'En pausa';
-    if (lower === 'completado') return 'Completado';
-    if (lower === 'cancelado') return 'Cancelado';
-    return 'Backlog';
   }
 
   const fetchCareerSkills = useCallback(async () => {
