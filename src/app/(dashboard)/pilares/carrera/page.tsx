@@ -25,6 +25,22 @@ import TiptapLink from "@tiptap/extension-link"
 import Underline from "@tiptap/extension-underline"
 import TiptapImage from "@tiptap/extension-image"
 import type { Database as SupabaseDatabase, Json } from "@/types/database"
+import {
+  mapCareerSkill,
+  mapSkillLink,
+  toOptionalString,
+  toRequiredString,
+  type CareerSkill,
+  type PriorityLevel,
+  type ProjectSkillLink,
+  type ProjectStatus,
+  type ProjectTaskSkillLink,
+  type ProjectUpdate,
+  type RawCareerSkill,
+  type RawProject,
+  type RawSkillLink,
+  type TaskStatus,
+} from "@/lib/career"
 
 type BrowserSupabaseClient = ReturnType<typeof createClient<SupabaseDatabase>>
 
@@ -356,10 +372,6 @@ function CyberBackground() {
     </>
   )
 }
-
-type ProjectStatus = 'Backlog' | 'En planeación' | 'En curso' | 'En pausa' | 'Completado' | 'Cancelado'
-type TaskStatus = 'SIN EMPEZAR' | 'EN CURSO' | 'COMPLETADO' | 'ARCHIVADO'
-type PriorityLevel = 'Baja' | 'Media' | 'Alta'
 
 interface Task {
   id: string
@@ -1181,91 +1193,8 @@ function RichTaskDocumentEditor({
   )
 }
 
-interface CareerSkill {
-  id: string
-  name: string
-  category: string
-  color: string | null
-  icon: string | null
-}
-
-interface ProjectTaskSkillLink {
-  id: string
-  skill_id: string
-  proficiency_level: string | null
-  notes: string | null
-  career_skills: CareerSkill | null
-}
-
-interface ProjectSkillLink {
-  id: string
-  skill_id: string
-  proficiency_level: string | null
-  notes: string | null
-  career_skills: CareerSkill | null
-}
-
-type RawCareerSkill = {
-  id?: unknown
-  name?: unknown
-  category?: unknown
-  color?: unknown
-  icon?: unknown
-}
-
-type RawSkillLink = {
-  id?: unknown
-  skill_id?: unknown
-  proficiency_level?: unknown
-  notes?: unknown
-  career_skills?: RawCareerSkill | null
-}
-
-type RawProjectTask = {
-  id?: unknown
-  title?: unknown
-  status?: unknown
-  project_task_skills?: RawSkillLink[] | null
-}
-
-type RawProject = {
-  id?: unknown
-  title?: unknown
-  summary?: unknown
-  description?: unknown
-  status?: unknown
-  priority?: unknown
-  start_date?: unknown
-  end_date?: unknown
-  project_tasks?: RawProjectTask[] | null
-  project_skills?: RawSkillLink[] | null
-}
-
 type RawProjectProfessionalScore = Partial<Record<keyof ProjectProfessionalScore, unknown>>
 type RawProjectTechnicalSummary = Partial<Record<keyof ProjectTechnicalSummary, unknown>>
-type ProjectUpdate = SupabaseDatabase["public"]["Tables"]["projects"]["Update"]
-
-const toOptionalString = (value: unknown) =>
-  value === null || value === undefined ? null : String(value)
-
-const toRequiredString = (value: unknown, fallback = "") =>
-  value === null || value === undefined ? fallback : String(value)
-
-const mapCareerSkill = (skill: RawCareerSkill): CareerSkill => ({
-  id: toRequiredString(skill.id),
-  name: toRequiredString(skill.name),
-  category: toRequiredString(skill.category, "General"),
-  color: toOptionalString(skill.color) || "#f97316",
-  icon: toOptionalString(skill.icon) || "Cpu",
-})
-
-const mapSkillLink = (link: RawSkillLink): ProjectSkillLink => ({
-  id: toRequiredString(link.id),
-  skill_id: toRequiredString(link.skill_id),
-  proficiency_level: toOptionalString(link.proficiency_level),
-  notes: toOptionalString(link.notes),
-  career_skills: link.career_skills ? mapCareerSkill(link.career_skills) : null,
-})
 
 interface ProjectProfessionalScore {
   project_id: string
