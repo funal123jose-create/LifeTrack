@@ -7,16 +7,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  FolderPlus, ChevronLeft, BrainCircuit, CheckCircle2, Circle,
-  Trash2, Plus, Clock, Play, ListTodo, HelpCircle, AlertCircle, X, Maximize2, Archive, Activity, Sparkles,
+  FolderPlus, ChevronLeft, BrainCircuit, CheckCircle2,
+  Trash2, Plus, ListTodo, X, Maximize2, Activity, Sparkles,
   Tags, Database, Cpu, Layers3, FileText, Save, BookOpen,
   ExternalLink, Download, FileArchive,
-  type LucideIcon,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { CyberBackground } from "@/components/career/cyber-background"
 import { RichTaskDocumentEditor } from "@/components/career/rich-task-document-editor"
 import Link from "next/link"
+import { cardVariants, containerVariants, macroColumns, microColumns } from "@/lib/career-page-config"
 import { generateCaseStudyExportHtml } from "@/lib/career-export"
 import type {
   Project,
@@ -84,22 +84,6 @@ export default function DataCarreraPage() {
 
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<ProjectCaseStudyDetail | null>(null)
   const [loadingCaseStudy, setLoadingCaseStudy] = useState(false)
-
-  const macroColumns: { id: ProjectStatus; label: string; color: string; bg: string; borderGlow: string; icon: LucideIcon }[] = [
-    { id: 'Backlog', label: 'Backlog', color: 'text-slate-400', bg: 'bg-slate-500/5', borderGlow: 'group-hover:border-slate-500/30', icon: HelpCircle },
-    { id: 'En planeación', label: 'Planeación', color: 'text-amber-500', bg: 'bg-amber-500/5', borderGlow: 'group-hover:border-amber-500/30', icon: Clock },
-    { id: 'En curso', label: 'En Curso', color: 'text-blue-500', bg: 'bg-blue-500/5', borderGlow: 'group-hover:border-blue-500/30', icon: Play },
-    { id: 'En pausa', label: 'En Pausa', color: 'text-purple-400', bg: 'bg-purple-500/5', borderGlow: 'group-hover:border-purple-500/30', icon: AlertCircle },
-    { id: 'Completado', label: 'Completado', color: 'text-emerald-500', bg: 'bg-emerald-500/5', borderGlow: 'group-hover:border-emerald-500/30', icon: CheckCircle2 },
-    { id: 'Cancelado', label: 'Cancelado', color: 'text-rose-400', bg: 'bg-rose-500/5', borderGlow: 'group-hover:border-rose-500/30', icon: X }
-  ]
-
-  const microColumns: { id: TaskStatus; label: string; color: string; border: string; icon: LucideIcon }[] = [
-    { id: 'SIN EMPEZAR', label: 'Sin empezar', color: 'text-slate-400', border: 'border-slate-500/10', icon: Circle },
-    { id: 'EN CURSO', label: 'En curso', color: 'text-blue-400', border: 'border-blue-500/10', icon: Clock },
-    { id: 'COMPLETADO', label: 'Completado', color: 'text-emerald-400', border: 'border-emerald-400/10', icon: CheckCircle2 },
-    { id: 'ARCHIVADO', label: 'Archivado', color: 'text-zinc-500', border: 'border-zinc-500/10', icon: Archive }
-  ]
 
   const getProjectSkillLinks = (project?: Project | null) => {
     return project?.project_skills || []
@@ -939,16 +923,6 @@ export default function DataCarreraPage() {
     } catch (err: unknown) {
       console.error("Error al purgar microtarea:", getErrorMessage(err))
     }
-  }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.055 } }
-  }
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 18, scale: 0.96, filter: "blur(5px)" },
-    show: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }
   }
 
   return (
