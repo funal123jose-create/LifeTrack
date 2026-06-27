@@ -40,6 +40,16 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { getCurrentWeekStartString, getDateForWeekdayNum, getLocalDateString } from "@/lib/date"
+import {
+  getConfidenceClass,
+  getConfidenceLabel,
+  getMealTypeLabel,
+  normalizeConfidence,
+  normalizeMealType,
+  type ConfidenceLevel,
+  type MealType,
+  type NutritionMeal,
+} from "@/lib/nutrition"
 
 // Días de la semana para el Planificador Semanal con su mapeo numérico para rutinas_entrenamiento
 const DAYS_OF_WEEK = [
@@ -68,50 +78,6 @@ const formatLocalDateTime = (value: string) => {
 }
 
 
-const getMealTypeLabel = (mealType: string) => {
-  const labels: Record<string, string> = {
-    breakfast: "Desayuno",
-    lunch: "Almuerzo",
-    dinner: "Cena",
-    snack: "Snack",
-    pre_workout: "Pre-entreno",
-    post_workout: "Post-entreno",
-    other: "Otro",
-  }
-
-  return labels[mealType] || "Otro"
-}
-
-const normalizeMealType = (mealType: string): MealType => {
-  const allowed: MealType[] = ["breakfast", "lunch", "dinner", "snack", "pre_workout", "post_workout", "other"]
-  return allowed.includes(mealType as MealType) ? (mealType as MealType) : "other"
-}
-
-
-const normalizeConfidence = (confidence: string): ConfidenceLevel => {
-  const allowed: ConfidenceLevel[] = ["low", "medium", "high"]
-  return allowed.includes(confidence as ConfidenceLevel) ? (confidence as ConfidenceLevel) : "medium"
-}
-
-const getConfidenceLabel = (confidence: string) => {
-  const labels: Record<string, string> = {
-    low: "Confianza baja",
-    medium: "Confianza media",
-    high: "Confianza alta",
-  }
-
-  return labels[confidence] || "Confianza media"
-}
-
-const getConfidenceClass = (confidence: string) => {
-  if (confidence === "high") return "border-emerald-300/10 bg-emerald-500/[0.07] text-emerald-300/85"
-  if (confidence === "low") return "border-amber-300/10 bg-amber-500/[0.07] text-amber-300/85"
-  return "border-blue-300/10 bg-blue-500/[0.07] text-blue-300/85"
-}
-
-type MealType = "breakfast" | "lunch" | "dinner" | "snack" | "pre_workout" | "post_workout" | "other"
-type ConfidenceLevel = "low" | "medium" | "high"
-
 type MealLog = {
   id: string
   meal_description: string
@@ -121,14 +87,6 @@ type MealLog = {
   confidence: ConfidenceLevel
   portion_assumption: string | null
   created_at: string
-}
-
-type NutritionMeal = {
-  meal_type: MealType
-  description: string
-  estimated_calories: number
-  confidence?: ConfidenceLevel
-  portion_assumption?: string | null
 }
 
 type RawNutritionMeal = {

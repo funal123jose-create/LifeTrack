@@ -2,27 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { GoogleGenAI, Type } from "@google/genai"
 import { createClient } from "@/lib/supabase/server"
 import { getGeminiApiKey } from "@/lib/env/server"
-
-const ALLOWED_MEAL_TYPES = [
-  "breakfast",
-  "lunch",
-  "dinner",
-  "snack",
-  "pre_workout",
-  "post_workout",
-  "other",
-] as const
-
-type MealType = typeof ALLOWED_MEAL_TYPES[number]
-type ConfidenceLevel = "low" | "medium" | "high"
-
-type NutritionMeal = {
-  meal_type: MealType
-  description: string
-  estimated_calories: number
-  confidence?: ConfidenceLevel
-  portion_assumption?: string
-}
+import { normalizeConfidence, normalizeMealType, type NutritionMeal } from "@/lib/nutrition"
 
 type NutritionResponse = {
   totalCalories: number
@@ -44,33 +24,6 @@ type RawNutritionPayload = {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null
-}
-
-function normalizeMealType(value: unknown): MealType {
-  const raw = String(value || "").toLowerCase().trim()
-
-  if (ALLOWED_MEAL_TYPES.includes(raw as MealType)) {
-    return raw as MealType
-  }
-
-  if (raw.includes("desay")) return "breakfast"
-  if (raw.includes("almuerzo") || raw.includes("almorc")) return "lunch"
-  if (raw.includes("cena") || raw.includes("noche")) return "dinner"
-  if (raw.includes("snack") || raw.includes("merienda") || raw.includes("piqueo")) return "snack"
-  if (raw.includes("pre")) return "pre_workout"
-  if (raw.includes("post")) return "post_workout"
-
-  return "other"
-}
-
-function normalizeConfidence(value: unknown): ConfidenceLevel {
-  const raw = String(value || "").toLowerCase().trim()
-
-  if (raw === "high" || raw === "medium" || raw === "low") {
-    return raw as ConfidenceLevel
-  }
-
-  return "medium"
 }
 
 function applyRealisticFloor(meal: NutritionMeal): NutritionMeal {
