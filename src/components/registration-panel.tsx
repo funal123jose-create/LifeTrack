@@ -12,14 +12,28 @@ import { LayoutList, ChevronDown, CheckCircle2, Clock, Circle, Plus, Loader2, XC
 import { createClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
 
+type ProjectTask = {
+  id: string
+  title: string
+  status: string | null
+  parent_id: string | null
+}
+
+type ProjectWithTasks = {
+  id: string
+  title: string
+  status: string | null
+  project_tasks: ProjectTask[] | null
+}
+
 export function RegistrationPanel({ open, setOpen }: { open: boolean, setOpen: (open: boolean) => void }) {
-  const [projects, setProjects] = useState<any[]>([])
+  const [projects, setProjects] = useState<ProjectWithTasks[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedProject, setExpandedProject] = useState<string | null>(null)
   const supabase = createClient()
 
   // --- NUEVA FUNCIÓN: LOGICA DE CHECKLIST ---
-  const handleToggleTask = async (taskId: string, currentStatus: string) => {
+  const handleToggleTask = async (taskId: string, currentStatus: string | null) => {
     // Definimos el siguiente estado basado en las constraints de tu DB
     const nextStatus = currentStatus === 'completado' ? 'en_progreso' : 'completado';
 
@@ -27,9 +41,9 @@ export function RegistrationPanel({ open, setOpen }: { open: boolean, setOpen: (
     setProjects(prevProjects => 
       prevProjects.map(project => ({
         ...project,
-        project_tasks: project.project_tasks.map((task: any) => 
+        project_tasks: project.project_tasks?.map((task) => 
           task.id === taskId ? { ...task, status: nextStatus } : task
-        )
+        ) ?? null
       }))
     );
 
@@ -58,6 +72,7 @@ export function RegistrationPanel({ open, setOpen }: { open: boolean, setOpen: (
           status,
           project_tasks (id, title, status, parent_id)
         `)
+        .returns<ProjectWithTasks[]>()
         .order('created_at', { ascending: false })
 
       if (!error && data) {
@@ -122,7 +137,7 @@ export function RegistrationPanel({ open, setOpen }: { open: boolean, setOpen: (
                       >
                         <div className="p-4 space-y-3">
                           {/* TAREAS PADRE */}
-                          {project.project_tasks?.filter((t: any) => !t.parent_id).map((task: any) => (
+                          {project.project_tasks?.filter((task) => !task.parent_id).map((task) => (
                             <div key={task.id} className="space-y-2">
                               <div className="flex items-center gap-3 group">
                                 <button 
@@ -140,7 +155,7 @@ export function RegistrationPanel({ open, setOpen }: { open: boolean, setOpen: (
                               
                               {/* SUBTAREAS */}
                               <div className="ml-7 space-y-2 border-l border-white/10 pl-4">
-                                {project.project_tasks?.filter((st: any) => st.parent_id === task.id).map((sub: any) => (
+                                {project.project_tasks?.filter((subtask) => subtask.parent_id === task.id).map((sub) => (
                                   <div key={sub.id} className="flex items-center gap-2 group">
                                     <button 
                                       onClick={() => handleToggleTask(sub.id, sub.status)}
@@ -175,7 +190,7 @@ export function RegistrationPanel({ open, setOpen }: { open: boolean, setOpen: (
   )
 }
 
-function StatusIcon({ status, size = 18 }: { status: string, size?: number }) {
+function StatusIcon({ status, size = 18 }: { status: string | null, size?: number }) {
   switch (status) {
     case 'completado':
       return <CheckCircle2 className="text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" size={size} />;

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import {
-  BrainCircuit,
   Sparkles,
   ShieldCheck,
   Plus,
@@ -30,6 +29,7 @@ import {
   BatteryCharging,
   Activity,
   ArrowLeft,
+  type LucideIcon,
 } from "lucide-react"
 
 const getLocalDateString = () => {
@@ -156,7 +156,9 @@ const DEFAULT_ROUTINES: RoutineTemplate[] = [
   },
 ]
 
-const categoryStyles: Record<string, { label: string; icon: any; className: string }> = {
+const getErrorMessage = (error: unknown) => (error instanceof Error ? error.message : "Error desconocido")
+
+const categoryStyles: Record<string, { label: string; icon: LucideIcon; className: string }> = {
   skincare: {
     label: "Skincare",
     icon: Sun,
@@ -470,7 +472,17 @@ export default function CuidadoPersonalPage() {
   }, [supabase, today, currentWeekStart])
 
   useEffect(() => {
-    fetchPersonalCareData()
+    let isActive = true
+
+    queueMicrotask(() => {
+      if (isActive) {
+        fetchPersonalCareData()
+      }
+    })
+
+    return () => {
+      isActive = false
+    }
   }, [fetchPersonalCareData])
 
   const saveDailyCheckin = async () => {
@@ -502,9 +514,10 @@ export default function CuidadoPersonalPage() {
       if (error) throw error
 
       await fetchPersonalCareData()
-    } catch (error: any) {
-      console.error("Error guardando check-in diario:", error?.message || error)
-      alert(`No se pudo guardar el check-in: ${error?.message || "Error desconocido"}`)
+    } catch (error: unknown) {
+      const message = getErrorMessage(error)
+      console.error("Error guardando check-in diario:", message)
+      alert(`No se pudo guardar el check-in: ${message}`)
     } finally {
       setSavingCheckin(false)
     }
@@ -539,9 +552,10 @@ export default function CuidadoPersonalPage() {
       setNewRoutineCategory("bienestar")
 
       await fetchPersonalCareData()
-    } catch (error: any) {
-      console.error("Error creando rutina:", error?.message || error)
-      alert(`No se pudo crear la rutina: ${error?.message || "Error desconocido"}`)
+    } catch (error: unknown) {
+      const message = getErrorMessage(error)
+      console.error("Error creando rutina:", message)
+      alert(`No se pudo crear la rutina: ${message}`)
     } finally {
       setSavingRoutine(false)
     }
@@ -574,9 +588,10 @@ export default function CuidadoPersonalPage() {
       if (error) throw error
 
       await fetchPersonalCareData()
-    } catch (error: any) {
-      console.error("Error cargando rutinas sugeridas:", error?.message || error)
-      alert(`No se pudieron crear las rutinas sugeridas: ${error?.message || "Error desconocido"}`)
+    } catch (error: unknown) {
+      const message = getErrorMessage(error)
+      console.error("Error cargando rutinas sugeridas:", message)
+      alert(`No se pudieron crear las rutinas sugeridas: ${message}`)
     } finally {
       setSavingRoutine(false)
     }
@@ -622,9 +637,10 @@ export default function CuidadoPersonalPage() {
       }
 
       await fetchPersonalCareData()
-    } catch (error: any) {
-      console.error("Error actualizando cumplimiento de rutina:", error?.message || error)
-      alert(`No se pudo actualizar la rutina: ${error?.message || "Error desconocido"}`)
+    } catch (error: unknown) {
+      const message = getErrorMessage(error)
+      console.error("Error actualizando cumplimiento de rutina:", message)
+      alert(`No se pudo actualizar la rutina: ${message}`)
     }
   }
 
@@ -642,9 +658,10 @@ export default function CuidadoPersonalPage() {
       if (error) throw error
 
       await fetchPersonalCareData()
-    } catch (error: any) {
-      console.error("Error cambiando estado de rutina:", error?.message || error)
-      alert(`No se pudo actualizar la rutina: ${error?.message || "Error desconocido"}`)
+    } catch (error: unknown) {
+      const message = getErrorMessage(error)
+      console.error("Error cambiando estado de rutina:", message)
+      alert(`No se pudo actualizar la rutina: ${message}`)
     }
   }
 
@@ -665,9 +682,10 @@ export default function CuidadoPersonalPage() {
       if (error) throw error
 
       await fetchPersonalCareData()
-    } catch (error: any) {
-      console.error("Error eliminando rutina:", error?.message || error)
-      alert(`No se pudo eliminar la rutina: ${error?.message || "Error desconocido"}`)
+    } catch (error: unknown) {
+      const message = getErrorMessage(error)
+      console.error("Error eliminando rutina:", message)
+      alert(`No se pudo eliminar la rutina: ${message}`)
     }
   }
 

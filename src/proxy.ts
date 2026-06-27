@@ -1,5 +1,8 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { publicEnv } from "@/lib/env/public"
+
+const PRIVATE_ROUTES = ['/dashboard', '/pilares']
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
@@ -9,8 +12,8 @@ export async function proxy(request: NextRequest) {
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    publicEnv.supabaseUrl,
+    publicEnv.supabaseAnonKey,
     {
       cookies: {
         get(name: string) {
@@ -38,10 +41,14 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data, error } = await supabase.auth.getClaims()
 
-  // Si no hay sesión y el usuario intenta entrar al dashboard, mandarlo al login
-  if (!session && request.nextUrl.pathname.startsWith('/dashboard')) {
+  // Validate private dashboard and pillar routes with signed auth claims.
+  const isPrivateRoute = PRIVATE_ROUTES.some((route) =>
+    request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(`${route}/`)
+  )
+
+  if ((!data?.claims || error) && isPrivateRoute) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
@@ -49,5 +56,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard', '/dashboard/:path*', '/pilares', '/pilares/:path*'],
 }

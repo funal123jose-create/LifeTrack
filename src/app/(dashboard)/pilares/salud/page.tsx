@@ -164,6 +164,14 @@ type NutritionMeal = {
   portion_assumption?: string | null
 }
 
+type RawNutritionMeal = {
+  meal_type?: unknown
+  description?: unknown
+  estimated_calories?: unknown
+  confidence?: unknown
+  portion_assumption?: unknown
+}
+
 type WaterLog = {
   id: string
   amount_liters: number
@@ -551,7 +559,7 @@ export default function CentroSaludPage() {
       if (mealsError) console.error("Error cargando historial de comidas:", mealsError)
       if (watersError) console.error("Error cargando historial de agua:", watersError)
 
-      setMealLogs((meals || []).map((item: any) => ({
+      setMealLogs((meals || []).map((item) => ({
         id: item.id,
         meal_description: item.meal_description,
         estimated_calories: Number(item.estimated_calories || 0),
@@ -562,7 +570,7 @@ export default function CentroSaludPage() {
         created_at: item.created_at,
       })))
 
-      setWaterLogs((waters || []).map((item: any) => ({
+      setWaterLogs((waters || []).map((item) => ({
         id: item.id,
         amount_liters: Number(item.amount_liters || 0),
         source: item.source || "manual",
@@ -598,7 +606,7 @@ export default function CentroSaludPage() {
         return
       }
 
-      setBodyProgressLogs((data || []).map((item: any) => ({
+      setBodyProgressLogs((data || []).map((item) => ({
         id: item.id,
         date: item.date,
         weight_kg: item.weight_kg !== null ? Number(item.weight_kg) : null,
@@ -699,7 +707,7 @@ export default function CentroSaludPage() {
     }
 
     if (data) {
-      const mappedLogs = data.map((item: any) => ({
+      const mappedLogs = data.map((item) => ({
         id: item.id,
         meal_description: item.meal_description,
         estimated_calories: Number(item.estimated_calories || 0),
@@ -859,7 +867,7 @@ export default function CentroSaludPage() {
         const cardioChecks: { [key: string]: boolean } = {}
 
         if (dbRoutines && dbRoutines.length > 0) {
-          dbRoutines.forEach((row: any) => {
+          dbRoutines.forEach((row) => {
             const dayObj = DAYS_OF_WEEK.find((d) => d.num === row.dia_semana)
             if (dayObj) {
               if (row.activo) {
@@ -868,7 +876,7 @@ export default function CentroSaludPage() {
 
               // Intentamos parsear la nueva estructura JSON de la rutina de entrenamiento
               try {
-                const parsed = JSON.parse(row.descripcion_rutina)
+                const parsed = JSON.parse(row.descripcion_rutina || "{}") as Partial<Record<"fuerza" | "cardio", string>>
                 fuerzaDescs[dayObj.id] = parsed.fuerza || ""
                 cardioDescs[dayObj.id] = parsed.cardio || ""
               } catch {
@@ -952,7 +960,17 @@ export default function CentroSaludPage() {
   }, [supabase, loadTodayLogs, loadBodyProgressLogs])
 
   useEffect(() => {
-    loadHealthData()
+    let isActive = true
+
+    queueMicrotask(() => {
+      if (isActive) {
+        loadHealthData()
+      }
+    })
+
+    return () => {
+      isActive = false
+    }
   }, [loadHealthData])
 
   // --- Guardar/Actualizar Perfil Físico ---
@@ -1259,11 +1277,11 @@ export default function CentroSaludPage() {
       const data = await response.json()
       const mealsFromAI: NutritionMeal[] = Array.isArray(data.meals)
         ? data.meals
-            .map((item: any) => ({
-              meal_type: normalizeMealType(item.meal_type || "other"),
+            .map((item: RawNutritionMeal) => ({
+              meal_type: normalizeMealType(String(item.meal_type || "other")),
               description: String(item.description || "").trim(),
               estimated_calories: Math.max(0, Math.round(Number(item.estimated_calories || 0))),
-              confidence: normalizeConfidence(item.confidence || "medium"),
+              confidence: normalizeConfidence(String(item.confidence || "medium")),
               portion_assumption: String(item.portion_assumption || "Porción promedio estimada por IA").trim(),
             }))
             .filter((item: NutritionMeal) => item.description && item.estimated_calories > 0)

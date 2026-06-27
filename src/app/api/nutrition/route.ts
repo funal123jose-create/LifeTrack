@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { GoogleGenAI, Type } from "@google/genai"
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+import { createClient } from "@/lib/supabase/server"
+import { getGeminiApiKey } from "@/lib/env/server"
 
 const ALLOWED_MEAL_TYPES = [
   "breakfast",
@@ -27,6 +27,23 @@ type NutritionMeal = {
 type NutritionResponse = {
   totalCalories: number
   meals: NutritionMeal[]
+}
+
+type RawNutritionMeal = {
+  meal_type?: unknown
+  description?: unknown
+  estimated_calories?: unknown
+  confidence?: unknown
+  portion_assumption?: unknown
+}
+
+type RawNutritionPayload = {
+  totalCalories?: unknown
+  meals?: unknown
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null
 }
 
 function normalizeMealType(value: unknown): MealType {
@@ -92,22 +109,24 @@ function applyRealisticFloor(meal: NutritionMeal): NutritionMeal {
   return meal
 }
 
-function sanitizeNutritionResponse(value: any): NutritionResponse {
-  const rawMeals = Array.isArray(value?.meals) ? value.meals : []
+function sanitizeNutritionResponse(value: unknown): NutritionResponse {
+  const payload: RawNutritionPayload = isRecord(value) ? value : {}
+  const rawMeals = Array.isArray(payload.meals) ? payload.meals : []
 
   const meals: NutritionMeal[] = rawMeals
-    .map((item: any) => {
-      const description = String(item?.description || "").trim()
-      const estimatedCalories = Math.max(0, Math.round(Number(item?.estimated_calories || 0)))
+    .map((item) => {
+      const mealItem: RawNutritionMeal = isRecord(item) ? item : {}
+      const description = String(mealItem.description || "").trim()
+      const estimatedCalories = Math.max(0, Math.round(Number(mealItem.estimated_calories || 0)))
 
       if (!description || estimatedCalories <= 0) return null
 
       const meal: NutritionMeal = {
-        meal_type: normalizeMealType(item?.meal_type),
+        meal_type: normalizeMealType(mealItem.meal_type),
         description,
         estimated_calories: estimatedCalories,
-        confidence: normalizeConfidence(item?.confidence),
-        portion_assumption: String(item?.portion_assumption || "Porción promedio").trim(),
+        confidence: normalizeConfidence(mealItem.confidence),
+        portion_assumption: String(mealItem.portion_assumption || "Porcion promedio").trim(),
       }
 
       return applyRealisticFloor(meal)
@@ -115,7 +134,7 @@ function sanitizeNutritionResponse(value: any): NutritionResponse {
     .filter(Boolean) as NutritionMeal[]
 
   const calculatedTotal = meals.reduce((sum, item) => sum + item.estimated_calories, 0)
-  const fallbackTotal = Math.max(0, Math.round(Number(value?.totalCalories || 0)))
+  const fallbackTotal = Math.max(0, Math.round(Number(payload.totalCalories || 0)))
 
   return {
     totalCalories: calculatedTotal > 0 ? calculatedTotal : fallbackTotal,
@@ -125,6 +144,22 @@ function sanitizeNutritionResponse(value: any): NutritionResponse {
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = await createClient()
+    const { data, error: authError } = await supabase.auth.getClaims()
+
+    if (authError || !data?.claims) {
+      return NextResponse.json({ error: "No autorizado." }, { status: 401 })
+    }
+
+    let geminiApiKey: string
+
+    try {
+      geminiApiKey = getGeminiApiKey()
+    } catch {
+      return NextResponse.json({ error: "Servicio de nutricion no configurado." }, { status: 500 })
+    }
+
+    const ai = new GoogleGenAI({ apiKey: geminiApiKey })
     const { text, audio, mimeType, mode } = await req.json()
 
     // --- MODO 1: TRANSCRIBIR AUDIO A TEXTO ---
@@ -280,8 +315,10 @@ Respuesta esperada:
     }
 
     return NextResponse.json({ error: "Parámetros inválidos o faltantes." }, { status: 400 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error en el endpoint de nutrición:", error)
-    return NextResponse.json({ error: error.message || "Error interno del servidor" }, { status: 500 })
+    const message = error instanceof Error ? error.message : "Error interno del servidor"
+
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

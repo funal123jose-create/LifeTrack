@@ -1,14 +1,12 @@
 "use client"
 
 import { useEffect, useState, useCallback, useRef } from "react"
+import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
-  Zap,
   Activity,
-  Target,
-  ArrowUpRight,
   Plus,
   BrainCircuit,
   Sparkles,
@@ -22,22 +20,18 @@ import {
   Orbit,
   Database,
   CheckCircle2,
-  CircleDotDashed,
-  TimerReset,
-  ScanLine,
   Gauge,
   Layers3,
-  Trophy,
   UserRound,
   CalendarClock,
   Waves,
-  ChevronRight,
   Rocket,
   LineChart,
   Star,
   Cpu,
   Scale,
   BatteryCharging,
+  type LucideIcon,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { RegistrationPanel } from "@/components/registration-panel"
@@ -204,6 +198,18 @@ type CareerSkillDetail = {
   last_used_at: string | null
 }
 
+type RawCareerSkillDetail = {
+  skill_id?: unknown
+  name?: unknown
+  category?: unknown
+  color?: unknown
+  icon?: unknown
+  projects_count?: unknown
+  active_projects_count?: unknown
+  completed_projects_count?: unknown
+  last_used_at?: unknown
+}
+
 type CareerSkillsSummary = {
   total_skills: number
   used_skills: number
@@ -262,8 +268,8 @@ export default function DashboardPage() {
   // --- ESTADOS PARA LÓGICA REAL ---
   const [careerProgress, setCareerProgress] = useState(0)
   const [healthProgress, setHealthProgress] = useState(0)
-  const [loadingProgress, setLoadingProgress] = useState(true)
-  const [loadingHealth, setLoadingHealth] = useState(true)
+  const [, setLoadingProgress] = useState(true)
+  const [, setLoadingHealth] = useState(true)
 
   // --- NUEVAS MÉTRICAS DEL DASHBOARD GENERAL ---
   const [totalProjects, setTotalProjects] = useState(0)
@@ -271,7 +277,7 @@ export default function DashboardPage() {
   const [completedProjects, setCompletedProjects] = useState(0)
   const [totalCareerTasks, setTotalCareerTasks] = useState(0)
   const [completedCareerTasks, setCompletedCareerTasks] = useState(0)
-  const [plannedWorkoutDays, setPlannedWorkoutDays] = useState(0)
+  const [, setPlannedWorkoutDays] = useState(0)
   const [completedHealthTasks, setCompletedHealthTasks] = useState(0)
   const [totalHealthTasks, setTotalHealthTasks] = useState(0)
 
@@ -284,24 +290,24 @@ export default function DashboardPage() {
 
   // --- RESUMEN SEMANAL DE SALUD ---
   const [weeklyHealthSummary, setWeeklyHealthSummary] = useState<WeeklyHealthSummary | null>(null)
-  const [loadingWeeklyHealth, setLoadingWeeklyHealth] = useState(true)
+  const [, setLoadingWeeklyHealth] = useState(true)
 
   // --- RESUMEN SEMANAL DE DATA & CARRERA ---
   const [weeklyCareerSummary, setWeeklyCareerSummary] = useState<WeeklyCareerSummary | null>(null)
-  const [loadingWeeklyCareer, setLoadingWeeklyCareer] = useState(true)
+  const [, setLoadingWeeklyCareer] = useState(true)
 
   // --- ACTIVIDAD SEMANAL REAL DE DATA & CARRERA ---
   const [weeklyCareerActivity, setWeeklyCareerActivity] = useState<WeeklyCareerActivity | null>(null)
-  const [loadingWeeklyCareerActivity, setLoadingWeeklyCareerActivity] = useState(true)
+  const [, setLoadingWeeklyCareerActivity] = useState(true)
 
   // --- SKILLS & STACK PROFESIONAL ---
   const [careerSkillsSummary, setCareerSkillsSummary] = useState<CareerSkillsSummary | null>(null)
-  const [loadingCareerSkills, setLoadingCareerSkills] = useState(true)
+  const [, setLoadingCareerSkills] = useState(true)
 
   // --- RESUMEN SEMANAL DE CUIDADO PERSONAL ---
   const [personalCareProgress, setPersonalCareProgress] = useState(0)
   const [weeklyPersonalCareSummary, setWeeklyPersonalCareSummary] = useState<WeeklyPersonalCareSummary | null>(null)
-  const [loadingPersonalCare, setLoadingPersonalCare] = useState(true)
+  const [, setLoadingPersonalCare] = useState(true)
 
   const supabase = createClient()
 
@@ -339,7 +345,7 @@ export default function DashboardPage() {
     if (completionsError) throw completionsError
 
     const completionSet = new Set(
-      (completions || []).map((row: any) => `${Number(row.dia_semana)}-${String(row.routine_type)}`)
+      (completions || []).map((row) => `${Number(row.dia_semana)}-${String(row.routine_type)}`)
     )
 
     let plannedTrainingDays = 0
@@ -348,7 +354,7 @@ export default function DashboardPage() {
     let totalRoutineItems = 0
     let completedRoutineItems = 0
 
-    ;(routines || []).forEach((row: any) => {
+    ;(routines || []).forEach((row) => {
       let hasFuerza = false
       let hasCardio = false
 
@@ -461,7 +467,7 @@ export default function DashboardPage() {
       setBodyProgressCount(progressCount || 0)
       setTodayMealCount(mealsCount || 0)
       setTodayWaterLiters(
-        (waterRows || []).reduce((total: number, row: any) => total + Number(row.amount_liters || 0), 0)
+        (waterRows || []).reduce((total, row) => total + Number(row.amount_liters || 0), 0)
       )
     } catch (error) {
       console.error("Error cargando insights históricos de salud:", error)
@@ -753,7 +759,9 @@ export default function DashboardPage() {
         return
       }
 
-      const rawSkillsDetail = Array.isArray(data?.skills_detail) ? data.skills_detail : []
+      const rawSkillsDetail: RawCareerSkillDetail[] = Array.isArray(data?.skills_detail)
+        ? data.skills_detail as RawCareerSkillDetail[]
+        : []
 
       setCareerSkillsSummary(data ? {
         total_skills: Number(data.total_skills || 0),
@@ -764,16 +772,16 @@ export default function DashboardPage() {
         top_skill_category: data.top_skill_category || null,
         top_skill_projects_count: Number(data.top_skill_projects_count || 0),
         categories_count: Number(data.categories_count || 0),
-        skills_detail: rawSkillsDetail.map((skill: any) => ({
+        skills_detail: rawSkillsDetail.map((skill) => ({
           skill_id: String(skill.skill_id || ""),
           name: String(skill.name || "Sin nombre"),
           category: String(skill.category || "General"),
-          color: skill.color || null,
-          icon: skill.icon || null,
+          color: skill.color ? String(skill.color) : null,
+          icon: skill.icon ? String(skill.icon) : null,
           projects_count: Number(skill.projects_count || 0),
           active_projects_count: Number(skill.active_projects_count || 0),
           completed_projects_count: Number(skill.completed_projects_count || 0),
-          last_used_at: skill.last_used_at || null,
+          last_used_at: skill.last_used_at ? String(skill.last_used_at) : null,
         }))
       } : null)
     } catch (error) {
@@ -840,7 +848,7 @@ export default function DashboardPage() {
         return
       }
 
-      const summary = data as any
+      const summary = data
 
       if (!summary) {
         setWeeklyPersonalCareSummary({
@@ -948,18 +956,18 @@ export default function DashboardPage() {
         let totalTasks = 0
         let completedTasks = 0
 
-        projects.forEach((project: any) => {
+        projects.forEach((project) => {
           const tasks = project.project_tasks || []
           totalTasks += tasks.length
-          completedTasks += tasks.filter((t: any) => String(t.status).toUpperCase() === "COMPLETADO").length
+          completedTasks += tasks.filter((task) => String(task.status).toUpperCase() === "COMPLETADO").length
         })
 
         const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
 
         setCareerProgress(percentage)
         setTotalProjects(projects.length)
-        setActiveProjects(projects.filter((p: any) => String(p.status).toLowerCase() === "en curso").length)
-        setCompletedProjects(projects.filter((p: any) => String(p.status).toLowerCase() === "completado").length)
+        setActiveProjects(projects.filter((project) => String(project.status).toLowerCase() === "en curso").length)
+        setCompletedProjects(projects.filter((project) => String(project.status).toLowerCase() === "completado").length)
         setTotalCareerTasks(totalTasks)
         setCompletedCareerTasks(completedTasks)
       } else {
@@ -1018,15 +1026,25 @@ export default function DashboardPage() {
       }
     }
 
-    getUserProfile()
-    fetchRealProgress()
-    fetchHealthProgress()
-    fetchHealthInsights()
-    fetchWeeklyHealthSummary()
-    fetchWeeklyCareerSummary()
-    fetchWeeklyCareerActivity()
-    fetchCareerSkillsSummary()
-    fetchWeeklyPersonalCareSummary()
+    let isActive = true
+
+    queueMicrotask(() => {
+      if (!isActive) return
+
+      getUserProfile()
+      fetchRealProgress()
+      fetchHealthProgress()
+      fetchHealthInsights()
+      fetchWeeklyHealthSummary()
+      fetchWeeklyCareerSummary()
+      fetchWeeklyCareerActivity()
+      fetchCareerSkillsSummary()
+      fetchWeeklyPersonalCareSummary()
+    })
+
+    return () => {
+      isActive = false
+    }
   }, [supabase, fetchRealProgress, fetchHealthProgress, fetchHealthInsights, fetchWeeklyHealthSummary, fetchWeeklyCareerSummary, fetchWeeklyCareerActivity, fetchCareerSkillsSummary, fetchWeeklyPersonalCareSummary])
 
   // --- ESCUCHA EN TIEMPO REAL DESDE SUPABASE ---
@@ -1034,7 +1052,7 @@ export default function DashboardPage() {
     const healthChannel = supabase
       .channel("realtime-health-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1050,7 +1068,7 @@ export default function DashboardPage() {
     const routineCompletionsChannel = supabase
       .channel("realtime-health-routine-completions-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1066,7 +1084,7 @@ export default function DashboardPage() {
     const projectsChannel = supabase
       .channel("realtime-career-projects-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1084,7 +1102,7 @@ export default function DashboardPage() {
     const tasksChannel = supabase
       .channel("realtime-career-tasks-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1101,7 +1119,7 @@ export default function DashboardPage() {
     const careerActivityChannel = supabase
       .channel("realtime-career-activity-logs-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1116,7 +1134,7 @@ export default function DashboardPage() {
     const careerSkillsChannel = supabase
       .channel("realtime-career-skills-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1131,7 +1149,7 @@ export default function DashboardPage() {
     const projectSkillsChannel = supabase
       .channel("realtime-project-skills-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1146,7 +1164,7 @@ export default function DashboardPage() {
     const bodyProgressChannel = supabase
       .channel("realtime-body-progress-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1162,7 +1180,7 @@ export default function DashboardPage() {
     const mealLogsChannel = supabase
       .channel("realtime-meal-logs-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1178,7 +1196,7 @@ export default function DashboardPage() {
     const waterLogsChannel = supabase
       .channel("realtime-water-logs-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1194,7 +1212,7 @@ export default function DashboardPage() {
     const personalCareDailyLogsChannel = supabase
       .channel("realtime-personal-care-daily-logs-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1209,7 +1227,7 @@ export default function DashboardPage() {
     const personalCareRoutinesChannel = supabase
       .channel("realtime-personal-care-routines-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1224,7 +1242,7 @@ export default function DashboardPage() {
     const personalCareCompletionsChannel = supabase
       .channel("realtime-personal-care-completions-changes")
       .on(
-        "postgres_changes" as any,
+        "postgres_changes",
         {
           event: "*",
           schema: "public",
@@ -1261,14 +1279,24 @@ export default function DashboardPage() {
     }
 
     if (!isPanelOpen) {
-      fetchRealProgress()
-      fetchHealthProgress()
-      fetchHealthInsights()
-      fetchWeeklyHealthSummary()
-      fetchWeeklyCareerSummary()
-      fetchWeeklyCareerActivity()
-      fetchCareerSkillsSummary()
-      fetchWeeklyPersonalCareSummary()
+      let isActive = true
+
+      queueMicrotask(() => {
+        if (!isActive) return
+
+        fetchRealProgress()
+        fetchHealthProgress()
+        fetchHealthInsights()
+        fetchWeeklyHealthSummary()
+        fetchWeeklyCareerSummary()
+        fetchWeeklyCareerActivity()
+        fetchCareerSkillsSummary()
+        fetchWeeklyPersonalCareSummary()
+      })
+
+      return () => {
+        isActive = false
+      }
     }
   }, [isPanelOpen, fetchRealProgress, fetchHealthProgress, fetchHealthInsights, fetchWeeklyHealthSummary, fetchWeeklyCareerSummary, fetchWeeklyCareerActivity, fetchCareerSkillsSummary, fetchWeeklyPersonalCareSummary])
 
@@ -1312,10 +1340,6 @@ export default function DashboardPage() {
     ? Math.min(Math.max(Math.round(weeklyCareerSummary.total_task_completion_percentage || 0), 0), 100)
     : 0
 
-  const careerActivityScore = weeklyCareerActivity
-    ? Math.min(Math.round((weeklyCareerActivity.total_events / 15) * 100), 100)
-    : 0
-
   const careerActivityLabel =
     weeklyCareerActivity?.activity_intensity === "high"
       ? "Alta intensidad"
@@ -1324,18 +1348,6 @@ export default function DashboardPage() {
         : weeklyCareerActivity?.activity_intensity === "low"
           ? "Actividad inicial"
           : "Sin actividad"
-
-  const careerOperationalEvents = weeklyCareerActivity
-    ? weeklyCareerActivity.projects_created_events +
-      weeklyCareerActivity.projects_completed_events +
-      weeklyCareerActivity.project_status_changed_events +
-      weeklyCareerActivity.project_priority_changed_events +
-      weeklyCareerActivity.tasks_created_events +
-      weeklyCareerActivity.tasks_completed_events +
-      weeklyCareerActivity.tasks_archived_events +
-      weeklyCareerActivity.task_status_changed_events +
-      weeklyCareerActivity.task_priority_changed_events
-    : 0
 
   const careerProfessionalEvents = weeklyCareerActivity?.professional_activity_events || 0
 
@@ -1394,101 +1406,6 @@ export default function DashboardPage() {
   const topSkillLabel = careerSkillsSummary && careerSkillsSummary.top_skill_projects_count > 0
     ? careerSkillsSummary.top_skill_name || "Sin skill dominante"
     : "Sin skill dominante"
-
-  const topSkillCategoryLabel = careerSkillsSummary && careerSkillsSummary.top_skill_projects_count > 0
-    ? careerSkillsSummary.top_skill_category || "Sin categoría"
-    : "Aún sin proyectos"
-
-  const stats = [
-    {
-      title: "Sistema Global",
-      value: `${globalProgress}%`,
-      icon: Gauge,
-      color: "from-slate-700 via-blue-600 to-cyan-500",
-      glow: "shadow-blue-500/10",
-      accent: "text-blue-300",
-      description: "Promedio de 3 pilares reales",
-      trend: "Live",
-    },
-    {
-      title: "Salud Física",
-      value: loadingHealth ? "..." : `${healthProgress}%`,
-      icon: HeartPulse,
-      color: "from-slate-700 via-emerald-600 to-teal-500",
-      glow: "shadow-emerald-500/10",
-      accent: "text-emerald-300",
-      description: `Rutina ${completedHealthTasks}/${totalHealthTasks} · ${latestWeightKg !== null ? `${latestWeightKg} kg` : "sin peso"}`,
-      trend: "Real-time",
-    },
-    {
-      title: "Data & Carrera",
-      value: loadingProgress ? "..." : `${careerProgress}%`,
-      icon: BrainCircuit,
-      color: "from-slate-700 via-orange-600 to-amber-500",
-      glow: "shadow-orange-500/10",
-      accent: "text-orange-300",
-      description: `${completedCareerTasks}/${totalCareerTasks} subtareas completadas`,
-      trend: "Real-time",
-    },
-    {
-      title: "Cuidado Personal",
-      value: loadingPersonalCare ? "..." : `${personalCareProgress}%`,
-      icon: UserRound,
-      color: "from-slate-700 via-purple-600 to-fuchsia-500",
-      glow: "shadow-purple-500/10",
-      accent: "text-purple-300",
-      description: `${weeklyPersonalCheckins}/7 check-ins · ${weeklyPersonalCompletedRoutines} rutinas`,
-      trend: "Real-time",
-    },
-  ]
-
-  const pillarRows = [
-    {
-      label: "Salud Física",
-      val: healthProgress,
-      color: "bg-emerald-500",
-      text: "text-emerald-300",
-      icon: Activity,
-      description: `${plannedWorkoutDays} días planificados · ${completedHealthTasks}/${totalHealthTasks} tareas · energía ${latestEnergyLevel !== null ? `${latestEnergyLevel}/10` : "sin registro"}`,
-    },
-    {
-      label: "Carrera & Datos",
-      val: careerProgress,
-      color: "bg-orange-500",
-      text: "text-orange-300",
-      icon: Database,
-      description: `${activeProjects} proyectos activos de ${totalProjects} totales`,
-    },
-    {
-      label: "Cuidado Personal",
-      val: personalCareProgress,
-      color: "bg-purple-500",
-      text: "text-purple-300",
-      icon: UserRound,
-      description: `${weeklyPersonalCheckins}/7 check-ins · ${weeklyPersonalActiveRoutines} rutinas activas`,
-    },
-  ]
-
-  const milestones = [
-    {
-      title: "Sostener check-in y rutinas de cuidado personal",
-      label: "Tercer pilar conectado",
-      icon: UserRound,
-      style: "border-purple-400/20 bg-purple-500/10 text-purple-300",
-    },
-    {
-      title: "Analizar tendencia semanal de salud",
-      label: "Resumen semanal conectado",
-      icon: Flame,
-      style: "border-emerald-400/20 bg-emerald-500/10 text-emerald-300",
-    },
-    {
-      title: "Analizar productividad semanal de carrera",
-      label: "Resumen Data & Carrera conectado",
-      icon: Cpu,
-      style: "border-orange-400/20 bg-orange-500/10 text-orange-300",
-    },
-  ]
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -1620,7 +1537,7 @@ export default function DashboardPage() {
     title: string,
     value: string,
     helper: string,
-    Icon: any,
+    Icon: LucideIcon,
     shellClassName: string,
     iconClassName: string,
     progress?: number
@@ -1659,7 +1576,7 @@ export default function DashboardPage() {
     title: string,
     value: string,
     helper: string,
-    Icon: any,
+    Icon: LucideIcon,
     colorClasses: string
   ) => (
     <motion.div
@@ -1685,7 +1602,7 @@ export default function DashboardPage() {
     focus: string,
     best: string,
     recommendation: string,
-    Icon: any,
+    Icon: LucideIcon,
     accentShell: string,
     accentText: string
   ) => (
@@ -1810,9 +1727,12 @@ export default function DashboardPage() {
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(96,165,250,0.35),transparent_55%)] blur-3xl" />
                   <div className="relative rounded-full bg-gradient-to-br from-white/35 via-blue-200/18 to-purple-200/24 p-[5px] shadow-[0_30px_70px_rgba(0,0,0,0.32)]">
-                    <img
+                    <Image
                       src={profileImageSrc}
                       alt="Foto de perfil"
+                      width={224}
+                      height={224}
+                      sizes="(min-width: 768px) 224px, 192px"
                       className="h-48 w-48 rounded-full border border-white/[0.14] bg-[#09111f]/90 object-cover p-2 md:h-56 md:w-56"
                     />
                   </div>

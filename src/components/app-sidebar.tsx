@@ -22,17 +22,23 @@ const navItems = [
   { title: "Pilares", url: "/pilares", icon: Zap },
 ]
 
+function subscribeToClientMount(onStoreChange: () => void) {
+  onStoreChange()
+
+  return () => {}
+}
+
 export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
+  const mounted = React.useSyncExternalStore(subscribeToClientMount, () => true, () => false)
   const [displayName, setDisplayName] = React.useState("Cargando...")
 
   const supabase = createClient()
 
   React.useEffect(() => {
-    setMounted(true)
+    let isActive = true
 
     const fetchUser = async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -44,13 +50,17 @@ export function AppSidebar() {
           .eq("id", session.user.id)
           .single()
 
-        if (profile) {
+        if (isActive && profile) {
           setDisplayName(profile.full_name || profile.username || "Usuario")
         }
       }
     }
 
     fetchUser()
+
+    return () => {
+      isActive = false
+    }
   }, [supabase])
 
   const handleLogout = async () => {

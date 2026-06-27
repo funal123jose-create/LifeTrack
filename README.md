@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LifeTrack Personal
 
-## Getting Started
+LifeTrack es una aplicacion personal construida con Next.js, TypeScript y Supabase para gestionar tres pilares de vida: salud, carrera y cuidado personal.
 
-First, run the development server:
+## Stack
+
+- Next.js App Router
+- TypeScript
+- Supabase Auth, Database y Storage
+- Tailwind CSS
+- Framer Motion
+- Recharts
+- Google Gemini API para estimacion nutricional
+
+## Rutas principales
+
+- `/login`: autenticacion de usuario.
+- `/dashboard`: resumen general privado.
+- `/pilares`: vista privada de pilares.
+- `/pilares/salud`: seguimiento de salud.
+- `/pilares/carrera`: proyectos, tareas, skills y evidencias.
+- `/pilares/cuidado-personal`: rutinas y seguimiento personal.
+- `/api/nutrition`: endpoint privado de servidor para estimacion nutricional con Gemini.
+
+## Variables de entorno
+
+Crea un archivo `.env.local` en la raiz del proyecto. No subas este archivo a Git.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+GEMINI_API_KEY=
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Notas:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` son publicas para el cliente web, pero igual deben configurarse por entorno.
+- `GEMINI_API_KEY` es privada y solo debe usarse del lado servidor.
+- No uses ni expongas `service_role`, contrasenas de base de datos, tokens personales o secretos de Vercel en el frontend.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Desarrollo local
 
-## Learn More
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Abre `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Validacion
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run lint
+npm run build
+```
 
-## Deploy on Vercel
+## Supabase
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+El proyecto local esta vinculado al proyecto Supabase de LifeTrack mediante `supabase/.temp/project-ref`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Antes de hacer cambios de esquema o politicas:
+
+- verifica el project ref;
+- revisa RLS en tablas expuestas;
+- revisa views y funciones `SECURITY DEFINER`;
+- revisa politicas de Storage;
+- genera o actualiza migraciones de forma controlada.
+
+## Seguridad local
+
+- Las rutas `/dashboard`, `/dashboard/:path*`, `/pilares` y `/pilares/:path*` se protegen desde `src/proxy.ts`.
+- `.env*` esta ignorado por Git.
+- Los secretos privados no deben usar prefijo `NEXT_PUBLIC_`.

@@ -9,10 +9,11 @@ import { Textarea } from "@/components/ui/textarea"
 import {
   FolderPlus, ChevronLeft, BrainCircuit, CheckCircle2, Circle,
   Trash2, Plus, Clock, Play, ListTodo, HelpCircle, AlertCircle, X, Maximize2, Archive, Activity, Sparkles,
-  Tags, Database, Cpu, Layers3, FileText, Save, BookOpen, Wrench, Lightbulb, LinkIcon, ClipboardCheck,
-  Target, Bold, Italic, Underline as UnderlineIcon, Heading1, Heading2, List, ListOrdered,
+  Tags, Database, Cpu, Layers3, FileText, Save, BookOpen, LinkIcon,
+  Bold, Italic, Underline as UnderlineIcon, Heading1, Heading2, List, ListOrdered,
   Quote, Code2, Palette, Highlighter, Eraser, ImageIcon, UploadCloud,
-  Paperclip, ExternalLink, Download, FileArchive
+  Paperclip, ExternalLink, Download, FileArchive,
+  type LucideIcon,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
@@ -23,6 +24,12 @@ import Highlight from "@tiptap/extension-highlight"
 import TiptapLink from "@tiptap/extension-link"
 import Underline from "@tiptap/extension-underline"
 import TiptapImage from "@tiptap/extension-image"
+import type { Database as SupabaseDatabase, Json } from "@/types/database"
+
+type BrowserSupabaseClient = ReturnType<typeof createClient<SupabaseDatabase>>
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Error desconocido"
 
 // --- COMPONENTE INTERACTIVO DE FONDO DARK MINIMALISTA CON ACENTOS NARANJA, PARTÍCULAS Y MOUSE TRACKING ---
 function CyberBackground() {
@@ -372,11 +379,11 @@ interface ProjectTaskDoc {
   learnings: string
   result_summary: string
   reference_links: string
-  document_content_json: any | null
+  document_content_json: Json | null
   document_content_html: string
 }
 
-type RichEditorJSON = Record<string, any>
+type RichEditorJSON = { [key: string]: Json | undefined }
 
 interface ProjectTaskAsset {
   id: string
@@ -501,7 +508,7 @@ function RichTaskDocumentEditor({
   taskTitle: string
   initialContent: RichEditorJSON | null
   onContentChange: (json: RichEditorJSON, html: string) => void
-  supabase: any
+  supabase: BrowserSupabaseClient
   projectId: string
   taskId: string
   docId?: string | null
@@ -527,10 +534,15 @@ function RichTaskDocumentEditor({
 
   const imageInputRef = useRef<HTMLInputElement | null>(null)
   const documentInputRef = useRef<HTMLInputElement | null>(null)
+  const onContentChangeRef = useRef(onContentChange)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [uploadingDocument, setUploadingDocument] = useState(false)
   const [referenceAssets, setReferenceAssets] = useState<ProjectTaskAsset[]>([])
   const [loadingReferenceAssets, setLoadingReferenceAssets] = useState(false)
+
+  useEffect(() => {
+    onContentChangeRef.current = onContentChange
+  }, [onContentChange])
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -579,13 +591,13 @@ function RichTaskDocumentEditor({
       },
     },
     onUpdate: ({ editor }) => {
-      onContentChange(editor.getJSON() as RichEditorJSON, editor.getHTML())
+      onContentChangeRef.current(editor.getJSON() as RichEditorJSON, editor.getHTML())
     },
   })
 
   useEffect(() => {
     if (!editor) return
-    onContentChange(editor.getJSON() as RichEditorJSON, editor.getHTML())
+    onContentChangeRef.current(editor.getJSON() as RichEditorJSON, editor.getHTML())
   }, [editor])
 
   const buildStorageFilePath = (userId: string, file: File, folder: "images" | "documents") => {
@@ -618,15 +630,25 @@ function RichTaskDocumentEditor({
       if (error) throw error
 
       setReferenceAssets((data || []) as ProjectTaskAsset[])
-    } catch (err: any) {
-      console.error("Error cargando documentos de referencia:", err?.message || err)
+    } catch (err: unknown) {
+      console.error("Error cargando documentos de referencia:", getErrorMessage(err))
     } finally {
       setLoadingReferenceAssets(false)
     }
   }, [supabase, taskId])
 
   useEffect(() => {
-    fetchReferenceAssets()
+    let isActive = true
+
+    queueMicrotask(() => {
+      if (isActive) {
+        fetchReferenceAssets()
+      }
+    })
+
+    return () => {
+      isActive = false
+    }
   }, [fetchReferenceAssets])
 
 
@@ -715,9 +737,9 @@ function RichTaskDocumentEditor({
       if (assetError) throw assetError
 
       setReferenceAssets((prev) => [inserted as ProjectTaskAsset, ...prev])
-    } catch (err: any) {
-      console.error("Error subiendo documento de referencia:", err?.message || err)
-      alert(`No se pudo adjuntar el documento: ${err?.message || "Error desconocido"}`)
+    } catch (err: unknown) {
+      console.error("Error subiendo documento de referencia:", getErrorMessage(err))
+      alert(`No se pudo adjuntar el documento: ${getErrorMessage(err)}`)
     } finally {
       setUploadingDocument(false)
       if (documentInputRef.current) documentInputRef.current.value = ""
@@ -744,9 +766,9 @@ function RichTaskDocumentEditor({
       }
 
       setReferenceAssets((prev) => prev.filter((item) => item.id !== asset.id))
-    } catch (err: any) {
-      console.error("Error eliminando documento de referencia:", err?.message || err)
-      alert(`No se pudo eliminar el documento: ${err?.message || "Error desconocido"}`)
+    } catch (err: unknown) {
+      console.error("Error eliminando documento de referencia:", getErrorMessage(err))
+      alert(`No se pudo eliminar el documento: ${getErrorMessage(err)}`)
     }
   }
 
@@ -814,9 +836,9 @@ function RichTaskDocumentEditor({
         .run()
 
       onContentChange(editor.getJSON() as RichEditorJSON, editor.getHTML())
-    } catch (err: any) {
-      console.error("Error subiendo imagen documental:", err?.message || err)
-      alert(`No se pudo insertar la imagen: ${err?.message || "Error desconocido"}`)
+    } catch (err: unknown) {
+      console.error("Error subiendo imagen documental:", getErrorMessage(err))
+      alert(`No se pudo insertar la imagen: ${getErrorMessage(err)}`)
     } finally {
       setUploadingImage(false)
       if (imageInputRef.current) imageInputRef.current.value = ""
@@ -1183,6 +1205,68 @@ interface ProjectSkillLink {
   career_skills: CareerSkill | null
 }
 
+type RawCareerSkill = {
+  id?: unknown
+  name?: unknown
+  category?: unknown
+  color?: unknown
+  icon?: unknown
+}
+
+type RawSkillLink = {
+  id?: unknown
+  skill_id?: unknown
+  proficiency_level?: unknown
+  notes?: unknown
+  career_skills?: RawCareerSkill | null
+}
+
+type RawProjectTask = {
+  id?: unknown
+  title?: unknown
+  status?: unknown
+  project_task_skills?: RawSkillLink[] | null
+}
+
+type RawProject = {
+  id?: unknown
+  title?: unknown
+  summary?: unknown
+  description?: unknown
+  status?: unknown
+  priority?: unknown
+  start_date?: unknown
+  end_date?: unknown
+  project_tasks?: RawProjectTask[] | null
+  project_skills?: RawSkillLink[] | null
+}
+
+type RawProjectProfessionalScore = Partial<Record<keyof ProjectProfessionalScore, unknown>>
+type RawProjectTechnicalSummary = Partial<Record<keyof ProjectTechnicalSummary, unknown>>
+type ProjectUpdate = SupabaseDatabase["public"]["Tables"]["projects"]["Update"]
+
+const toOptionalString = (value: unknown) =>
+  value === null || value === undefined ? null : String(value)
+
+const toRequiredString = (value: unknown, fallback = "") =>
+  value === null || value === undefined ? fallback : String(value)
+
+const mapCareerSkill = (skill: RawCareerSkill): CareerSkill => ({
+  id: toRequiredString(skill.id),
+  name: toRequiredString(skill.name),
+  category: toRequiredString(skill.category, "General"),
+  color: toOptionalString(skill.color) || "#f97316",
+  icon: toOptionalString(skill.icon) || "Cpu",
+})
+
+const mapSkillLink = (link: RawSkillLink): ProjectSkillLink => ({
+  id: toRequiredString(link.id),
+  skill_id: toRequiredString(link.skill_id),
+  proficiency_level: toOptionalString(link.proficiency_level),
+  notes: toOptionalString(link.notes),
+  career_skills: link.career_skills ? mapCareerSkill(link.career_skills) : null,
+})
+
 interface ProjectProfessionalScore {
   project_id: string
   total_tasks: number
@@ -1262,7 +1346,7 @@ interface ProjectCaseStudyTaskDoc {
   result_summary?: string | null
   reference_links?: string | null
   document_content_html?: string | null
-  document_content_json?: any | null
+  document_content_json?: Json | null
 }
 
 interface ProjectCaseStudyTask {
@@ -2113,6 +2197,7 @@ export default function DataCarreraPage() {
   const [newDescription, setNewDescription] = useState("")
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const selectedProjectId = selectedProject?.id
   const [newTaskText, setNewTaskText] = useState("")
 
   const [selectedTaskForDoc, setSelectedTaskForDoc] = useState<Task | null>(null)
@@ -2126,7 +2211,7 @@ export default function DataCarreraPage() {
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<ProjectCaseStudyDetail | null>(null)
   const [loadingCaseStudy, setLoadingCaseStudy] = useState(false)
 
-  const macroColumns: { id: ProjectStatus; label: string; color: string; bg: string; borderGlow: string; icon: any }[] = [
+  const macroColumns: { id: ProjectStatus; label: string; color: string; bg: string; borderGlow: string; icon: LucideIcon }[] = [
     { id: 'Backlog', label: 'Backlog', color: 'text-slate-400', bg: 'bg-slate-500/5', borderGlow: 'group-hover:border-slate-500/30', icon: HelpCircle },
     { id: 'En planeación', label: 'Planeación', color: 'text-amber-500', bg: 'bg-amber-500/5', borderGlow: 'group-hover:border-amber-500/30', icon: Clock },
     { id: 'En curso', label: 'En Curso', color: 'text-blue-500', bg: 'bg-blue-500/5', borderGlow: 'group-hover:border-blue-500/30', icon: Play },
@@ -2135,7 +2220,7 @@ export default function DataCarreraPage() {
     { id: 'Cancelado', label: 'Cancelado', color: 'text-rose-400', bg: 'bg-rose-500/5', borderGlow: 'group-hover:border-rose-500/30', icon: X }
   ]
 
-  const microColumns: { id: TaskStatus; label: string; color: string; border: string; icon: any }[] = [
+  const microColumns: { id: TaskStatus; label: string; color: string; border: string; icon: LucideIcon }[] = [
     { id: 'SIN EMPEZAR', label: 'Sin empezar', color: 'text-slate-400', border: 'border-slate-500/10', icon: Circle },
     { id: 'EN CURSO', label: 'En curso', color: 'text-blue-400', border: 'border-blue-500/10', icon: Clock },
     { id: 'COMPLETADO', label: 'Completado', color: 'text-emerald-400', border: 'border-emerald-400/10', icon: CheckCircle2 },
@@ -2266,13 +2351,6 @@ export default function DataCarreraPage() {
     document_content_html: "",
   })
 
-  const updateTaskDocField = (field: keyof ProjectTaskDoc, value: string) => {
-    setTaskDoc((prev) => ({
-      ...(prev || buildEmptyTaskDoc(selectedTaskForDoc)),
-      [field]: value,
-    }))
-  }
-
   const updateTaskDocRichContent = (json: RichEditorJSON, html: string) => {
     setTaskDoc((prev) => ({
       ...(prev || buildEmptyTaskDoc(selectedTaskForDoc)),
@@ -2308,15 +2386,9 @@ export default function DataCarreraPage() {
 
       if (error) throw error
 
-      setCareerSkills((data || []).map((skill: any) => ({
-        id: skill.id,
-        name: skill.name,
-        category: skill.category || 'General',
-        color: skill.color || '#f97316',
-        icon: skill.icon || 'Cpu'
-      })))
-    } catch (err: any) {
-      console.error("Error sincronizando catálogo de skills:", err?.message || err)
+      setCareerSkills(((data || []) as RawCareerSkill[]).map(mapCareerSkill))
+    } catch (err: unknown) {
+      console.error("Error sincronizando catálogo de skills:", getErrorMessage(err))
     } finally {
       setLoadingSkills(false)
     }
@@ -2369,7 +2441,7 @@ export default function DataCarreraPage() {
       if (error) throw error
 
       if (data) {
-        const mapped: Project[] = data.map((proj: any) => {
+        const mapped: Project[] = (data as RawProject[]).map((proj) => {
           let currentStatus: ProjectStatus = 'Backlog'
           const dbStatus = String(proj.status).toLowerCase().trim()
 
@@ -2382,54 +2454,38 @@ export default function DataCarreraPage() {
           const cleanPriority = (proj.priority === 'Baja' || proj.priority === 'Media' || proj.priority === 'Alta') ?
             proj.priority : 'Media'
 
-          const tasks: Task[] = (Array.isArray(proj.project_tasks) ? proj.project_tasks : []).map((t: any) => {
+          const tasks: Task[] = (Array.isArray(proj.project_tasks) ? proj.project_tasks : []).map((t) => {
             const rawStatus = String(t.status || 'SIN EMPEZAR').toUpperCase() as TaskStatus
 
-            const taskSkillLinks: ProjectTaskSkillLink[] = (Array.isArray(t.project_task_skills) ? t.project_task_skills : []).map((link: any) => ({
-              id: link.id,
-              skill_id: link.skill_id,
-              proficiency_level: link.proficiency_level || 'Aplicado',
-              notes: link.notes || null,
-              career_skills: link.career_skills ? {
-                id: link.career_skills.id,
-                name: link.career_skills.name,
-                category: link.career_skills.category || 'General',
-                color: link.career_skills.color || '#f97316',
-                icon: link.career_skills.icon || 'Cpu'
-              } : null
-            }))
+            const taskSkillLinks: ProjectTaskSkillLink[] = (Array.isArray(t.project_task_skills) ? t.project_task_skills : [])
+              .map((link) => ({
+                ...mapSkillLink(link),
+                proficiency_level: toOptionalString(link.proficiency_level) || "Aplicado",
+              }))
 
             return {
-              id: t.id,
-              title: t.title || '',
+              id: toRequiredString(t.id),
+              title: toRequiredString(t.title),
               status: ['SIN EMPEZAR', 'EN CURSO', 'COMPLETADO', 'ARCHIVADO'].includes(rawStatus) ? rawStatus : 'SIN EMPEZAR',
               task_skills: taskSkillLinks
             }
           })
 
-          const skillLinks: ProjectSkillLink[] = (Array.isArray(proj.project_skills) ? proj.project_skills : []).map((link: any) => ({
-            id: link.id,
-            skill_id: link.skill_id,
-            proficiency_level: link.proficiency_level || 'Practicando',
-            notes: link.notes || null,
-            career_skills: link.career_skills ? {
-              id: link.career_skills.id,
-              name: link.career_skills.name,
-              category: link.career_skills.category || 'General',
-              color: link.career_skills.color || '#f97316',
-              icon: link.career_skills.icon || 'Cpu'
-            } : null
-          }))
+          const skillLinks: ProjectSkillLink[] = (Array.isArray(proj.project_skills) ? proj.project_skills : [])
+            .map((link) => ({
+              ...mapSkillLink(link),
+              proficiency_level: toOptionalString(link.proficiency_level) || "Practicando",
+            }))
 
           return {
-            id: proj.id,
-            title: proj.title,
-            summary: proj.summary,
-            description: proj.description,
+            id: toRequiredString(proj.id),
+            title: toRequiredString(proj.title),
+            summary: toOptionalString(proj.summary),
+            description: toOptionalString(proj.description),
             status: currentStatus,
             priority: cleanPriority,
-            start_date: proj.start_date,
-            end_date: proj.end_date,
+            start_date: toOptionalString(proj.start_date),
+            end_date: toOptionalString(proj.end_date),
             project_tasks: tasks,
             project_skills: skillLinks
           }
@@ -2437,18 +2493,18 @@ export default function DataCarreraPage() {
 
         setProjects(mapped)
 
-        const targetId = updateModalId || selectedProject?.id
+        const targetId = updateModalId || selectedProjectId
         if (targetId) {
           const updated = mapped.find(p => p.id === targetId)
           if (updated) setSelectedProject(updated)
         }
       }
-    } catch (err: any) {
-      console.error("Error crítico en sincronización de la matriz:", err?.message || err)
+    } catch (err: unknown) {
+      console.error("Error crítico en sincronización de la matriz:", getErrorMessage(err))
     } finally {
       setLoading(false)
     }
-  }, [supabase, selectedProject?.id])
+  }, [supabase, selectedProjectId])
 
   const fetchProfessionalScores = useCallback(async () => {
     try {
@@ -2476,9 +2532,11 @@ export default function DataCarreraPage() {
 
       const mappedScores: Record<string, ProjectProfessionalScore> = {}
 
-      ;(data || []).forEach((score: any) => {
-        mappedScores[score.project_id] = {
-          project_id: score.project_id,
+      ;((data || []) as RawProjectProfessionalScore[]).forEach((score) => {
+        const projectId = toRequiredString(score.project_id)
+
+        mappedScores[projectId] = {
+          project_id: projectId,
           total_tasks: Number(score.total_tasks || 0),
           completed_tasks: Number(score.completed_tasks || 0),
           documented_tasks: Number(score.documented_tasks || 0),
@@ -2493,8 +2551,8 @@ export default function DataCarreraPage() {
       })
 
       setProjectScores(mappedScores)
-    } catch (err: any) {
-      console.error("Error cargando score profesional de proyectos:", err?.message || err)
+    } catch (err: unknown) {
+      console.error("Error cargando score profesional de proyectos:", getErrorMessage(err))
     }
   }, [supabase])
 
@@ -2541,16 +2599,18 @@ export default function DataCarreraPage() {
 
       const mappedSummaries: Record<string, ProjectTechnicalSummary> = {}
 
-      ;(data || []).forEach((summary: any) => {
-        mappedSummaries[summary.project_id] = {
-          project_id: summary.project_id,
-          project_title: summary.project_title || "",
-          project_description: summary.project_description || null,
-          project_summary: summary.project_summary || null,
-          project_status: summary.project_status || null,
-          project_priority: summary.project_priority || null,
-          start_date: summary.start_date || null,
-          end_date: summary.end_date || null,
+      ;((data || []) as RawProjectTechnicalSummary[]).forEach((summary) => {
+        const projectId = toRequiredString(summary.project_id)
+
+        mappedSummaries[projectId] = {
+          project_id: projectId,
+          project_title: toRequiredString(summary.project_title),
+          project_description: toOptionalString(summary.project_description),
+          project_summary: toOptionalString(summary.project_summary),
+          project_status: toOptionalString(summary.project_status),
+          project_priority: toOptionalString(summary.project_priority),
+          start_date: toOptionalString(summary.start_date),
+          end_date: toOptionalString(summary.end_date),
           total_tasks: Number(summary.total_tasks || 0),
           completed_tasks: Number(summary.completed_tasks || 0),
           in_progress_tasks: Number(summary.in_progress_tasks || 0),
@@ -2564,8 +2624,8 @@ export default function DataCarreraPage() {
           total_images: Number(summary.total_images || 0),
           total_documents: Number(summary.total_documents || 0),
           tasks_with_assets: Number(summary.tasks_with_assets || 0),
-          project_stack: summary.project_stack || "",
-          task_stack: summary.task_stack || "",
+          project_stack: toRequiredString(summary.project_stack),
+          task_stack: toRequiredString(summary.task_stack),
           task_completion_percentage: Number(summary.task_completion_percentage || 0),
           documentation_percentage: Number(summary.documentation_percentage || 0),
           skill_coverage_percentage: Number(summary.skill_coverage_percentage || 0),
@@ -2575,8 +2635,8 @@ export default function DataCarreraPage() {
       })
 
       setTechnicalSummaries(mappedSummaries)
-    } catch (err: any) {
-      console.error("Error cargando resumen técnico de proyectos:", err?.message || err)
+    } catch (err: unknown) {
+      console.error("Error cargando resumen técnico de proyectos:", getErrorMessage(err))
     }
   }, [supabase])
 
@@ -2659,9 +2719,9 @@ export default function DataCarreraPage() {
         evidence_coverage_percentage: Number(data.evidence_coverage_percentage || 0),
         professional_score: Number(data.professional_score || 0),
       })
-    } catch (err: any) {
-      console.error("Error cargando caso técnico del proyecto:", err?.message || err)
-      alert(`No se pudo cargar el caso técnico: ${err?.message || "Error desconocido"}`)
+    } catch (err: unknown) {
+      console.error("Error cargando caso técnico del proyecto:", getErrorMessage(err))
+      alert(`No se pudo cargar el caso técnico: ${getErrorMessage(err)}`)
     } finally {
       setLoadingCaseStudy(false)
     }
@@ -2687,10 +2747,20 @@ export default function DataCarreraPage() {
   }, [selectedCaseStudy])
 
   useEffect(() => {
-    fetchCareerSkills()
-    fetchProjects()
-    fetchProfessionalScores()
-    fetchTechnicalSummaries()
+    let isActive = true
+
+    queueMicrotask(() => {
+      if (!isActive) return
+
+      fetchCareerSkills()
+      fetchProjects()
+      fetchProfessionalScores()
+      fetchTechnicalSummaries()
+    })
+
+    return () => {
+      isActive = false
+    }
   }, [fetchCareerSkills, fetchProjects, fetchProfessionalScores, fetchTechnicalSummaries])
 
   const handleCreateProject = async (e: React.FormEvent) => {
@@ -2719,15 +2789,15 @@ export default function DataCarreraPage() {
       await fetchProjects()
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
-    } catch (err: any) {
-      alert(`No se pudo inicializar el nodo de proyecto: ${err?.message}`)
+    } catch (err: unknown) {
+      alert(`No se pudo inicializar el nodo de proyecto: ${getErrorMessage(err)}`)
     }
   }
 
   const handleUpdateProjectFields = async (fields: Partial<Omit<Project, 'id' | 'project_tasks'>>) => {
     if (!selectedProject) return
 
-    const payload: any = { ...fields }
+    const payload: ProjectUpdate = { ...fields }
 
     if ('status' in payload && payload.status) {
       payload.status = sanitizeStatusForDB(payload.status)
@@ -2743,8 +2813,8 @@ export default function DataCarreraPage() {
       await fetchProjects(selectedProject.id)
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
-    } catch (err: any) {
-      console.error("Error al mutar datos del proyecto en Supabase:", err?.message)
+    } catch (err: unknown) {
+      console.error("Error al mutar datos del proyecto en Supabase:", getErrorMessage(err))
     }
   }
 
@@ -2760,8 +2830,8 @@ export default function DataCarreraPage() {
       await fetchProjects()
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
-    } catch (err: any) {
-      console.error("Error en protocolo de eliminación:", err?.message || err)
+    } catch (err: unknown) {
+      console.error("Error en protocolo de eliminación:", getErrorMessage(err))
     }
   }
 
@@ -2798,9 +2868,9 @@ export default function DataCarreraPage() {
       await fetchProjects(selectedProject.id)
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
-    } catch (err: any) {
-      console.error("Error actualizando stack del proyecto:", err?.message || err)
-      alert(`No se pudo actualizar el stack del proyecto: ${err?.message}`)
+    } catch (err: unknown) {
+      console.error("Error actualizando stack del proyecto:", getErrorMessage(err))
+      alert(`No se pudo actualizar el stack del proyecto: ${getErrorMessage(err)}`)
     }
   }
 
@@ -2832,23 +2902,15 @@ export default function DataCarreraPage() {
 
       if (error) throw error
 
-      const mapped: ProjectTaskSkillLink[] = (data || []).map((link: any) => ({
-        id: link.id,
-        skill_id: link.skill_id,
-        proficiency_level: link.proficiency_level || 'Aplicado',
-        notes: link.notes || null,
-        career_skills: link.career_skills ? {
-          id: link.career_skills.id,
-          name: link.career_skills.name,
-          category: link.career_skills.category || 'General',
-          color: link.career_skills.color || '#f97316',
-          icon: link.career_skills.icon || 'Cpu'
-        } : null
-      }))
+      const mapped: ProjectTaskSkillLink[] = ((data || []) as RawSkillLink[])
+        .map((link) => ({
+          ...mapSkillLink(link),
+          proficiency_level: toOptionalString(link.proficiency_level) || "Aplicado",
+        }))
 
       setSelectedTaskSkillLinks(mapped)
-    } catch (err: any) {
-      console.error("Error sincronizando skills de subtarea:", err?.message || err)
+    } catch (err: unknown) {
+      console.error("Error sincronizando skills de subtarea:", getErrorMessage(err))
     } finally {
       setLoadingTaskSkills(false)
     }
@@ -2889,9 +2951,9 @@ export default function DataCarreraPage() {
       await fetchProjects(selectedProject.id)
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
-    } catch (err: any) {
-      console.error("Error actualizando skills de subtarea:", err?.message || err)
-      alert(`No se pudo actualizar la skill de la subtarea: ${err?.message}`)
+    } catch (err: unknown) {
+      console.error("Error actualizando skills de subtarea:", getErrorMessage(err))
+      alert(`No se pudo actualizar la skill de la subtarea: ${getErrorMessage(err)}`)
     }
   }
 
@@ -2946,9 +3008,9 @@ export default function DataCarreraPage() {
           document_content_html: data.document_content_html || "",
         })
       }
-    } catch (err: any) {
-      console.error("Error cargando documentación de subtarea:", err?.message || err)
-      alert(`No se pudo cargar la documentación: ${err?.message}`)
+    } catch (err: unknown) {
+      console.error("Error cargando documentación de subtarea:", getErrorMessage(err))
+      alert(`No se pudo cargar la documentación: ${getErrorMessage(err)}`)
     } finally {
       setLoadingTaskDoc(false)
     }
@@ -3018,9 +3080,9 @@ export default function DataCarreraPage() {
 
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
-    } catch (err: any) {
-      console.error("Error guardando documentación de subtarea:", err?.message || err)
-      alert(`No se pudo guardar la documentación: ${err?.message}`)
+    } catch (err: unknown) {
+      console.error("Error guardando documentación de subtarea:", getErrorMessage(err))
+      alert(`No se pudo guardar la documentación: ${getErrorMessage(err)}`)
     } finally {
       setSavingTaskDoc(false)
     }
@@ -3042,8 +3104,8 @@ export default function DataCarreraPage() {
       await fetchProjects(selectedProject.id)
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
-    } catch (err: any) {
-      alert(`Error de inyección en subtareas: ${err?.message}`)
+    } catch (err: unknown) {
+      alert(`Error de inyección en subtareas: ${getErrorMessage(err)}`)
     }
   }
 
@@ -3060,8 +3122,8 @@ export default function DataCarreraPage() {
       await fetchProjects(selectedProject.id)
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
-    } catch (err: any) {
-      console.error("Error en transición de microestado:", err?.message || err)
+    } catch (err: unknown) {
+      console.error("Error en transición de microestado:", getErrorMessage(err))
     }
   }
 
@@ -3073,8 +3135,8 @@ export default function DataCarreraPage() {
       await fetchProjects(selectedProject.id)
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
-    } catch (err: any) {
-      console.error("Error al purgar microtarea:", err?.message || err)
+    } catch (err: unknown) {
+      console.error("Error al purgar microtarea:", getErrorMessage(err))
     }
   }
 
@@ -3156,7 +3218,7 @@ export default function DataCarreraPage() {
               <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-orange-400/20 bg-orange-500/[0.055] shadow-[0_0_22px_rgba(249,115,22,0.15)]">
                 <FolderPlus size={16} className="animate-pulse text-orange-300" />
               </span>
-              // INICIALIZAR NODO DE DATA-STREAM
+              INICIALIZAR NODO DE DATA-STREAM
             </CardTitle>
           </CardHeader>
           <CardContent className="relative">
@@ -3652,7 +3714,7 @@ export default function DataCarreraPage() {
                   <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
                     <div>
                       <label className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.2em] text-orange-200/85">
-                        <Tags size={15} className="animate-pulse" /> // STACK & SKILLS DEL PROYECTO
+                        <Tags size={15} className="animate-pulse" /> STACK & SKILLS DEL PROYECTO
                       </label>
                       <p className="mt-2 text-xs font-medium leading-relaxed text-slate-500">
                         Selecciona las tecnologías y habilidades que estás desarrollando con este proyecto. Esto alimentará la analítica de skills del Dashboard.
@@ -3769,7 +3831,7 @@ export default function DataCarreraPage() {
                 <div className="space-y-5 border-t border-white/[0.06] pt-6">
                   <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
                     <label className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.2em] text-orange-200/85">
-                      <ListTodo size={15} className="animate-pulse" /> // MATRIZ DE MICRO-SUBTAREAS
+                      <ListTodo size={15} className="animate-pulse" /> MATRIZ DE MICRO-SUBTAREAS
                     </label>
 
                     <div className="flex w-full max-w-md gap-2 rounded-2xl border border-white/[0.06] bg-black/30 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
