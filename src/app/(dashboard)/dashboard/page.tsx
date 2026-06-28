@@ -37,6 +37,7 @@ import { motion } from "framer-motion"
 import { RegistrationPanel } from "@/components/registration-panel"
 import { DashboardBackground } from "@/components/dashboard/dashboard-background"
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
+import { clampPct, containerVariants, itemVariants, profileImageSrc } from "@/lib/dashboard-page-config"
 import { formatDateShort } from "@/lib/dashboard-page-helpers"
 import {
   mapCareerSkillsSummary,
@@ -1024,20 +1025,6 @@ export default function DashboardPage() {
   const topSkillLabel = careerSkillsSummary && careerSkillsSummary.top_skill_projects_count > 0
     ? careerSkillsSummary.top_skill_name || "Sin skill dominante"
     : "Sin skill dominante"
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.055 } },
-  }
-
-  const itemVariants = {
-    hidden: { y: 12, opacity: 0, filter: "blur(3px)" },
-    visible: { y: 0, opacity: 1, filter: "blur(0px)" },
-  }
-
-  const clampPct = (value: number) => Math.min(Math.max(Math.round(value || 0), 0), 100)
-
-  const profileImageSrc = "/images/jose-dashboard.png"
 
   const weeklyWaterPct = weeklyHealthSummary
     ? Math.min(Math.round((weeklyHealthSummary.total_water_liters / 14) * 100), 100)
