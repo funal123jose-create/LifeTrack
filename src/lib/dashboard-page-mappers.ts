@@ -1,4 +1,10 @@
-import type { WeeklyCareerActivity, WeeklyCareerSummary, WeeklyHealthSummary } from "@/lib/dashboard-page-models"
+import type {
+  CareerSkillsSummary,
+  RawCareerSkillDetail,
+  WeeklyCareerActivity,
+  WeeklyCareerSummary,
+  WeeklyHealthSummary,
+} from "@/lib/dashboard-page-models"
 
 type RoutineMetrics = {
   weekStart: string
@@ -12,6 +18,9 @@ type RoutineMetrics = {
 type RawWeeklyHealthSummary = Partial<Record<keyof WeeklyHealthSummary, unknown>>
 type RawWeeklyCareerSummary = Partial<Record<keyof WeeklyCareerSummary, unknown>>
 type RawWeeklyCareerActivity = Partial<Record<keyof WeeklyCareerActivity, unknown>>
+type RawCareerSkillsSummary = Partial<Record<keyof Omit<CareerSkillsSummary, "skills_detail">, unknown>> & {
+  skills_detail?: unknown
+}
 
 export const mapWeeklyHealthSummary = (
   data: RawWeeklyHealthSummary | null | undefined,
@@ -111,5 +120,37 @@ export const mapWeeklyCareerActivity = (
     last_event_description: data.last_event_description ? String(data.last_event_description) : null,
     last_event_at: data.last_event_at ? String(data.last_event_at) : null,
     activity_intensity: data.activity_intensity ? String(data.activity_intensity) : "none",
+  }
+}
+
+export const mapCareerSkillsSummary = (
+  data: RawCareerSkillsSummary | null | undefined
+): CareerSkillsSummary | null => {
+  if (!data) return null
+
+  const rawSkillsDetail: RawCareerSkillDetail[] = Array.isArray(data.skills_detail)
+    ? data.skills_detail as RawCareerSkillDetail[]
+    : []
+
+  return {
+    total_skills: Number(data.total_skills || 0),
+    used_skills: Number(data.used_skills || 0),
+    unused_skills: Number(data.unused_skills || 0),
+    total_skill_project_links: Number(data.total_skill_project_links || 0),
+    top_skill_name: data.top_skill_name ? String(data.top_skill_name) : null,
+    top_skill_category: data.top_skill_category ? String(data.top_skill_category) : null,
+    top_skill_projects_count: Number(data.top_skill_projects_count || 0),
+    categories_count: Number(data.categories_count || 0),
+    skills_detail: rawSkillsDetail.map((skill) => ({
+      skill_id: String(skill.skill_id || ""),
+      name: String(skill.name || "Sin nombre"),
+      category: String(skill.category || "General"),
+      color: skill.color ? String(skill.color) : null,
+      icon: skill.icon ? String(skill.icon) : null,
+      projects_count: Number(skill.projects_count || 0),
+      active_projects_count: Number(skill.active_projects_count || 0),
+      completed_projects_count: Number(skill.completed_projects_count || 0),
+      last_used_at: skill.last_used_at ? String(skill.last_used_at) : null,
+    })),
   }
 }

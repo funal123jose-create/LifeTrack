@@ -38,10 +38,14 @@ import { RegistrationPanel } from "@/components/registration-panel"
 import { DashboardBackground } from "@/components/dashboard/dashboard-background"
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
 import { formatDateShort } from "@/lib/dashboard-page-helpers"
-import { mapWeeklyCareerActivity, mapWeeklyCareerSummary, mapWeeklyHealthSummary } from "@/lib/dashboard-page-mappers"
+import {
+  mapCareerSkillsSummary,
+  mapWeeklyCareerActivity,
+  mapWeeklyCareerSummary,
+  mapWeeklyHealthSummary,
+} from "@/lib/dashboard-page-mappers"
 import type {
   CareerSkillsSummary,
-  RawCareerSkillDetail,
   WeeklyCareerActivity,
   WeeklyCareerSummary,
   WeeklyHealthSummary,
@@ -462,31 +466,7 @@ export default function DashboardPage() {
         return
       }
 
-      const rawSkillsDetail: RawCareerSkillDetail[] = Array.isArray(data?.skills_detail)
-        ? data.skills_detail as RawCareerSkillDetail[]
-        : []
-
-      setCareerSkillsSummary(data ? {
-        total_skills: Number(data.total_skills || 0),
-        used_skills: Number(data.used_skills || 0),
-        unused_skills: Number(data.unused_skills || 0),
-        total_skill_project_links: Number(data.total_skill_project_links || 0),
-        top_skill_name: data.top_skill_name || null,
-        top_skill_category: data.top_skill_category || null,
-        top_skill_projects_count: Number(data.top_skill_projects_count || 0),
-        categories_count: Number(data.categories_count || 0),
-        skills_detail: rawSkillsDetail.map((skill) => ({
-          skill_id: String(skill.skill_id || ""),
-          name: String(skill.name || "Sin nombre"),
-          category: String(skill.category || "General"),
-          color: skill.color ? String(skill.color) : null,
-          icon: skill.icon ? String(skill.icon) : null,
-          projects_count: Number(skill.projects_count || 0),
-          active_projects_count: Number(skill.active_projects_count || 0),
-          completed_projects_count: Number(skill.completed_projects_count || 0),
-          last_used_at: skill.last_used_at ? String(skill.last_used_at) : null,
-        }))
-      } : null)
+      setCareerSkillsSummary(mapCareerSkillsSummary(data))
     } catch (error) {
       console.error("Error sincronizando skills profesionales:", error)
       setCareerSkillsSummary(null)
