@@ -137,10 +137,6 @@ export default function CentroSaludPage() {
   const plannedCount = plannedDays.length
   const currentAge = birthDate ? calculateAgeFromBirthDate(birthDate) : null
 
-  const formatLogTime = (value: string) => {
-    return formatLocalDateTime(value)
-  }
-
   // --- Cargar historiales diarios de comida y agua ---
   const loadTodayLogs = useCallback(async (userId?: string) => {
     try {
@@ -1382,7 +1378,7 @@ export default function CentroSaludPage() {
                                   </span>
                                   <span>{meal.source === "audio" ? "Audio" : "Texto"}</span>
                                 </div>
-                                <span>{formatLogTime(meal.created_at)}</span>
+                                <span>{formatLocalDateTime(meal.created_at)}</span>
                               </div>
                               {meal.portion_assumption && (
                                 <p className="mt-2 line-clamp-2 rounded-xl border border-white/[0.05] bg-white/[0.025] px-3 py-2 text-[10px] font-medium leading-relaxed text-slate-500">
@@ -1428,7 +1424,7 @@ export default function CentroSaludPage() {
                                 </div>
                               </div>
                               <span className="text-[10px] font-bold text-slate-500">
-                                {formatLogTime(water.created_at)}
+                                {formatLocalDateTime(water.created_at)}
                               </span>
                             </div>
                           ))
