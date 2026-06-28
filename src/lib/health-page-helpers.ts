@@ -49,6 +49,10 @@ export const getCurrentWeekdayId = () => {
   return daysMapping[new Date().getDay()]
 }
 
+export const getCurrentCalorieTarget = (isWorkoutDay: boolean, bmrTarget: number) => {
+  return isWorkoutDay ? bmrTarget + 400 : bmrTarget
+}
+
 type RawMealLog = Partial<Record<keyof MealLog, unknown>>
 type RawWaterLog = Partial<Record<keyof WaterLog, unknown>>
 type RawBodyProgressLog = Partial<Record<keyof BodyProgressLog, unknown>>
@@ -112,7 +116,7 @@ export const getDailyHealthMetrics = (
   isWorkoutDay: boolean,
   bmrTarget: number
 ) => {
-  const currentCalorieTarget = isWorkoutDay ? bmrTarget + 400 : bmrTarget
+  const currentCalorieTarget = getCurrentCalorieTarget(isWorkoutDay, bmrTarget)
   const waterGoal = 3
 
   return {

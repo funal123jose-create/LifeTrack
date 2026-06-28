@@ -44,6 +44,7 @@ import {
   DAYS_OF_WEEK,
   calculateAgeFromBirthDate,
   formatLocalDateTime,
+  getCurrentCalorieTarget,
   getCurrentWeekdayId,
   getDailyHealthMetrics,
   getEstimatedCaloriesFromNutritionResponse,
@@ -567,7 +568,7 @@ export default function CentroSaludPage() {
     if (!session?.user) return
 
     const todayStr = getLocalDateString()
-    const finalCalorieTarget = workoutState ? bmrTarget + 400 : bmrTarget
+    const finalCalorieTarget = getCurrentCalorieTarget(workoutState, bmrTarget)
 
     await supabase
       .from("daily_health_tracker")
