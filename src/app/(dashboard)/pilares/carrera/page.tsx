@@ -59,6 +59,7 @@ import {
   formatAssetSize,
   getCaseStudyDocHasContent,
   getAssetVisual,
+  getProjectPriorityTone,
   getScoreTone,
   getTaskStatusTone,
   mapCareerSkill,
@@ -936,11 +937,7 @@ export default function DataCarreraPage() {
                               <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-orange-400/0 to-transparent transition-all duration-500 group-hover/card:via-orange-300/35" />
 
                               <div className="relative z-10 flex items-center justify-between">
-                                <span className={`rounded-lg border px-2 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] ${
-                                  project.priority === 'Alta' ? 'border-red-400/25 bg-red-500/10 text-red-300 shadow-[0_0_14px_rgba(239,68,68,0.16)]' :
-                                    project.priority === 'Media' ? 'border-amber-400/25 bg-amber-500/10 text-amber-300 shadow-[0_0_14px_rgba(245,158,11,0.12)]' :
-                                      'border-blue-400/25 bg-blue-500/10 text-blue-300 shadow-[0_0_14px_rgba(59,130,246,0.12)]'
-                                  }`}>
+                                <span className={`rounded-lg border px-2 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] ${getProjectPriorityTone(project.priority)}`}>
                                   {project.priority}
                                 </span>
                                 <Maximize2 size={12} className="scale-75 text-slate-600 opacity-0 transition-all duration-300 group-hover/card:scale-100 group-hover/card:text-orange-300 group-hover/card:opacity-100" />

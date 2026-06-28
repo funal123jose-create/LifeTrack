@@ -296,6 +296,13 @@ export const getTaskStatusTone = (status?: string | null) => {
   return "border-slate-300/10 bg-slate-500/[0.06] text-slate-300"
 }
 
+export const getProjectPriorityTone = (priority?: PriorityLevel | null) => {
+  if (priority === "Alta") return "border-red-400/25 bg-red-500/10 text-red-300 shadow-[0_0_14px_rgba(239,68,68,0.16)]"
+  if (priority === "Media") return "border-amber-400/25 bg-amber-500/10 text-amber-300 shadow-[0_0_14px_rgba(245,158,11,0.12)]"
+
+  return "border-blue-400/25 bg-blue-500/10 text-blue-300 shadow-[0_0_14px_rgba(59,130,246,0.12)]"
+}
+
 export const getScoreTone = (score?: number | null) => {
   const safeScore = Number(score || 0)
 
