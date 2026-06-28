@@ -43,6 +43,7 @@ import {
   getCareerActivityLabel,
   getCareerProfessionalActivityPct,
   getCareerProfessionalEvents,
+  getHealthDashboardMetrics,
   getLastCareerActivityLabel,
   getLastCareerActivityText,
   getPersonalCareDashboardMetrics,
@@ -939,12 +940,10 @@ export default function DashboardPage() {
   const weeklyPersonalRoutinePct = personalCareMetrics.routinePct
   const weeklyPersonalCheckinPct = personalCareMetrics.checkinPct
 
-  const weeklyTrainingPct = weeklyHealthSummary
-    ? Math.min(Math.max(Math.round(weeklyHealthSummary.training_completion_percentage || 0), 0), 100)
-    : 0
-
-  const weeklyPlannedDays = weeklyHealthSummary?.planned_training_days || 0
-  const weeklyCompletedDays = weeklyHealthSummary?.completed_training_days || 0
+  const healthMetrics = getHealthDashboardMetrics(weeklyHealthSummary)
+  const weeklyTrainingPct = healthMetrics.trainingPct
+  const weeklyPlannedDays = healthMetrics.plannedDays
+  const weeklyCompletedDays = healthMetrics.completedDays
 
   const weeklyCareerPct = weeklyCareerSummary
     ? Math.min(Math.max(Math.round(weeklyCareerSummary.weekly_productivity_percentage || 0), 0), 100)
@@ -980,33 +979,16 @@ export default function DashboardPage() {
     ? careerSkillsSummary.top_skill_name || "Sin skill dominante"
     : "Sin skill dominante"
 
-  const weeklyWaterPct = weeklyHealthSummary
-    ? Math.min(Math.round((weeklyHealthSummary.total_water_liters / 14) * 100), 100)
-    : 0
-
-  const weeklyMealsPct = weeklyHealthSummary
-    ? Math.min(Math.round((weeklyHealthSummary.meals_count / 21) * 100), 100)
-    : 0
-
-  const caloriesBalancePct =
-    weeklyHealthSummary && weeklyHealthSummary.avg_calorie_target > 0
-      ? Math.min(
-          Math.round((weeklyHealthSummary.avg_daily_calories / weeklyHealthSummary.avg_calorie_target) * 100),
-          100
-        )
-      : 0
+  const weeklyWaterPct = healthMetrics.waterPct
+  const weeklyMealsPct = healthMetrics.mealsPct
+  const caloriesBalancePct = healthMetrics.caloriesBalancePct
 
   const weeklyMoodPct = personalCareMetrics.moodPct
   const weeklyMotivationPct = personalCareMetrics.motivationPct
   const weeklySleepPct = personalCareMetrics.sleepPct
   const weeklyStressPct = personalCareMetrics.stressPct
 
-  const healthInsightSummary =
-    weeklyTrainingPct >= 80
-      ? "Constancia sólida: la rutina semanal viene muy bien."
-      : weeklyCompletedDays > 0
-        ? "Hay avance, pero todavía hay espacio para mejorar la constancia."
-        : "El foco inmediato es activar la rutina semanal."
+  const healthInsightSummary = healthMetrics.insight
 
   const careerInsightSummary =
     careerProfessionalEvents >= 3

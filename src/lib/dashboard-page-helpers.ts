@@ -1,4 +1,4 @@
-import type { WeeklyCareerActivity, WeeklyPersonalCareSummary } from "@/lib/dashboard-page-models"
+import type { WeeklyCareerActivity, WeeklyHealthSummary, WeeklyPersonalCareSummary } from "@/lib/dashboard-page-models"
 
 export const formatDateShort = (value?: string | null) => {
   if (!value) return "—"
@@ -116,5 +116,34 @@ export const getPersonalCareDashboardMetrics = (
         : checkins > 0
           ? "Hay seguimiento inicial, pero hace falta m\u00e1s constancia diaria."
           : "Conviene empezar con check-ins simples y una rutina diaria.",
+  }
+}
+
+export const getHealthDashboardMetrics = (summary: WeeklyHealthSummary | null) => {
+  const trainingPct = summary
+    ? clampDashboardPct(summary.training_completion_percentage || 0)
+    : 0
+  const completedDays = summary?.completed_training_days || 0
+
+  return {
+    trainingPct,
+    plannedDays: summary?.planned_training_days || 0,
+    completedDays,
+    waterPct: summary
+      ? Math.min(Math.round((summary.total_water_liters / 14) * 100), 100)
+      : 0,
+    mealsPct: summary
+      ? Math.min(Math.round((summary.meals_count / 21) * 100), 100)
+      : 0,
+    caloriesBalancePct:
+      summary && summary.avg_calorie_target > 0
+        ? Math.min(Math.round((summary.avg_daily_calories / summary.avg_calorie_target) * 100), 100)
+        : 0,
+    insight:
+      trainingPct >= 80
+        ? "Constancia sólida: la rutina semanal viene muy bien."
+        : completedDays > 0
+          ? "Hay avance, pero todavía hay espacio para mejorar la constancia."
+          : "El foco inmediato es activar la rutina semanal.",
   }
 }
