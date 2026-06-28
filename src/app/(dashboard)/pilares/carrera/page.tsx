@@ -29,6 +29,7 @@ import {
   mapTechnicalSummaries,
   sanitizeStatusForDB,
 } from "@/lib/career-page-helpers"
+import { getErrorMessage } from "@/lib/errors"
 import type {
   Project,
   ProjectCaseStudyDetail,
@@ -62,9 +63,6 @@ import {
   type RichEditorJSON,
   type TaskStatus,
 } from "@/lib/career"
-
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : "Error desconocido"
 
 export default function DataCarreraPage() {
   const supabase = createClient()

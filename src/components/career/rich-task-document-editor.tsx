@@ -22,11 +22,9 @@ import {
   type ProjectTaskAsset,
   type RichEditorJSON,
 } from "@/lib/career"
+import { getErrorMessage } from "@/lib/errors"
 
 type BrowserSupabaseClient = ReturnType<typeof createClient<SupabaseDatabase>>
-
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : "Error desconocido"
 
 export function RichTaskDocumentEditor({
   taskTitle,
