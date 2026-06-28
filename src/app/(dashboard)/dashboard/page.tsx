@@ -38,6 +38,7 @@ import { RegistrationPanel } from "@/components/registration-panel"
 import { DashboardBackground } from "@/components/dashboard/dashboard-background"
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
 import { formatDateShort } from "@/lib/dashboard-page-helpers"
+import { mapWeeklyHealthSummary } from "@/lib/dashboard-page-mappers"
 import type {
   CareerSkillsSummary,
   RawCareerSkillDetail,
@@ -303,34 +304,7 @@ export default function DashboardPage() {
         console.error("Error cargando resumen semanal de salud:", error)
       }
 
-      setWeeklyHealthSummary({
-        week_start: data?.week_start || routineMetrics.weekStart,
-        week_end: data?.week_end || routineMetrics.weekEnd,
-
-        // Este valor se sobrescribe con la nueva fuente real de checks semanales.
-        active_days: routineMetrics.activeDays,
-
-        meals_count: Number(data?.meals_count || 0),
-        total_meal_calories: Number(data?.total_meal_calories || 0),
-        avg_calories_per_meal: Number(data?.avg_calories_per_meal || 0),
-        water_events_count: Number(data?.water_events_count || 0),
-        total_water_liters: Number(data?.total_water_liters || 0),
-        avg_daily_water_liters: Number(data?.avg_daily_water_liters || 0),
-        tracker_total_calories: Number(data?.tracker_total_calories || 0),
-        avg_daily_calories: Number(data?.avg_daily_calories || 0),
-        avg_calorie_target: Number(data?.avg_calorie_target || 0),
-        workout_days: Number(data?.workout_days || 0),
-
-        // Estos tres campos ya no dependen de fuerzaDone/cardioDone dentro de rutinas_entrenamiento.
-        planned_training_days: routineMetrics.plannedTrainingDays,
-        completed_training_days: routineMetrics.completedTrainingDays,
-        training_completion_percentage: routineMetrics.trainingCompletionPercentage,
-
-        avg_energy_level: Number(data?.avg_energy_level || 0),
-        progress_records: Number(data?.progress_records || 0),
-        latest_weight_kg: data?.latest_weight_kg !== null && data?.latest_weight_kg !== undefined ? Number(data.latest_weight_kg) : null,
-        latest_weight_date: data?.latest_weight_date || null,
-      })
+      setWeeklyHealthSummary(mapWeeklyHealthSummary(data, routineMetrics))
     } catch (error) {
       console.error("Error sincronizando resumen semanal de salud:", error)
       setWeeklyHealthSummary(null)
