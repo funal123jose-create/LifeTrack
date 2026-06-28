@@ -43,14 +43,15 @@ import { getCurrentWeekStartString, getDateForWeekdayNum, getLocalDateString } f
 import {
   DAYS_OF_WEEK,
   formatLocalDateTime,
+  getEstimatedCaloriesFromNutritionResponse,
   mapBodyProgressLog,
   mapMealLog,
+  mapNutritionMealsFromAI,
   mapWaterLog,
 } from "@/lib/health-page-helpers"
 import type {
   BodyProgressLog,
   MealLog,
-  RawNutritionMeal,
   RoutineCompletion,
   WaterLog,
 } from "@/lib/health-page-models"
@@ -849,21 +850,8 @@ export default function CentroSaludPage() {
       })
 
       const data = await response.json()
-      const mealsFromAI: NutritionMeal[] = Array.isArray(data.meals)
-        ? data.meals
-            .map((item: RawNutritionMeal) => ({
-              meal_type: normalizeMealType(String(item.meal_type || "other")),
-              description: String(item.description || "").trim(),
-              estimated_calories: Math.max(0, Math.round(Number(item.estimated_calories || 0))),
-              confidence: normalizeConfidence(String(item.confidence || "medium")),
-              portion_assumption: String(item.portion_assumption || "Porción promedio estimada por IA").trim(),
-            }))
-            .filter((item: NutritionMeal) => item.description && item.estimated_calories > 0)
-        : []
-
-      const estimatedCalories = mealsFromAI.length > 0
-        ? mealsFromAI.reduce((sum, item) => sum + item.estimated_calories, 0)
-        : Math.max(0, Math.round(Number(data.totalCalories || 0)))
+      const mealsFromAI = Array.isArray(data.meals) ? mapNutritionMealsFromAI(data.meals) : []
+      const estimatedCalories = getEstimatedCaloriesFromNutritionResponse(mealsFromAI, data.totalCalories)
 
       if (estimatedCalories > 0) {
         const nuevasCalorias = caloriesIngested + estimatedCalories

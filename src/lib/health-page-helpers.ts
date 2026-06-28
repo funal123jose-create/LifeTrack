@@ -1,5 +1,5 @@
-import { normalizeConfidence, normalizeMealType } from "@/lib/nutrition"
-import type { BodyProgressLog, MealLog, WaterLog } from "@/lib/health-page-models"
+import { normalizeConfidence, normalizeMealType, type NutritionMeal } from "@/lib/nutrition"
+import type { BodyProgressLog, MealLog, RawNutritionMeal, WaterLog } from "@/lib/health-page-models"
 
 export const DAYS_OF_WEEK = [
   { id: "mon", name: "Lunes", num: 1 },
@@ -60,3 +60,24 @@ export const mapBodyProgressLog = (item: RawBodyProgressLog): BodyProgressLog =>
   notes: item.notes !== null && item.notes !== undefined ? String(item.notes) : null,
   created_at: String(item.created_at || ""),
 })
+
+export const mapNutritionMealsFromAI = (items: RawNutritionMeal[]): NutritionMeal[] => {
+  return items
+    .map((item) => ({
+      meal_type: normalizeMealType(String(item.meal_type || "other")),
+      description: String(item.description || "").trim(),
+      estimated_calories: Math.max(0, Math.round(Number(item.estimated_calories || 0))),
+      confidence: normalizeConfidence(String(item.confidence || "medium")),
+      portion_assumption: String(item.portion_assumption || "Porción promedio estimada por IA").trim(),
+    }))
+    .filter((item) => item.description && item.estimated_calories > 0)
+}
+
+export const getEstimatedCaloriesFromNutritionResponse = (
+  meals: NutritionMeal[],
+  fallbackTotalCalories: unknown
+) => {
+  return meals.length > 0
+    ? meals.reduce((sum, item) => sum + item.estimated_calories, 0)
+    : Math.max(0, Math.round(Number(fallbackTotalCalories || 0)))
+}
