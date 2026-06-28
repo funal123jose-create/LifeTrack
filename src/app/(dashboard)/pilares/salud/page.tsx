@@ -47,6 +47,7 @@ import {
   getCurrentWeekdayId,
   getDailyHealthMetrics,
   getEstimatedCaloriesFromNutritionResponse,
+  getRoutineCompletionPercentage,
   mapBodyProgressLog,
   mapMealLog,
   mapNutritionMealsFromAI,
@@ -737,24 +738,13 @@ export default function CentroSaludPage() {
 
   // Calcular la tasa de éxito diaria acumulada para preparar la futura exportación al Dashboard
   const getCompletionPercentage = (dayId: string) => {
-    const hasFuerza = (fuerzaDescriptions[dayId] || "").trim() !== ""
-    const hasCardio = (cardioDescriptions[dayId] || "").trim() !== ""
-
-    if (!hasFuerza && !hasCardio) return null
-
-    let totalTasks = 0
-    let completedTasks = 0
-
-    if (hasFuerza) {
-      totalTasks++
-      if (fuerzaChecked[dayId]) completedTasks++
-    }
-    if (hasCardio) {
-      totalTasks++
-      if (cardioChecked[dayId]) completedTasks++
-    }
-
-    return Math.round((completedTasks / totalTasks) * 100)
+    return getRoutineCompletionPercentage(
+      dayId,
+      fuerzaDescriptions,
+      cardioDescriptions,
+      fuerzaChecked,
+      cardioChecked
+    )
   }
 
   // --- Grabación de Audio ---

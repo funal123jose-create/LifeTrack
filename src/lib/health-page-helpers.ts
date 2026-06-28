@@ -122,3 +122,31 @@ export const getDailyHealthMetrics = (
     caloriePct: Math.min(Math.round((caloriesIngested / currentCalorieTarget) * 100), 140),
   }
 }
+
+export const getRoutineCompletionPercentage = (
+  dayId: string,
+  fuerzaDescriptions: Record<string, string>,
+  cardioDescriptions: Record<string, string>,
+  fuerzaChecked: Record<string, boolean>,
+  cardioChecked: Record<string, boolean>
+) => {
+  const hasFuerza = (fuerzaDescriptions[dayId] || "").trim() !== ""
+  const hasCardio = (cardioDescriptions[dayId] || "").trim() !== ""
+
+  if (!hasFuerza && !hasCardio) return null
+
+  let totalTasks = 0
+  let completedTasks = 0
+
+  if (hasFuerza) {
+    totalTasks++
+    if (fuerzaChecked[dayId]) completedTasks++
+  }
+
+  if (hasCardio) {
+    totalTasks++
+    if (cardioChecked[dayId]) completedTasks++
+  }
+
+  return Math.round((completedTasks / totalTasks) * 100)
+}
