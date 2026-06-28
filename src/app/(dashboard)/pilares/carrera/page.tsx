@@ -25,6 +25,7 @@ import {
   getProjectSkillIds,
   getProjectSkills,
   getProjectTechnicalSummary as getProjectTechnicalSummaryFromMap,
+  getProfessionalScoreMetrics,
   getTaskSkillIds,
   groupCareerSkills,
   mapProfessionalScores,
@@ -1108,12 +1109,7 @@ export default function DataCarreraPage() {
                       </div>
 
                       <div className="relative mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-                        {[
-                          { label: "Operativo", value: score?.task_completion_percentage ?? 0, detail: `${score?.completed_tasks ?? 0}/${score?.total_tasks ?? 0} tareas` },
-                          { label: "Documentación", value: score?.documentation_percentage ?? 0, detail: `${score?.documented_tasks ?? 0}/${score?.total_tasks ?? 0} subtareas` },
-                          { label: "Skills", value: score?.skill_coverage_percentage ?? 0, detail: `${score?.total_task_skills ?? 0} skills aplicadas` },
-                          { label: "Evidencias", value: score?.evidence_coverage_percentage ?? 0, detail: `${score?.total_assets ?? 0} archivos` },
-                        ].map((metric) => (
+                        {getProfessionalScoreMetrics(score).map((metric) => (
                           <div key={metric.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
                             <div className="flex items-center justify-between">
                               <span className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">

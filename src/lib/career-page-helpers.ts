@@ -107,6 +107,29 @@ export const getProjectTechnicalSummary = (
   return summaries[project.id] || null
 }
 
+export const getProfessionalScoreMetrics = (score?: ProjectProfessionalScore | null) => [
+  {
+    label: "Operativo",
+    value: score?.task_completion_percentage ?? 0,
+    detail: `${score?.completed_tasks ?? 0}/${score?.total_tasks ?? 0} tareas`,
+  },
+  {
+    label: "Documentación",
+    value: score?.documentation_percentage ?? 0,
+    detail: `${score?.documented_tasks ?? 0}/${score?.total_tasks ?? 0} subtareas`,
+  },
+  {
+    label: "Skills",
+    value: score?.skill_coverage_percentage ?? 0,
+    detail: `${score?.total_task_skills ?? 0} skills aplicadas`,
+  },
+  {
+    label: "Evidencias",
+    value: score?.evidence_coverage_percentage ?? 0,
+    detail: `${score?.total_assets ?? 0} archivos`,
+  },
+]
+
 const normalizeProjectPriority = (priority: unknown): PriorityLevel => {
   return priority === "Baja" || priority === "Media" || priority === "Alta" ? priority : "Media"
 }
