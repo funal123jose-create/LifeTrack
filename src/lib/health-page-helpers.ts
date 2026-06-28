@@ -81,3 +81,20 @@ export const getEstimatedCaloriesFromNutritionResponse = (
     ? meals.reduce((sum, item) => sum + item.estimated_calories, 0)
     : Math.max(0, Math.round(Number(fallbackTotalCalories || 0)))
 }
+
+export const getDailyHealthMetrics = (
+  waterIngested: number,
+  caloriesIngested: number,
+  isWorkoutDay: boolean,
+  bmrTarget: number
+) => {
+  const currentCalorieTarget = isWorkoutDay ? bmrTarget + 400 : bmrTarget
+  const waterGoal = 3
+
+  return {
+    currentCalorieTarget,
+    waterGoal,
+    waterPct: Math.min(Math.round((waterIngested / waterGoal) * 100), 100),
+    caloriePct: Math.min(Math.round((caloriesIngested / currentCalorieTarget) * 100), 140),
+  }
+}

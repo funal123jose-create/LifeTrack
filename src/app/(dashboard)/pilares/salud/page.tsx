@@ -43,6 +43,7 @@ import { getCurrentWeekStartString, getDateForWeekdayNum, getLocalDateString } f
 import {
   DAYS_OF_WEEK,
   formatLocalDateTime,
+  getDailyHealthMetrics,
   getEstimatedCaloriesFromNutritionResponse,
   mapBodyProgressLog,
   mapMealLog,
@@ -143,10 +144,10 @@ export default function CentroSaludPage() {
   }
 
   // --- Calcular Meta Calórica Actual Dinámicamente ---
-  const currentCalorieTarget = isWorkoutDay ? bmrTarget + 400 : bmrTarget
-  const waterGoal = 3
-  const waterPct = Math.min(Math.round((waterIngested / waterGoal) * 100), 100)
-  const caloriePct = Math.min(Math.round((caloriesIngested / currentCalorieTarget) * 100), 140)
+  const dailyHealthMetrics = getDailyHealthMetrics(waterIngested, caloriesIngested, isWorkoutDay, bmrTarget)
+  const currentCalorieTarget = dailyHealthMetrics.currentCalorieTarget
+  const waterPct = dailyHealthMetrics.waterPct
+  const caloriePct = dailyHealthMetrics.caloriePct
   const plannedCount = plannedDays.length
   const currentAge = birthDate ? calculateAge(birthDate) : null
 
