@@ -45,6 +45,7 @@ import {
   getCareerProfessionalEvents,
   getLastCareerActivityLabel,
   getLastCareerActivityText,
+  getPersonalCareDashboardMetrics,
   getProfessionalActivityBreakdown,
 } from "@/lib/dashboard-page-helpers"
 import {
@@ -929,28 +930,14 @@ export default function DashboardPage() {
 
   const globalProgress = Math.round((healthProgress + careerProgress + personalCareProgress) / 3)
 
-  const personalCareScore = weeklyPersonalCareSummary
-    ? Math.min(Math.max(Math.round(weeklyPersonalCareSummary.personal_care_score || 0), 0), 100)
-    : personalCareProgress
-
-  const personalCareIntensityLabel =
-    weeklyPersonalCareSummary?.care_intensity === "high"
-      ? "Alta constancia"
-      : weeklyPersonalCareSummary?.care_intensity === "medium"
-        ? "Constancia media"
-        : weeklyPersonalCareSummary?.care_intensity === "low"
-          ? "Inicio activo"
-          : "Sin actividad"
-
-  const weeklyPersonalCheckins = weeklyPersonalCareSummary?.checkin_days || 0
-  const weeklyPersonalCompletedRoutines = weeklyPersonalCareSummary?.completed_routine_events || 0
-  const weeklyPersonalActiveRoutines = weeklyPersonalCareSummary?.active_routines || 0
-  const weeklyPersonalRoutinePct = weeklyPersonalCareSummary
-    ? Math.min(Math.max(Math.round(weeklyPersonalCareSummary.routine_completion_percentage || 0), 0), 100)
-    : 0
-  const weeklyPersonalCheckinPct = weeklyPersonalCareSummary
-    ? Math.min(Math.max(Math.round(weeklyPersonalCareSummary.checkin_completion_percentage || 0), 0), 100)
-    : 0
+  const personalCareMetrics = getPersonalCareDashboardMetrics(weeklyPersonalCareSummary, personalCareProgress)
+  const personalCareScore = personalCareMetrics.score
+  const personalCareIntensityLabel = personalCareMetrics.intensityLabel
+  const weeklyPersonalCheckins = personalCareMetrics.checkins
+  const weeklyPersonalCompletedRoutines = personalCareMetrics.completedRoutines
+  const weeklyPersonalActiveRoutines = personalCareMetrics.activeRoutines
+  const weeklyPersonalRoutinePct = personalCareMetrics.routinePct
+  const weeklyPersonalCheckinPct = personalCareMetrics.checkinPct
 
   const weeklyTrainingPct = weeklyHealthSummary
     ? Math.min(Math.max(Math.round(weeklyHealthSummary.training_completion_percentage || 0), 0), 100)
@@ -1009,21 +996,10 @@ export default function DashboardPage() {
         )
       : 0
 
-  const weeklyMoodPct = weeklyPersonalCareSummary?.avg_mood_level
-    ? clampPct(weeklyPersonalCareSummary.avg_mood_level * 10)
-    : 0
-
-  const weeklyMotivationPct = weeklyPersonalCareSummary?.avg_motivation_level
-    ? clampPct(weeklyPersonalCareSummary.avg_motivation_level * 10)
-    : 0
-
-  const weeklySleepPct = weeklyPersonalCareSummary?.avg_sleep_quality
-    ? clampPct(weeklyPersonalCareSummary.avg_sleep_quality * 10)
-    : 0
-
-  const weeklyStressPct = weeklyPersonalCareSummary?.avg_stress_level
-    ? clampPct(weeklyPersonalCareSummary.avg_stress_level * 10)
-    : 0
+  const weeklyMoodPct = personalCareMetrics.moodPct
+  const weeklyMotivationPct = personalCareMetrics.motivationPct
+  const weeklySleepPct = personalCareMetrics.sleepPct
+  const weeklyStressPct = personalCareMetrics.stressPct
 
   const healthInsightSummary =
     weeklyTrainingPct >= 80
@@ -1039,12 +1015,7 @@ export default function DashboardPage() {
         ? "Hay avance operativo, pero aún puedes documentar más."
         : "Tu principal foco debe ser cerrar subtareas y dejar evidencia."
 
-  const careInsightSummary =
-    weeklyPersonalCheckins >= 4
-      ? "Buen seguimiento personal: existe una base de autocuidado."
-      : weeklyPersonalCheckins > 0
-        ? "Hay seguimiento inicial, pero hace falta más constancia diaria."
-        : "Conviene empezar con check-ins simples y una rutina diaria."
+  const careInsightSummary = personalCareMetrics.insight
 
   const bar = (
     value: number,

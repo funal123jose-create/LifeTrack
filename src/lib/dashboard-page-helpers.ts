@@ -1,4 +1,4 @@
-import type { WeeklyCareerActivity } from "@/lib/dashboard-page-models"
+import type { WeeklyCareerActivity, WeeklyPersonalCareSummary } from "@/lib/dashboard-page-models"
 
 export const formatDateShort = (value?: string | null) => {
   if (!value) return "—"
@@ -76,3 +76,45 @@ export const getProfessionalActivityBreakdown = (
     tone: "border-emerald-300/12 bg-emerald-500/[0.075] text-emerald-200",
   },
 ]
+
+const clampDashboardPct = (value: number) => Math.min(Math.max(Math.round(value || 0), 0), 100)
+
+export const getPersonalCareDashboardMetrics = (
+  summary: WeeklyPersonalCareSummary | null,
+  fallbackProgress: number
+) => {
+  const checkins = summary?.checkin_days || 0
+
+  return {
+    score: summary
+      ? clampDashboardPct(summary.personal_care_score || 0)
+      : fallbackProgress,
+    intensityLabel:
+      summary?.care_intensity === "high"
+        ? "Alta constancia"
+        : summary?.care_intensity === "medium"
+          ? "Constancia media"
+          : summary?.care_intensity === "low"
+            ? "Inicio activo"
+            : "Sin actividad",
+    checkins,
+    completedRoutines: summary?.completed_routine_events || 0,
+    activeRoutines: summary?.active_routines || 0,
+    routinePct: summary
+      ? clampDashboardPct(summary.routine_completion_percentage || 0)
+      : 0,
+    checkinPct: summary
+      ? clampDashboardPct(summary.checkin_completion_percentage || 0)
+      : 0,
+    moodPct: summary?.avg_mood_level ? clampDashboardPct(summary.avg_mood_level * 10) : 0,
+    motivationPct: summary?.avg_motivation_level ? clampDashboardPct(summary.avg_motivation_level * 10) : 0,
+    sleepPct: summary?.avg_sleep_quality ? clampDashboardPct(summary.avg_sleep_quality * 10) : 0,
+    stressPct: summary?.avg_stress_level ? clampDashboardPct(summary.avg_stress_level * 10) : 0,
+    insight:
+      checkins >= 4
+        ? "Buen seguimiento personal: existe una base de autocuidado."
+        : checkins > 0
+          ? "Hay seguimiento inicial, pero hace falta m\u00e1s constancia diaria."
+          : "Conviene empezar con check-ins simples y una rutina diaria.",
+  }
+}
