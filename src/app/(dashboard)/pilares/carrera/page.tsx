@@ -24,6 +24,7 @@ import {
   getProjectSkills,
   groupCareerSkills,
   mapProfessionalScores,
+  mapProjectCaseStudy,
   mapRawProjects,
   mapTechnicalSummaries,
   sanitizeStatusForDB,
@@ -33,6 +34,7 @@ import type {
   ProjectCaseStudyDetail,
   ProjectProfessionalScore,
   ProjectTechnicalSummary,
+  RawProjectCaseStudyDetail,
   RawProjectProfessionalScore,
   RawProjectTechnicalSummary,
   Task,
@@ -51,8 +53,6 @@ import {
   type CareerSkill,
   type PriorityLevel,
   type ProjectStatus,
-  type ProjectCaseStudySkill,
-  type ProjectCaseStudyTask,
   type ProjectTaskDoc,
   type ProjectTaskSkillLink,
   type ProjectUpdate,
@@ -335,38 +335,7 @@ export default function DataCarreraPage() {
 
       if (error) throw error
 
-      setSelectedCaseStudy({
-        project_id: String(data.project_id || ""),
-        project_title: data.project_title || "",
-        project_description: data.project_description || null,
-        project_summary: data.project_summary || null,
-        project_status: data.project_status || null,
-        project_priority: data.project_priority || null,
-        start_date: data.start_date || null,
-        end_date: data.end_date || null,
-        total_tasks: Number(data.total_tasks || 0),
-        completed_tasks: Number(data.completed_tasks || 0),
-        in_progress_tasks: Number(data.in_progress_tasks || 0),
-        pending_tasks: Number(data.pending_tasks || 0),
-        archived_tasks: Number(data.archived_tasks || 0),
-        documented_tasks: Number(data.documented_tasks || 0),
-        total_project_skills: Number(data.total_project_skills || 0),
-        total_task_skills: Number(data.total_task_skills || 0),
-        tasks_with_skills: Number(data.tasks_with_skills || 0),
-        total_assets: Number(data.total_assets || 0),
-        total_images: Number(data.total_images || 0),
-        total_documents: Number(data.total_documents || 0),
-        tasks_with_assets: Number(data.tasks_with_assets || 0),
-        project_stack: data.project_stack || "",
-        task_stack: data.task_stack || "",
-        project_stack_json: (Array.isArray(data.project_stack_json) ? data.project_stack_json : []) as unknown as ProjectCaseStudySkill[],
-        tasks_json: (Array.isArray(data.tasks_json) ? data.tasks_json : []) as unknown as ProjectCaseStudyTask[],
-        task_completion_percentage: Number(data.task_completion_percentage || 0),
-        documentation_percentage: Number(data.documentation_percentage || 0),
-        skill_coverage_percentage: Number(data.skill_coverage_percentage || 0),
-        evidence_coverage_percentage: Number(data.evidence_coverage_percentage || 0),
-        professional_score: Number(data.professional_score || 0),
-      })
+      setSelectedCaseStudy(mapProjectCaseStudy(data as RawProjectCaseStudyDetail))
     } catch (err: unknown) {
       console.error("Error cargando caso técnico del proyecto:", getErrorMessage(err))
       alert(`No se pudo cargar el caso técnico: ${getErrorMessage(err)}`)

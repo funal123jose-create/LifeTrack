@@ -17,6 +17,10 @@ export interface Task {
 
 export type RawProjectProfessionalScore = Partial<Record<keyof ProjectProfessionalScore, unknown>>
 export type RawProjectTechnicalSummary = Partial<Record<keyof ProjectTechnicalSummary, unknown>>
+export type RawProjectCaseStudyDetail = RawProjectTechnicalSummary & {
+  project_stack_json?: unknown
+  tasks_json?: unknown
+}
 
 export interface ProjectProfessionalScore {
   project_id: string

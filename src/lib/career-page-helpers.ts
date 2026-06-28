@@ -4,6 +4,8 @@ import {
   toRequiredString,
   type CareerSkill,
   type PriorityLevel,
+  type ProjectCaseStudySkill,
+  type ProjectCaseStudyTask,
   type ProjectSkillLink,
   type ProjectStatus,
   type ProjectTaskDoc,
@@ -13,8 +15,10 @@ import {
 } from "@/lib/career"
 import type {
   Project,
+  ProjectCaseStudyDetail,
   ProjectProfessionalScore,
   ProjectTechnicalSummary,
+  RawProjectCaseStudyDetail,
   RawProjectProfessionalScore,
   RawProjectTechnicalSummary,
   Task,
@@ -190,3 +194,36 @@ export const mapTechnicalSummaries = (
 
   return mappedSummaries
 }
+
+export const mapProjectCaseStudy = (data: RawProjectCaseStudyDetail): ProjectCaseStudyDetail => ({
+  project_id: toRequiredString(data.project_id),
+  project_title: toRequiredString(data.project_title),
+  project_description: toOptionalString(data.project_description),
+  project_summary: toOptionalString(data.project_summary),
+  project_status: toOptionalString(data.project_status),
+  project_priority: toOptionalString(data.project_priority),
+  start_date: toOptionalString(data.start_date),
+  end_date: toOptionalString(data.end_date),
+  total_tasks: Number(data.total_tasks || 0),
+  completed_tasks: Number(data.completed_tasks || 0),
+  in_progress_tasks: Number(data.in_progress_tasks || 0),
+  pending_tasks: Number(data.pending_tasks || 0),
+  archived_tasks: Number(data.archived_tasks || 0),
+  documented_tasks: Number(data.documented_tasks || 0),
+  total_project_skills: Number(data.total_project_skills || 0),
+  total_task_skills: Number(data.total_task_skills || 0),
+  tasks_with_skills: Number(data.tasks_with_skills || 0),
+  total_assets: Number(data.total_assets || 0),
+  total_images: Number(data.total_images || 0),
+  total_documents: Number(data.total_documents || 0),
+  tasks_with_assets: Number(data.tasks_with_assets || 0),
+  project_stack: toRequiredString(data.project_stack),
+  task_stack: toRequiredString(data.task_stack),
+  project_stack_json: (Array.isArray(data.project_stack_json) ? data.project_stack_json : []) as ProjectCaseStudySkill[],
+  tasks_json: (Array.isArray(data.tasks_json) ? data.tasks_json : []) as ProjectCaseStudyTask[],
+  task_completion_percentage: Number(data.task_completion_percentage || 0),
+  documentation_percentage: Number(data.documentation_percentage || 0),
+  skill_coverage_percentage: Number(data.skill_coverage_percentage || 0),
+  evidence_coverage_percentage: Number(data.evidence_coverage_percentage || 0),
+  professional_score: Number(data.professional_score || 0),
+})
