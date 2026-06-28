@@ -1,4 +1,4 @@
-import type { WeeklyCareerSummary, WeeklyHealthSummary } from "@/lib/dashboard-page-models"
+import type { WeeklyCareerActivity, WeeklyCareerSummary, WeeklyHealthSummary } from "@/lib/dashboard-page-models"
 
 type RoutineMetrics = {
   weekStart: string
@@ -11,6 +11,7 @@ type RoutineMetrics = {
 
 type RawWeeklyHealthSummary = Partial<Record<keyof WeeklyHealthSummary, unknown>>
 type RawWeeklyCareerSummary = Partial<Record<keyof WeeklyCareerSummary, unknown>>
+type RawWeeklyCareerActivity = Partial<Record<keyof WeeklyCareerActivity, unknown>>
 
 export const mapWeeklyHealthSummary = (
   data: RawWeeklyHealthSummary | null | undefined,
@@ -71,5 +72,44 @@ export const mapWeeklyCareerSummary = (
     top_project_id: data.top_project_id ? String(data.top_project_id) : null,
     top_project_title: data.top_project_title ? String(data.top_project_title) : null,
     top_project_completed_tasks: Number(data.top_project_completed_tasks || 0),
+  }
+}
+
+export const mapWeeklyCareerActivity = (
+  data: RawWeeklyCareerActivity | null | undefined
+): WeeklyCareerActivity | null => {
+  if (!data) return null
+
+  return {
+    week_start: data.week_start ? String(data.week_start) : null,
+    week_end: data.week_end ? String(data.week_end) : null,
+    total_events: Number(data.total_events || 0),
+    projects_created_events: Number(data.projects_created_events || 0),
+    projects_completed_events: Number(data.projects_completed_events || 0),
+    project_status_changed_events: Number(data.project_status_changed_events || 0),
+    project_priority_changed_events: Number(data.project_priority_changed_events || 0),
+    tasks_created_events: Number(data.tasks_created_events || 0),
+    tasks_completed_events: Number(data.tasks_completed_events || 0),
+    tasks_archived_events: Number(data.tasks_archived_events || 0),
+    task_status_changed_events: Number(data.task_status_changed_events || 0),
+    task_priority_changed_events: Number(data.task_priority_changed_events || 0),
+    project_skill_assigned_events: Number(data.project_skill_assigned_events || 0),
+    task_skill_assigned_events: Number(data.task_skill_assigned_events || 0),
+    task_documented_events: Number(data.task_documented_events || 0),
+    task_documentation_updated_events: Number(data.task_documentation_updated_events || 0),
+    task_evidence_uploaded_events: Number(data.task_evidence_uploaded_events || 0),
+    skill_activity_events: Number(data.skill_activity_events || 0),
+    documentation_activity_events: Number(data.documentation_activity_events || 0),
+    evidence_activity_events: Number(data.evidence_activity_events || 0),
+    professional_activity_events: Number(data.professional_activity_events || 0),
+    active_projects_touched: Number(data.active_projects_touched || 0),
+    active_tasks_touched: Number(data.active_tasks_touched || 0),
+    most_active_day: data.most_active_day ? String(data.most_active_day) : null,
+    most_active_day_events: Number(data.most_active_day_events || 0),
+    last_event_type: data.last_event_type ? String(data.last_event_type) : null,
+    last_event_title: data.last_event_title ? String(data.last_event_title) : null,
+    last_event_description: data.last_event_description ? String(data.last_event_description) : null,
+    last_event_at: data.last_event_at ? String(data.last_event_at) : null,
+    activity_intensity: data.activity_intensity ? String(data.activity_intensity) : "none",
   }
 }
