@@ -23,6 +23,7 @@ import {
   getProjectSkillLinks,
   getProjectSkills,
   groupCareerSkills,
+  mapRawProjects,
   sanitizeStatusForDB,
 } from "@/lib/career-page-helpers"
 import type {
@@ -48,7 +49,6 @@ import {
   toRequiredString,
   type CareerSkill,
   type PriorityLevel,
-  type ProjectSkillLink,
   type ProjectStatus,
   type ProjectCaseStudySkill,
   type ProjectCaseStudyTask,
@@ -193,55 +193,7 @@ export default function DataCarreraPage() {
       if (error) throw error
 
       if (data) {
-        const mapped: Project[] = (data as RawProject[]).map((proj) => {
-          let currentStatus: ProjectStatus = 'Backlog'
-          const dbStatus = String(proj.status).toLowerCase().trim()
-
-          if (dbStatus === 'en planeación' || dbStatus === 'en planeacion') currentStatus = 'En planeación'
-          else if (dbStatus === 'en curso') currentStatus = 'En curso'
-          else if (dbStatus === 'en pausa') currentStatus = 'En pausa'
-          else if (dbStatus === 'completado') currentStatus = 'Completado'
-          else if (dbStatus === 'cancelado') currentStatus = 'Cancelado'
-
-          const cleanPriority = (proj.priority === 'Baja' || proj.priority === 'Media' || proj.priority === 'Alta') ?
-            proj.priority : 'Media'
-
-          const tasks: Task[] = (Array.isArray(proj.project_tasks) ? proj.project_tasks : []).map((t) => {
-            const rawStatus = String(t.status || 'SIN EMPEZAR').toUpperCase() as TaskStatus
-
-            const taskSkillLinks: ProjectTaskSkillLink[] = (Array.isArray(t.project_task_skills) ? t.project_task_skills : [])
-              .map((link) => ({
-                ...mapSkillLink(link),
-                proficiency_level: toOptionalString(link.proficiency_level) || "Aplicado",
-              }))
-
-            return {
-              id: toRequiredString(t.id),
-              title: toRequiredString(t.title),
-              status: ['SIN EMPEZAR', 'EN CURSO', 'COMPLETADO', 'ARCHIVADO'].includes(rawStatus) ? rawStatus : 'SIN EMPEZAR',
-              task_skills: taskSkillLinks
-            }
-          })
-
-          const skillLinks: ProjectSkillLink[] = (Array.isArray(proj.project_skills) ? proj.project_skills : [])
-            .map((link) => ({
-              ...mapSkillLink(link),
-              proficiency_level: toOptionalString(link.proficiency_level) || "Practicando",
-            }))
-
-          return {
-            id: toRequiredString(proj.id),
-            title: toRequiredString(proj.title),
-            summary: toOptionalString(proj.summary),
-            description: toOptionalString(proj.description),
-            status: currentStatus,
-            priority: cleanPriority,
-            start_date: toOptionalString(proj.start_date),
-            end_date: toOptionalString(proj.end_date),
-            project_tasks: tasks,
-            project_skills: skillLinks
-          }
-        })
+        const mapped = mapRawProjects(data as RawProject[])
 
         setProjects(mapped)
 
