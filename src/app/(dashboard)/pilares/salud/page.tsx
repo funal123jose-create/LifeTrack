@@ -40,6 +40,14 @@ import {
 import Link from "next/link"
 import { BiometricsBackground, FloatingBioChips, HudCornerFrame } from "@/components/health/biometrics-background"
 import { getCurrentWeekStartString, getDateForWeekdayNum, getLocalDateString } from "@/lib/date"
+import { DAYS_OF_WEEK, formatLocalDateTime } from "@/lib/health-page-helpers"
+import type {
+  BodyProgressLog,
+  MealLog,
+  RawNutritionMeal,
+  RoutineCompletion,
+  WaterLog,
+} from "@/lib/health-page-models"
 import {
   getConfidenceClass,
   getConfidenceLabel,
@@ -50,75 +58,6 @@ import {
   type MealType,
   type NutritionMeal,
 } from "@/lib/nutrition"
-
-// Días de la semana para el Planificador Semanal con su mapeo numérico para rutinas_entrenamiento
-const DAYS_OF_WEEK = [
-  { id: "mon", name: "Lunes", num: 1 },
-  { id: "tue", name: "Martes", num: 2 },
-  { id: "wed", name: "Miércoles", num: 3 },
-  { id: "thu", name: "Jueves", num: 4 },
-  { id: "fri", name: "Viernes", num: 5 },
-  { id: "sat", name: "Sábado", num: 6 },
-  { id: "sun", name: "Domingo", num: 7 },
-]
-// Semana operativa: lunes a domingo.
-// Esto permite que cada lunes los checks aparezcan vacíos sin borrar el historial anterior.
-const formatLocalDateTime = (value: string) => {
-  try {
-    return new Date(value).toLocaleString("es-PE", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  } catch {
-    return "--/--/---- --:--"
-  }
-}
-
-
-type MealLog = {
-  id: string
-  meal_description: string
-  estimated_calories: number
-  source: string
-  meal_type: MealType
-  confidence: ConfidenceLevel
-  portion_assumption: string | null
-  created_at: string
-}
-
-type RawNutritionMeal = {
-  meal_type?: unknown
-  description?: unknown
-  estimated_calories?: unknown
-  confidence?: unknown
-  portion_assumption?: unknown
-}
-
-type WaterLog = {
-  id: string
-  amount_liters: number
-  source: string
-  created_at: string
-}
-
-type BodyProgressLog = {
-  id: string
-  date: string
-  weight_kg: number | null
-  energy_level: number | null
-  notes: string | null
-  created_at: string
-}
-
-type RoutineCompletion = {
-  date: string
-  dia_semana: number
-  routine_type: "fuerza" | "cardio"
-  completed: boolean
-}
 
 export default function CentroSaludPage() {
   const supabase = createClient()
