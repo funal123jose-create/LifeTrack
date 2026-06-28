@@ -20,9 +20,11 @@ import { cardVariants, containerVariants, macroColumns, microColumns } from "@/l
 import { generateCaseStudyExportHtml } from "@/lib/career-export"
 import {
   buildEmptyTaskDoc,
+  getProjectProfessionalScore,
   getProjectTaskCompletionPct,
   getProjectSkillLinks,
   getProjectSkills,
+  getProjectTechnicalSummary as getProjectTechnicalSummaryFromMap,
   groupCareerSkills,
   mapProfessionalScores,
   mapProjectCaseStudy,
@@ -93,13 +95,11 @@ export default function DataCarreraPage() {
   const [loadingCaseStudy, setLoadingCaseStudy] = useState(false)
 
   const getProjectScore = (project?: Project | null) => {
-    if (!project) return null
-    return projectScores[project.id] || null
+    return getProjectProfessionalScore(project, projectScores)
   }
 
   const getProjectTechnicalSummary = (project?: Project | null) => {
-    if (!project) return null
-    return technicalSummaries[project.id] || null
+    return getProjectTechnicalSummaryFromMap(project, technicalSummaries)
   }
 
   const groupedCareerSkills = groupCareerSkills(careerSkills)

@@ -83,6 +83,22 @@ export const getProjectTaskCompletionPct = (project?: Project | null) => {
   return total > 0 ? Math.round((completed / total) * 100) : 0
 }
 
+export const getProjectProfessionalScore = (
+  project: Project | null | undefined,
+  scores: Record<string, ProjectProfessionalScore>
+) => {
+  if (!project) return null
+  return scores[project.id] || null
+}
+
+export const getProjectTechnicalSummary = (
+  project: Project | null | undefined,
+  summaries: Record<string, ProjectTechnicalSummary>
+) => {
+  if (!project) return null
+  return summaries[project.id] || null
+}
+
 const normalizeProjectPriority = (priority: unknown): PriorityLevel => {
   return priority === "Baja" || priority === "Media" || priority === "Alta" ? priority : "Media"
 }
