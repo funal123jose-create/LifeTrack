@@ -20,6 +20,7 @@ import { cardVariants, containerVariants, macroColumns, microColumns } from "@/l
 import { generateCaseStudyExportHtml } from "@/lib/career-export"
 import {
   buildEmptyTaskDoc,
+  getProjectTaskCompletionPct,
   getProjectSkillLinks,
   getProjectSkills,
   groupCareerSkills,
@@ -901,9 +902,7 @@ export default function DataCarreraPage() {
                         </div>
                       ) : (
                         filtered.map((project) => {
-                          const total = project.project_tasks.length
-                          const done = project.project_tasks.filter(t => t.status === 'COMPLETADO').length
-                          const pct = total > 0 ? Math.round((done / total) * 100) : 0
+                          const pct = getProjectTaskCompletionPct(project)
                           const score = getProjectScore(project)
                           const scoreValue = score?.professional_score ?? 0
                           const scoreTone = getScoreTone(scoreValue)
