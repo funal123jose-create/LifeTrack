@@ -25,6 +25,30 @@ export const formatLocalDateTime = (value: string) => {
   }
 }
 
+export const calculateAgeFromBirthDate = (birthDateValue: string) => {
+  if (!birthDateValue) return null
+
+  const today = new Date()
+  const birth = new Date(birthDateValue)
+
+  if (Number.isNaN(birth.getTime())) return null
+
+  let age = today.getFullYear() - birth.getFullYear()
+  const monthDiff = today.getMonth() - birth.getMonth()
+  const dayDiff = today.getDate() - birth.getDate()
+
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    age--
+  }
+
+  return age
+}
+
+export const getCurrentWeekdayId = () => {
+  const daysMapping = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
+  return daysMapping[new Date().getDay()]
+}
+
 type RawMealLog = Partial<Record<keyof MealLog, unknown>>
 type RawWaterLog = Partial<Record<keyof WaterLog, unknown>>
 type RawBodyProgressLog = Partial<Record<keyof BodyProgressLog, unknown>>

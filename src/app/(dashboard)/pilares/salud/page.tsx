@@ -42,7 +42,9 @@ import { BiometricsBackground, FloatingBioChips, HudCornerFrame } from "@/compon
 import { getCurrentWeekStartString, getDateForWeekdayNum, getLocalDateString } from "@/lib/date"
 import {
   DAYS_OF_WEEK,
+  calculateAgeFromBirthDate,
   formatLocalDateTime,
+  getCurrentWeekdayId,
   getDailyHealthMetrics,
   getEstimatedCaloriesFromNutritionResponse,
   mapBodyProgressLog,
@@ -124,24 +126,6 @@ export default function CentroSaludPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
 
-  const calculateAge = (birthDateValue: string) => {
-    if (!birthDateValue) return null
-
-    const today = new Date()
-    const birth = new Date(birthDateValue)
-
-    if (Number.isNaN(birth.getTime())) return null
-
-    let age = today.getFullYear() - birth.getFullYear()
-    const monthDiff = today.getMonth() - birth.getMonth()
-    const dayDiff = today.getDate() - birth.getDate()
-
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-      age--
-    }
-
-    return age
-  }
 
   // --- Calcular Meta Calórica Actual Dinámicamente ---
   const dailyHealthMetrics = getDailyHealthMetrics(waterIngested, caloriesIngested, isWorkoutDay, bmrTarget)
@@ -149,7 +133,7 @@ export default function CentroSaludPage() {
   const waterPct = dailyHealthMetrics.waterPct
   const caloriePct = dailyHealthMetrics.caloriePct
   const plannedCount = plannedDays.length
-  const currentAge = birthDate ? calculateAge(birthDate) : null
+  const currentAge = birthDate ? calculateAgeFromBirthDate(birthDate) : null
 
   const formatLogTime = (value: string) => {
     return formatLocalDateTime(value)
@@ -397,9 +381,7 @@ export default function CentroSaludPage() {
   const loadHealthData = useCallback(async () => {
     try {
       // Determinamos dinámicamente qué día es hoy en la semana actual real del sistema
-      const daysMapping = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
-      const todayIndex = new Date().getDay()
-      const todayId = daysMapping[todayIndex]
+      const todayId = getCurrentWeekdayId()
       setCurrentDayId(todayId)
 
       const { data: { session } } = await supabase.auth.getSession()
@@ -421,7 +403,7 @@ export default function CentroSaludPage() {
         setProgressWeight(String(profile.weight_kg))
 
         // Calcular BMR Base con edad exacta
-        const age = calculateAge(profile.birth_date) || 0
+        const age = calculateAgeFromBirthDate(profile.birth_date) || 0
         let baseCalories = (10 * Number(profile.weight_kg)) + (6.25 * Number(profile.height_cm)) - (5 * age)
         baseCalories = profile.gender === "male" ? baseCalories + 5 : baseCalories - 161
         const calculatedBmr = Math.round(baseCalories * 1.2)
