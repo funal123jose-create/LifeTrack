@@ -36,6 +36,7 @@ import {
 import { motion } from "framer-motion"
 import { RegistrationPanel } from "@/components/registration-panel"
 import { DashboardBackground } from "@/components/dashboard/dashboard-background"
+import { DashboardProgressBar, DashboardProgressRing } from "@/components/dashboard/dashboard-progress"
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
 import { clampPct, containerVariants, itemVariants, profileImageSrc } from "@/lib/dashboard-page-config"
 import {
@@ -982,44 +983,6 @@ export default function DashboardPage() {
 
   const careInsightSummary = personalCareMetrics.insight
 
-  const bar = (
-    value: number,
-    fillClassName: string,
-    heightClassName = "h-2.5"
-  ) => (
-    <div className={`${heightClassName} w-full overflow-hidden rounded-full bg-white/[0.06]`}>
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: `${clampPct(value)}%` }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className={`h-full rounded-full ${fillClassName}`}
-      />
-    </div>
-  )
-
-  const ring = (
-    value: number,
-    color: string,
-    size = "h-24 w-24",
-    inner = "h-[74px] w-[74px]",
-    label = `${clampPct(value)}%`
-  ) => (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.92, rotate: -8 }}
-      animate={{ opacity: 1, scale: 1, rotate: 0 }}
-      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-      className={`relative grid ${size} shrink-0 place-items-center rounded-full shadow-[0_16px_34px_rgba(0,0,0,0.22)]`}
-      style={{
-        background: `conic-gradient(${color} ${clampPct(value) * 3.6}deg, rgba(255,255,255,0.08) 0deg)`,
-      }}
-    >
-      <div className="absolute inset-0 rounded-full opacity-35 blur-xl" style={{ backgroundColor: color }} />
-      <div className={`relative z-10 grid ${inner} place-items-center rounded-full bg-[#09111f] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-white/[0.06]`}>
-        <span className="whitespace-nowrap text-[clamp(0.9rem,1.6vw,1.45rem)] font-extrabold leading-none tracking-[-0.045em] text-white [overflow-wrap:normal]">{label}</span>
-      </div>
-    </motion.div>
-  )
-
   const sectionHeader = (title: string, subtitle: string, accentClassName: string) => (
     <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
       <div className="min-w-0">
@@ -1074,7 +1037,7 @@ export default function DashboardPage() {
 
       {typeof progress === "number" ? (
         <div className="relative z-10 mt-5">
-          {bar(progress, "bg-white/95")}
+          <DashboardProgressBar value={progress} fillClassName="bg-white/95" />
         </div>
       ) : null}
     </motion.div>
@@ -1206,7 +1169,7 @@ export default function DashboardPage() {
                 <div className="rounded-[1.25rem] border border-white/[0.075] bg-white/[0.045] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] backdrop-blur-xl">
                   <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Avance general</p>
                   <div className="mt-3 flex items-center gap-3">
-                    {ring(globalProgress, "#60a5fa", "h-16 w-16", "h-[48px] w-[48px]", `${globalProgress}%`)}
+                    <DashboardProgressRing value={globalProgress} color="#60a5fa" size="h-16 w-16" inner="h-[48px] w-[48px]" label={`${globalProgress}%`} />
                     <p className="text-sm leading-6 text-slate-400">Promedio real de los tres pilares.</p>
                   </div>
                 </div>
@@ -1340,7 +1303,7 @@ export default function DashboardPage() {
                       <p className="mt-1 text-sm text-slate-500">No solo números: combina avance, hábitos y contexto semanal.</p>
                     </div>
                   </div>
-                  {ring(healthProgress, "#34d399")}
+                  <DashboardProgressRing value={healthProgress} color="#34d399" />
                 </div>
               </CardHeader>
 
@@ -1356,7 +1319,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
 
-                  {bar(weeklyTrainingPct, "bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400", "h-3")}
+                  <DashboardProgressBar value={weeklyTrainingPct} fillClassName="bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400" heightClassName="h-3" />
                   <div className="mt-3 grid gap-2 text-sm text-slate-400 sm:grid-cols-3">
                     <p>Planificados: <span className="font-semibold text-white">{weeklyPlannedDays}</span></p>
                     <p>Cumplidos: <span className="font-semibold text-white">{weeklyCompletedDays}</span></p>
@@ -1376,14 +1339,14 @@ export default function DashboardPage() {
                           <span>Agua semanal</span>
                           <span>{weeklyHealthSummary ? `${weeklyHealthSummary.total_water_liters.toFixed(2)}L` : "—"}</span>
                         </div>
-                        {bar(weeklyWaterPct, "bg-gradient-to-r from-cyan-500 to-sky-400")}
+                        <DashboardProgressBar value={weeklyWaterPct} fillClassName="bg-gradient-to-r from-cyan-500 to-sky-400" />
                       </div>
                       <div>
                         <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
                           <span>Comidas registradas</span>
                           <span>{weeklyHealthSummary ? `${weeklyHealthSummary.meals_count}` : `${todayMealCount} hoy`}</span>
                         </div>
-                        {bar(weeklyMealsPct, "bg-gradient-to-r from-orange-500 to-amber-400")}
+                        <DashboardProgressBar value={weeklyMealsPct} fillClassName="bg-gradient-to-r from-orange-500 to-amber-400" />
                       </div>
                       <div>
                         <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
@@ -1394,7 +1357,7 @@ export default function DashboardPage() {
                               : "—"}
                           </span>
                         </div>
-                        {bar(caloriesBalancePct, "bg-gradient-to-r from-violet-500 to-fuchsia-400")}
+                        <DashboardProgressBar value={caloriesBalancePct} fillClassName="bg-gradient-to-r from-violet-500 to-fuchsia-400" />
                       </div>
                     </div>
                   </div>
@@ -1407,21 +1370,25 @@ export default function DashboardPage() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
-                        {ring(
-                          weeklyHealthSummary?.avg_energy_level
-                            ? weeklyHealthSummary.avg_energy_level * 10
-                            : latestEnergyLevel !== null ? latestEnergyLevel * 10 : 0,
-                          "#60a5fa",
-                          "h-16 w-16",
-                          "h-[46px] w-[46px]",
-                          weeklyHealthSummary?.avg_energy_level
-                            ? `${weeklyHealthSummary.avg_energy_level.toFixed(1)}`
-                            : latestEnergyLevel !== null ? `${latestEnergyLevel}` : "—"
-                        )}
+                        <DashboardProgressRing
+                          value={
+                            weeklyHealthSummary?.avg_energy_level
+                              ? weeklyHealthSummary.avg_energy_level * 10
+                              : latestEnergyLevel !== null ? latestEnergyLevel * 10 : 0
+                          }
+                          color="#60a5fa"
+                          size="h-16 w-16"
+                          inner="h-[46px] w-[46px]"
+                          label={
+                            weeklyHealthSummary?.avg_energy_level
+                              ? `${weeklyHealthSummary.avg_energy_level.toFixed(1)}`
+                              : latestEnergyLevel !== null ? `${latestEnergyLevel}` : "—"
+                          }
+                        />
                         <p className="mt-2 text-xs font-bold text-slate-300">Energía</p>
                       </div>
                       <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
-                        {ring(weeklyTrainingPct, "#34d399", "h-16 w-16", "h-[46px] w-[46px]", `${weeklyTrainingPct}%`)}
+                        <DashboardProgressRing value={weeklyTrainingPct} color="#34d399" size="h-16 w-16" inner="h-[46px] w-[46px]" label={`${weeklyTrainingPct}%`} />
                         <p className="mt-2 text-xs font-bold text-slate-300">Rutina</p>
                       </div>
                     </div>
@@ -1507,7 +1474,7 @@ export default function DashboardPage() {
                       <p className="mt-1 text-sm text-slate-500">Proyectos, subtareas, actividad profesional y stack usado.</p>
                     </div>
                   </div>
-                  {ring(careerProgress, "#f59e0b")}
+                  <DashboardProgressRing value={careerProgress} color="#f59e0b" />
                 </div>
               </CardHeader>
 
@@ -1523,7 +1490,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
 
-                  {bar(weeklyCareerSummary ? totalCareerPct : careerProgress, "bg-gradient-to-r from-amber-500 via-orange-400 to-yellow-300", "h-3")}
+                  <DashboardProgressBar value={weeklyCareerSummary ? totalCareerPct : careerProgress} fillClassName="bg-gradient-to-r from-amber-500 via-orange-400 to-yellow-300" heightClassName="h-3" />
                   <div className="mt-3 grid gap-2 text-sm text-slate-400 sm:grid-cols-3">
                     <p>Completadas: <span className="font-semibold text-white">{completedCareerTasks}</span></p>
                     <p>En curso: <span className="font-semibold text-white">{weeklyCareerSummary?.in_progress_tasks ?? 0}</span></p>
@@ -1543,21 +1510,21 @@ export default function DashboardPage() {
                           <span>Productividad semanal</span>
                           <span>{weeklyCareerPct}%</span>
                         </div>
-                        {bar(weeklyCareerPct, "bg-gradient-to-r from-sky-500 to-blue-400")}
+                        <DashboardProgressBar value={weeklyCareerPct} fillClassName="bg-gradient-to-r from-sky-500 to-blue-400" />
                       </div>
                       <div>
                         <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
                           <span>Uso del stack</span>
                           <span>{skillsUsagePct}%</span>
                         </div>
-                        {bar(skillsUsagePct, "bg-gradient-to-r from-violet-500 to-fuchsia-400")}
+                        <DashboardProgressBar value={skillsUsagePct} fillClassName="bg-gradient-to-r from-violet-500 to-fuchsia-400" />
                       </div>
                       <div>
                         <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
                           <span>Actividad demostrable</span>
                           <span>{careerProfessionalActivityPct}%</span>
                         </div>
-                        {bar(careerProfessionalActivityPct, "bg-gradient-to-r from-emerald-500 to-teal-400")}
+                        <DashboardProgressBar value={careerProfessionalActivityPct} fillClassName="bg-gradient-to-r from-emerald-500 to-teal-400" />
                       </div>
                     </div>
                   </div>
@@ -1697,7 +1664,7 @@ export default function DashboardPage() {
                       <p className="mt-1 text-sm text-slate-500">Autocuidado, constancia emocional y hábitos personales.</p>
                     </div>
                   </div>
-                  {ring(personalCareProgress, "#c084fc")}
+                  <DashboardProgressRing value={personalCareProgress} color="#c084fc" />
                 </div>
               </CardHeader>
 
@@ -1713,7 +1680,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
 
-                  {bar(personalCareScore, "bg-gradient-to-r from-purple-500 via-fuchsia-400 to-pink-300", "h-3")}
+                  <DashboardProgressBar value={personalCareScore} fillClassName="bg-gradient-to-r from-purple-500 via-fuchsia-400 to-pink-300" heightClassName="h-3" />
                   <div className="mt-3 grid gap-2 text-sm text-slate-400 sm:grid-cols-3">
                     <p>Check-ins: <span className="font-semibold text-white">{weeklyPersonalCheckins}</span></p>
                     <p>Rutinas: <span className="font-semibold text-white">{weeklyPersonalCompletedRoutines}</span></p>
@@ -1733,28 +1700,28 @@ export default function DashboardPage() {
                           <span>Ánimo</span>
                           <span>{weeklyPersonalCareSummary?.avg_mood_level ? `${weeklyPersonalCareSummary.avg_mood_level.toFixed(1)}/10` : "—"}</span>
                         </div>
-                        {bar(weeklyMoodPct, "bg-gradient-to-r from-emerald-500 to-teal-400")}
+                        <DashboardProgressBar value={weeklyMoodPct} fillClassName="bg-gradient-to-r from-emerald-500 to-teal-400" />
                       </div>
                       <div>
                         <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
                           <span>Motivación</span>
                           <span>{weeklyPersonalCareSummary?.avg_motivation_level ? `${weeklyPersonalCareSummary.avg_motivation_level.toFixed(1)}/10` : "—"}</span>
                         </div>
-                        {bar(weeklyMotivationPct, "bg-gradient-to-r from-sky-500 to-blue-400")}
+                        <DashboardProgressBar value={weeklyMotivationPct} fillClassName="bg-gradient-to-r from-sky-500 to-blue-400" />
                       </div>
                       <div>
                         <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
                           <span>Estrés</span>
                           <span>{weeklyPersonalCareSummary?.avg_stress_level ? `${weeklyPersonalCareSummary.avg_stress_level.toFixed(1)}/10` : "—"}</span>
                         </div>
-                        {bar(weeklyStressPct, "bg-gradient-to-r from-rose-500 to-pink-400")}
+                        <DashboardProgressBar value={weeklyStressPct} fillClassName="bg-gradient-to-r from-rose-500 to-pink-400" />
                       </div>
                       <div>
                         <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
                           <span>Sueño</span>
                           <span>{weeklyPersonalCareSummary?.avg_sleep_quality ? `${weeklyPersonalCareSummary.avg_sleep_quality.toFixed(1)}/10` : "—"}</span>
                         </div>
-                        {bar(weeklySleepPct, "bg-gradient-to-r from-violet-500 to-indigo-400")}
+                        <DashboardProgressBar value={weeklySleepPct} fillClassName="bg-gradient-to-r from-violet-500 to-indigo-400" />
                       </div>
                     </div>
                   </div>
@@ -1766,11 +1733,11 @@ export default function DashboardPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
-                        {ring(weeklyPersonalCheckinPct, "#c084fc", "h-16 w-16", "h-[46px] w-[46px]", `${weeklyPersonalCheckins}`)}
+                        <DashboardProgressRing value={weeklyPersonalCheckinPct} color="#c084fc" size="h-16 w-16" inner="h-[46px] w-[46px]" label={`${weeklyPersonalCheckins}`} />
                         <p className="mt-2 text-xs font-bold text-slate-300">Check-ins</p>
                       </div>
                       <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
-                        {ring(weeklyPersonalRoutinePct, "#f472b6", "h-16 w-16", "h-[46px] w-[46px]", `${weeklyPersonalCompletedRoutines}`)}
+                        <DashboardProgressRing value={weeklyPersonalRoutinePct} color="#f472b6" size="h-16 w-16" inner="h-[46px] w-[46px]" label={`${weeklyPersonalCompletedRoutines}`} />
                         <p className="mt-2 text-xs font-bold text-slate-300">Rutinas</p>
                       </div>
                     </div>
