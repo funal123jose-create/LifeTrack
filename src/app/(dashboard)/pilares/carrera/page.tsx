@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { CyberBackground } from "@/components/career/cyber-background"
+import { MetricGrid } from "@/components/career/metric-grid"
 import { ProjectCard } from "@/components/career/project-card"
 import { RichTaskDocumentEditor } from "@/components/career/rich-task-document-editor"
 import { TaskCard } from "@/components/career/task-card"
@@ -1091,15 +1092,7 @@ export default function DataCarreraPage() {
                         </div>
                       </div>
 
-                      <div className="relative mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-                        {getTechnicalSummaryMetrics(technicalSummary).map((item) => (
-                          <div key={item.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
-                            <p className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
-                            <p className="mt-2 text-2xl font-extrabold text-slate-100">{item.value}</p>
-                            <p className="mt-1 text-[9px] font-medium text-slate-600">{item.detail}</p>
-                          </div>
-                        ))}
-                      </div>
+                      <MetricGrid className="relative mt-5" metrics={getTechnicalSummaryMetrics(technicalSummary)} />
 
                       <div className="relative mt-5 grid gap-4 lg:grid-cols-2">
                         <div className="rounded-2xl border border-orange-300/10 bg-orange-500/[0.045] p-4">
@@ -1657,15 +1650,7 @@ export default function DataCarreraPage() {
                                 </div>
                               </div>
 
-                              <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-                                {getCaseStudySummaryMetrics(selectedCaseStudy).map((metric) => (
-                                  <div key={metric.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
-                                    <p className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">{metric.label}</p>
-                                    <p className="mt-2 text-2xl font-extrabold text-slate-100">{metric.value}</p>
-                                    <p className="mt-1 text-[9px] font-medium text-slate-600">{metric.detail}</p>
-                                  </div>
-                                ))}
-                              </div>
+                              <MetricGrid className="mt-5" metrics={getCaseStudySummaryMetrics(selectedCaseStudy)} />
 
                               <div className="mt-5 grid gap-4 lg:grid-cols-2">
                                 <div className="rounded-2xl border border-orange-300/10 bg-black/24 p-4">
