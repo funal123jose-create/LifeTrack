@@ -40,6 +40,7 @@ import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString 
 import { formatDateShort } from "@/lib/dashboard-page-helpers"
 import {
   mapCareerSkillsSummary,
+  mapWeeklyPersonalCareSummary,
   mapWeeklyCareerActivity,
   mapWeeklyCareerSummary,
   mapWeeklyHealthSummary,
@@ -531,73 +532,7 @@ export default function DashboardPage() {
         return
       }
 
-      const summary = data
-
-      if (!summary) {
-        setWeeklyPersonalCareSummary({
-          week_start: currentWeekStart,
-          week_end: currentWeekEnd,
-          active_days: 0,
-          checkin_days: 0,
-          avg_mood_level: 0,
-          avg_stress_level: 0,
-          avg_motivation_level: 0,
-          avg_sleep_quality: 0,
-          reflection_days: 0,
-          gratitude_days: 0,
-          improvement_days: 0,
-          active_routines: 0,
-          completed_routine_events: 0,
-          routine_completed_days: 0,
-          unique_routines_completed: 0,
-          routine_completion_percentage: 0,
-          checkin_completion_percentage: 0,
-          personal_care_score: 0,
-          last_log_date: null,
-          last_mood_level: null,
-          last_stress_level: null,
-          last_motivation_level: null,
-          last_sleep_quality: null,
-          last_reflection: null,
-          last_gratitude_note: null,
-          last_improvement_note: null,
-          last_activity_at: null,
-          care_intensity: "none",
-        })
-        setPersonalCareProgress(0)
-        return
-      }
-
-      const mappedSummary: WeeklyPersonalCareSummary = {
-        week_start: summary.week_start || currentWeekStart,
-        week_end: summary.week_end || currentWeekEnd,
-        active_days: Number(summary.active_days || 0),
-        checkin_days: Number(summary.checkin_days || 0),
-        avg_mood_level: Number(summary.avg_mood_level || 0),
-        avg_stress_level: Number(summary.avg_stress_level || 0),
-        avg_motivation_level: Number(summary.avg_motivation_level || 0),
-        avg_sleep_quality: Number(summary.avg_sleep_quality || 0),
-        reflection_days: Number(summary.reflection_days || 0),
-        gratitude_days: Number(summary.gratitude_days || 0),
-        improvement_days: Number(summary.improvement_days || 0),
-        active_routines: Number(summary.active_routines || 0),
-        completed_routine_events: Number(summary.completed_routine_events || 0),
-        routine_completed_days: Number(summary.routine_completed_days || 0),
-        unique_routines_completed: Number(summary.unique_routines_completed || 0),
-        routine_completion_percentage: Number(summary.routine_completion_percentage || 0),
-        checkin_completion_percentage: Number(summary.checkin_completion_percentage || 0),
-        personal_care_score: Number(summary.personal_care_score || 0),
-        last_log_date: summary.last_log_date || null,
-        last_mood_level: summary.last_mood_level !== null && summary.last_mood_level !== undefined ? Number(summary.last_mood_level) : null,
-        last_stress_level: summary.last_stress_level !== null && summary.last_stress_level !== undefined ? Number(summary.last_stress_level) : null,
-        last_motivation_level: summary.last_motivation_level !== null && summary.last_motivation_level !== undefined ? Number(summary.last_motivation_level) : null,
-        last_sleep_quality: summary.last_sleep_quality !== null && summary.last_sleep_quality !== undefined ? Number(summary.last_sleep_quality) : null,
-        last_reflection: summary.last_reflection || null,
-        last_gratitude_note: summary.last_gratitude_note || null,
-        last_improvement_note: summary.last_improvement_note || null,
-        last_activity_at: summary.last_activity_at || null,
-        care_intensity: summary.care_intensity || "none",
-      }
+      const mappedSummary = mapWeeklyPersonalCareSummary(data, currentWeekStart, currentWeekEnd)
 
       setWeeklyPersonalCareSummary(mappedSummary)
       setPersonalCareProgress(Math.min(Math.max(Math.round(mappedSummary.personal_care_score || 0), 0), 100))

@@ -4,6 +4,7 @@ import type {
   WeeklyCareerActivity,
   WeeklyCareerSummary,
   WeeklyHealthSummary,
+  WeeklyPersonalCareSummary,
 } from "@/lib/dashboard-page-models"
 
 type RoutineMetrics = {
@@ -21,6 +22,7 @@ type RawWeeklyCareerActivity = Partial<Record<keyof WeeklyCareerActivity, unknow
 type RawCareerSkillsSummary = Partial<Record<keyof Omit<CareerSkillsSummary, "skills_detail">, unknown>> & {
   skills_detail?: unknown
 }
+type RawWeeklyPersonalCareSummary = Partial<Record<keyof WeeklyPersonalCareSummary, unknown>>
 
 export const mapWeeklyHealthSummary = (
   data: RawWeeklyHealthSummary | null | undefined,
@@ -154,3 +156,46 @@ export const mapCareerSkillsSummary = (
     })),
   }
 }
+
+export const mapWeeklyPersonalCareSummary = (
+  data: RawWeeklyPersonalCareSummary | null | undefined,
+  currentWeekStart: string,
+  currentWeekEnd: string
+): WeeklyPersonalCareSummary => ({
+  week_start: data?.week_start ? String(data.week_start) : currentWeekStart,
+  week_end: data?.week_end ? String(data.week_end) : currentWeekEnd,
+  active_days: Number(data?.active_days || 0),
+  checkin_days: Number(data?.checkin_days || 0),
+  avg_mood_level: Number(data?.avg_mood_level || 0),
+  avg_stress_level: Number(data?.avg_stress_level || 0),
+  avg_motivation_level: Number(data?.avg_motivation_level || 0),
+  avg_sleep_quality: Number(data?.avg_sleep_quality || 0),
+  reflection_days: Number(data?.reflection_days || 0),
+  gratitude_days: Number(data?.gratitude_days || 0),
+  improvement_days: Number(data?.improvement_days || 0),
+  active_routines: Number(data?.active_routines || 0),
+  completed_routine_events: Number(data?.completed_routine_events || 0),
+  routine_completed_days: Number(data?.routine_completed_days || 0),
+  unique_routines_completed: Number(data?.unique_routines_completed || 0),
+  routine_completion_percentage: Number(data?.routine_completion_percentage || 0),
+  checkin_completion_percentage: Number(data?.checkin_completion_percentage || 0),
+  personal_care_score: Number(data?.personal_care_score || 0),
+  last_log_date: data?.last_log_date ? String(data.last_log_date) : null,
+  last_mood_level: data?.last_mood_level !== null && data?.last_mood_level !== undefined
+    ? Number(data.last_mood_level)
+    : null,
+  last_stress_level: data?.last_stress_level !== null && data?.last_stress_level !== undefined
+    ? Number(data.last_stress_level)
+    : null,
+  last_motivation_level: data?.last_motivation_level !== null && data?.last_motivation_level !== undefined
+    ? Number(data.last_motivation_level)
+    : null,
+  last_sleep_quality: data?.last_sleep_quality !== null && data?.last_sleep_quality !== undefined
+    ? Number(data.last_sleep_quality)
+    : null,
+  last_reflection: data?.last_reflection ? String(data.last_reflection) : null,
+  last_gratitude_note: data?.last_gratitude_note ? String(data.last_gratitude_note) : null,
+  last_improvement_note: data?.last_improvement_note ? String(data.last_improvement_note) : null,
+  last_activity_at: data?.last_activity_at ? String(data.last_activity_at) : null,
+  care_intensity: data?.care_intensity ? String(data.care_intensity) : "none",
+})
