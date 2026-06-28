@@ -30,6 +30,7 @@ import {
   getProfessionalScoreMetrics,
   getProjectsByStatus,
   getTechnicalSummaryMetrics,
+  getTasksByStatus,
   getTaskSkillIds,
   groupCareerSkills,
   mapProfessionalScores,
@@ -1445,7 +1446,7 @@ export default function DataCarreraPage() {
 
                   <div className="grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2 lg:grid-cols-4">
                     {microColumns.map((col) => {
-                      const tasksInCol = selectedProject.project_tasks.filter(t => t.status === col.id)
+                      const tasksInCol = getTasksByStatus(selectedProject.project_tasks, col.id)
 
                       return (
                         <div key={col.id} className="flex min-w-0 flex-col gap-3 rounded-[1.35rem] border border-white/[0.055] bg-[#080b12]/60 p-4 shadow-[0_14px_40px_rgba(0,0,0,0.20)] backdrop-blur-xl">
