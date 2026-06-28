@@ -48,6 +48,9 @@ import {
   getCurrentWeekdayId,
   getDailyHealthMetrics,
   getEstimatedCaloriesFromNutritionResponse,
+  getRecentBodyProgressLogs,
+  getRecentMealLogs,
+  getRecentWaterLogs,
   getRoutineCompletionPercentage,
   mapBodyProgressLog,
   mapMealLog,
@@ -1358,7 +1361,7 @@ export default function CentroSaludPage() {
                             Aún no hay comidas registradas hoy.
                           </div>
                         ) : (
-                          mealLogs.slice(0, 3).map((meal) => (
+                          getRecentMealLogs(mealLogs).map((meal) => (
                             <div key={meal.id} className="rounded-2xl border border-white/[0.055] bg-black/20 p-3">
                               <div className="flex items-start justify-between gap-3">
                                 <p className="line-clamp-2 text-xs font-semibold leading-relaxed text-slate-300">
@@ -1408,7 +1411,7 @@ export default function CentroSaludPage() {
                             Aún no hay eventos de agua registrados hoy.
                           </div>
                         ) : (
-                          waterLogs.slice(0, 5).map((water) => (
+                          getRecentWaterLogs(waterLogs).map((water) => (
                             <div key={water.id} className="flex items-center justify-between rounded-2xl border border-white/[0.055] bg-black/20 p-3">
                               <div className="flex items-center gap-2">
                                 <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-blue-300/15 bg-blue-500/[0.055] text-blue-300">
@@ -1727,7 +1730,7 @@ export default function CentroSaludPage() {
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          {bodyProgressLogs.slice(0, 3).map((log) => (
+                          {getRecentBodyProgressLogs(bodyProgressLogs).map((log) => (
                             <div key={log.id} className="rounded-2xl border border-white/[0.055] bg-black/20 p-3">
                               <div className="flex items-center justify-between gap-3">
                                 <div>

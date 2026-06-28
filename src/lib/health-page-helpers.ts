@@ -101,6 +101,18 @@ export const mapNutritionMealsFromAI = (items: RawNutritionMeal[]): NutritionMea
     .filter((item) => item.description && item.estimated_calories > 0)
 }
 
+export const getRecentMealLogs = (logs: MealLog[], limit = 3) => {
+  return logs.slice(0, limit)
+}
+
+export const getRecentWaterLogs = (logs: WaterLog[], limit = 5) => {
+  return logs.slice(0, limit)
+}
+
+export const getRecentBodyProgressLogs = (logs: BodyProgressLog[], limit = 3) => {
+  return logs.slice(0, limit)
+}
+
 export const getEstimatedCaloriesFromNutritionResponse = (
   meals: NutritionMeal[],
   fallbackTotalCalories: unknown
