@@ -19,6 +19,28 @@ export type NutritionMeal = {
   portion_assumption?: string | null
 }
 
+const MEAL_TYPE_LABELS: Record<MealType, string> = {
+  breakfast: "Desayuno",
+  lunch: "Almuerzo",
+  dinner: "Cena",
+  snack: "Snack",
+  pre_workout: "Pre-entreno",
+  post_workout: "Post-entreno",
+  other: "Otro",
+}
+
+const CONFIDENCE_LABELS: Record<ConfidenceLevel, string> = {
+  low: "Confianza baja",
+  medium: "Confianza media",
+  high: "Confianza alta",
+}
+
+const CONFIDENCE_CLASSES: Record<ConfidenceLevel, string> = {
+  low: "border-amber-300/10 bg-amber-500/[0.07] text-amber-300/85",
+  medium: "border-blue-300/10 bg-blue-500/[0.07] text-blue-300/85",
+  high: "border-emerald-300/10 bg-emerald-500/[0.07] text-emerald-300/85",
+}
+
 export const normalizeMealType = (value: unknown): MealType => {
   const raw = String(value || "").toLowerCase().trim()
 
@@ -47,32 +69,13 @@ export const normalizeConfidence = (value: unknown): ConfidenceLevel => {
 }
 
 export const getMealTypeLabel = (mealType: string) => {
-  const labels: Record<string, string> = {
-    breakfast: "Desayuno",
-    lunch: "Almuerzo",
-    dinner: "Cena",
-    snack: "Snack",
-    pre_workout: "Pre-entreno",
-    post_workout: "Post-entreno",
-    other: "Otro",
-  }
-
-  return labels[mealType] || "Otro"
+  return MEAL_TYPE_LABELS[normalizeMealType(mealType)]
 }
 
 export const getConfidenceLabel = (confidence: string) => {
-  const labels: Record<string, string> = {
-    low: "Confianza baja",
-    medium: "Confianza media",
-    high: "Confianza alta",
-  }
-
-  return labels[confidence] || "Confianza media"
+  return CONFIDENCE_LABELS[normalizeConfidence(confidence)]
 }
 
 export const getConfidenceClass = (confidence: string) => {
-  if (confidence === "high") return "border-emerald-300/10 bg-emerald-500/[0.07] text-emerald-300/85"
-  if (confidence === "low") return "border-amber-300/10 bg-amber-500/[0.07] text-amber-300/85"
-
-  return "border-blue-300/10 bg-blue-500/[0.07] text-blue-300/85"
+  return CONFIDENCE_CLASSES[normalizeConfidence(confidence)]
 }
