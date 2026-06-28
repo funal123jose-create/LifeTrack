@@ -21,6 +21,8 @@ import { generateCaseStudyExportHtml } from "@/lib/career-export"
 import {
   buildEmptyTaskDoc,
   getCaseStudySummaryMetrics,
+  getHiddenProjectSkillCount,
+  getHiddenTaskSkillCount,
   getProjectProfessionalScore,
   getProjectStatusCount,
   getProjectTaskCompletionPct,
@@ -32,6 +34,8 @@ import {
   getTechnicalSummaryMetrics,
   getTasksByStatus,
   getTaskSkillIds,
+  getVisibleProjectSkills,
+  getVisibleTaskSkillLinks,
   groupCareerSkills,
   mapProfessionalScores,
   mapProjectCaseStudy,
@@ -111,6 +115,7 @@ export default function DataCarreraPage() {
 
   const groupedCareerSkills = groupCareerSkills(careerSkills)
 
+  const selectedProjectSkills = getProjectSkills(selectedProject)
   const selectedProjectSkillIds = getProjectSkillIds(selectedProject)
   const selectedTaskSkillIds = getTaskSkillIds(selectedTaskSkillLinks)
 
@@ -908,6 +913,8 @@ export default function DataCarreraPage() {
                           const score = getProjectScore(project)
                           const scoreValue = score?.professional_score ?? 0
                           const scoreTone = getScoreTone(scoreValue)
+                          const visibleProjectSkills = getVisibleProjectSkills(project)
+                          const hiddenProjectSkillCount = getHiddenProjectSkillCount(project)
 
                           return (
                             <motion.div
@@ -948,7 +955,7 @@ export default function DataCarreraPage() {
                                 </p>
 
                                 <div className="flex flex-wrap gap-1.5 pt-1">
-                                  {getProjectSkills(project).slice(0, 3).map((skill) => (
+                                  {visibleProjectSkills.map((skill) => (
                                     <span
                                       key={skill.id}
                                       className="rounded-full border border-orange-300/10 bg-orange-500/[0.055] px-2 py-0.5 text-[7px] font-extrabold uppercase tracking-[0.08em] text-orange-200/80"
@@ -956,9 +963,9 @@ export default function DataCarreraPage() {
                                       {skill.name}
                                     </span>
                                   ))}
-                                  {getProjectSkills(project).length > 3 && (
+                                  {hiddenProjectSkillCount > 0 && (
                                     <span className="rounded-full border border-white/[0.06] bg-white/[0.035] px-2 py-0.5 text-[7px] font-extrabold uppercase tracking-[0.08em] text-slate-400">
-                                      +{getProjectSkills(project).length - 3}
+                                      +{hiddenProjectSkillCount}
                                     </span>
                                   )}
                                 </div>
@@ -1319,7 +1326,7 @@ export default function DataCarreraPage() {
 
                     <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.055] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.10em] text-orange-200/80">
                       <Database size={12} />
-                      {getProjectSkills(selectedProject).length} skills vinculadas
+                      {selectedProjectSkills.length} skills vinculadas
                     </div>
                   </div>
 
@@ -1335,14 +1342,14 @@ export default function DataCarreraPage() {
                       </div>
 
                       <div className="relative mt-5 flex min-h-[92px] flex-wrap content-start gap-2 rounded-2xl border border-white/[0.045] bg-black/24 p-3">
-                        {getProjectSkills(selectedProject).length === 0 ? (
+                        {selectedProjectSkills.length === 0 ? (
                           <div className="flex w-full items-center justify-center rounded-xl border border-dashed border-white/[0.04] bg-white/[0.015] px-4 py-8 text-center">
                             <span className="break-words text-[9px] font-bold uppercase tracking-[0.16em] text-slate-700">
                               [ Sin skills vinculadas ]
                             </span>
                           </div>
                         ) : (
-                          getProjectSkills(selectedProject).map((skill) => (
+                          selectedProjectSkills.map((skill) => (
                             <button
                               key={skill.id}
                               type="button"
@@ -1482,7 +1489,7 @@ export default function DataCarreraPage() {
 
                                     {task.task_skills.length > 0 && (
                                       <div className="mt-2 flex flex-wrap gap-1.5">
-                                        {task.task_skills.slice(0, 3).map((link) => {
+                                        {getVisibleTaskSkillLinks(task.task_skills).map((link) => {
                                           const skill = link.career_skills
                                           if (!skill) return null
 
@@ -1501,9 +1508,9 @@ export default function DataCarreraPage() {
                                           )
                                         })}
 
-                                        {task.task_skills.length > 3 && (
+                                        {getHiddenTaskSkillCount(task.task_skills) > 0 && (
                                           <span className="inline-flex items-center rounded-lg border border-white/[0.06] bg-black/28 px-2 py-1 text-[7px] font-extrabold uppercase tracking-[0.08em] text-slate-400">
-                                            +{task.task_skills.length - 3}
+                                            +{getHiddenTaskSkillCount(task.task_skills)}
                                           </span>
                                         )}
                                       </div>

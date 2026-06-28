@@ -67,12 +67,28 @@ export const getProjectSkills = (project?: Project | null): CareerSkill[] => {
     .filter((skill): skill is CareerSkill => Boolean(skill))
 }
 
+export const getVisibleProjectSkills = (project?: Project | null, limit = 3) => {
+  return getProjectSkills(project).slice(0, limit)
+}
+
+export const getHiddenProjectSkillCount = (project?: Project | null, limit = 3) => {
+  return Math.max(getProjectSkills(project).length - limit, 0)
+}
+
 export const getProjectSkillIds = (project?: Project | null) => {
   return new Set(getProjectSkillLinks(project).map((link) => link.skill_id))
 }
 
 export const getTaskSkillIds = (skillLinks: ProjectTaskSkillLink[]) => {
   return new Set(skillLinks.map((link) => link.skill_id))
+}
+
+export const getVisibleTaskSkillLinks = (skillLinks: ProjectTaskSkillLink[], limit = 3) => {
+  return skillLinks.slice(0, limit)
+}
+
+export const getHiddenTaskSkillCount = (skillLinks: ProjectTaskSkillLink[], limit = 3) => {
+  return Math.max(skillLinks.length - limit, 0)
 }
 
 export const groupCareerSkills = (skills: CareerSkill[]): Record<string, CareerSkill[]> => {
