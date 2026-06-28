@@ -1,4 +1,10 @@
-import type { WeeklyCareerActivity, WeeklyHealthSummary, WeeklyPersonalCareSummary } from "@/lib/dashboard-page-models"
+import type {
+  CareerSkillsSummary,
+  WeeklyCareerActivity,
+  WeeklyCareerSummary,
+  WeeklyHealthSummary,
+  WeeklyPersonalCareSummary,
+} from "@/lib/dashboard-page-models"
 
 export const formatDateShort = (value?: string | null) => {
   if (!value) return "—"
@@ -145,5 +151,41 @@ export const getHealthDashboardMetrics = (summary: WeeklyHealthSummary | null) =
         : completedDays > 0
           ? "Hay avance, pero todavía hay espacio para mejorar la constancia."
           : "El foco inmediato es activar la rutina semanal.",
+  }
+}
+
+export const getCareerDashboardMetrics = (
+  summary: WeeklyCareerSummary | null,
+  skillsSummary: CareerSkillsSummary | null,
+  professionalEvents: number
+) => {
+  const weeklyPct = summary
+    ? clampDashboardPct(summary.weekly_productivity_percentage || 0)
+    : 0
+  const totalPct = summary
+    ? clampDashboardPct(summary.total_task_completion_percentage || 0)
+    : 0
+  const skillsUsagePct = skillsSummary && skillsSummary.total_skills > 0
+    ? Math.round((skillsSummary.used_skills / skillsSummary.total_skills) * 100)
+    : 0
+  const topSkills = skillsSummary?.skills_detail
+    ? skillsSummary.skills_detail.filter((skill) => skill.projects_count > 0).slice(0, 5)
+    : []
+  const topSkillLabel = skillsSummary && skillsSummary.top_skill_projects_count > 0
+    ? skillsSummary.top_skill_name || "Sin skill dominante"
+    : "Sin skill dominante"
+
+  return {
+    weeklyPct,
+    totalPct,
+    skillsUsagePct,
+    topSkills,
+    topSkillLabel,
+    insight:
+      professionalEvents >= 3
+        ? "Buen nivel demostrable: est\u00e1s convirtiendo avance en evidencia."
+        : weeklyPct >= 50
+          ? "Hay avance operativo, pero a\u00fan puedes documentar m\u00e1s."
+          : "Tu principal foco debe ser cerrar subtareas y dejar evidencia.",
   }
 }

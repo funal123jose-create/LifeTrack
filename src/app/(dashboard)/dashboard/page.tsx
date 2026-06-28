@@ -41,6 +41,7 @@ import { clampPct, containerVariants, itemVariants, profileImageSrc } from "@/li
 import {
   formatDateShort,
   getCareerActivityLabel,
+  getCareerDashboardMetrics,
   getCareerProfessionalActivityPct,
   getCareerProfessionalEvents,
   getHealthDashboardMetrics,
@@ -945,17 +946,12 @@ export default function DashboardPage() {
   const weeklyPlannedDays = healthMetrics.plannedDays
   const weeklyCompletedDays = healthMetrics.completedDays
 
-  const weeklyCareerPct = weeklyCareerSummary
-    ? Math.min(Math.max(Math.round(weeklyCareerSummary.weekly_productivity_percentage || 0), 0), 100)
-    : 0
-
-  const totalCareerPct = weeklyCareerSummary
-    ? Math.min(Math.max(Math.round(weeklyCareerSummary.total_task_completion_percentage || 0), 0), 100)
-    : 0
-
   const careerActivityLabel = getCareerActivityLabel(weeklyCareerActivity)
   const careerProfessionalEvents = getCareerProfessionalEvents(weeklyCareerActivity)
   const careerProfessionalActivityPct = getCareerProfessionalActivityPct(weeklyCareerActivity)
+  const careerMetrics = getCareerDashboardMetrics(weeklyCareerSummary, careerSkillsSummary, careerProfessionalEvents)
+  const weeklyCareerPct = careerMetrics.weeklyPct
+  const totalCareerPct = careerMetrics.totalPct
 
   const lastCareerActivityText = getLastCareerActivityText(weeklyCareerActivity)
 
@@ -967,17 +963,9 @@ export default function DashboardPage() {
     icon: professionalActivityIcons[index],
   }))
 
-  const skillsUsagePct = careerSkillsSummary && careerSkillsSummary.total_skills > 0
-    ? Math.round((careerSkillsSummary.used_skills / careerSkillsSummary.total_skills) * 100)
-    : 0
-
-  const topCareerSkills = careerSkillsSummary?.skills_detail
-    ? careerSkillsSummary.skills_detail.filter((skill) => skill.projects_count > 0).slice(0, 5)
-    : []
-
-  const topSkillLabel = careerSkillsSummary && careerSkillsSummary.top_skill_projects_count > 0
-    ? careerSkillsSummary.top_skill_name || "Sin skill dominante"
-    : "Sin skill dominante"
+  const skillsUsagePct = careerMetrics.skillsUsagePct
+  const topCareerSkills = careerMetrics.topSkills
+  const topSkillLabel = careerMetrics.topSkillLabel
 
   const weeklyWaterPct = healthMetrics.waterPct
   const weeklyMealsPct = healthMetrics.mealsPct
@@ -990,12 +978,7 @@ export default function DashboardPage() {
 
   const healthInsightSummary = healthMetrics.insight
 
-  const careerInsightSummary =
-    careerProfessionalEvents >= 3
-      ? "Buen nivel demostrable: estás convirtiendo avance en evidencia."
-      : weeklyCareerPct >= 50
-        ? "Hay avance operativo, pero aún puedes documentar más."
-        : "Tu principal foco debe ser cerrar subtareas y dejar evidencia."
+  const careerInsightSummary = careerMetrics.insight
 
   const careInsightSummary = personalCareMetrics.insight
 
