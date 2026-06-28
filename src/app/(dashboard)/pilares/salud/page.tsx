@@ -40,7 +40,13 @@ import {
 import Link from "next/link"
 import { BiometricsBackground, FloatingBioChips, HudCornerFrame } from "@/components/health/biometrics-background"
 import { getCurrentWeekStartString, getDateForWeekdayNum, getLocalDateString } from "@/lib/date"
-import { DAYS_OF_WEEK, formatLocalDateTime } from "@/lib/health-page-helpers"
+import {
+  DAYS_OF_WEEK,
+  formatLocalDateTime,
+  mapBodyProgressLog,
+  mapMealLog,
+  mapWaterLog,
+} from "@/lib/health-page-helpers"
 import type {
   BodyProgressLog,
   MealLog,
@@ -179,23 +185,8 @@ export default function CentroSaludPage() {
       if (mealsError) console.error("Error cargando historial de comidas:", mealsError)
       if (watersError) console.error("Error cargando historial de agua:", watersError)
 
-      setMealLogs((meals || []).map((item) => ({
-        id: item.id,
-        meal_description: item.meal_description,
-        estimated_calories: Number(item.estimated_calories || 0),
-        source: item.source || "text",
-        meal_type: normalizeMealType(item.meal_type || "other"),
-        confidence: normalizeConfidence(item.confidence || "medium"),
-        portion_assumption: item.portion_assumption || null,
-        created_at: item.created_at,
-      })))
-
-      setWaterLogs((waters || []).map((item) => ({
-        id: item.id,
-        amount_liters: Number(item.amount_liters || 0),
-        source: item.source || "manual",
-        created_at: item.created_at,
-      })))
+      setMealLogs((meals || []).map((item) => mapMealLog(item)))
+      setWaterLogs((waters || []).map((item) => mapWaterLog(item)))
     } catch (error) {
       console.error("Error sincronizando historiales diarios:", error)
     }
@@ -226,14 +217,7 @@ export default function CentroSaludPage() {
         return
       }
 
-      setBodyProgressLogs((data || []).map((item) => ({
-        id: item.id,
-        date: item.date,
-        weight_kg: item.weight_kg !== null ? Number(item.weight_kg) : null,
-        energy_level: item.energy_level !== null ? Number(item.energy_level) : null,
-        notes: item.notes,
-        created_at: item.created_at,
-      })))
+      setBodyProgressLogs((data || []).map((item) => mapBodyProgressLog(item)))
     } catch (error) {
       console.error("Error sincronizando progreso físico:", error)
     }
@@ -275,16 +259,7 @@ export default function CentroSaludPage() {
 
     if (data) {
       setMealLogs((prev) => [
-        {
-          id: data.id,
-          meal_description: data.meal_description,
-          estimated_calories: Number(data.estimated_calories || 0),
-          source: data.source || source,
-          meal_type: normalizeMealType(data.meal_type || mealType),
-          confidence: normalizeConfidence(data.confidence || confidence),
-          portion_assumption: data.portion_assumption || portionAssumption,
-          created_at: data.created_at,
-        },
+        mapMealLog(data, { source, meal_type: mealType, confidence, portion_assumption: portionAssumption }),
         ...prev,
       ])
     }
@@ -327,16 +302,7 @@ export default function CentroSaludPage() {
     }
 
     if (data) {
-      const mappedLogs = data.map((item) => ({
-        id: item.id,
-        meal_description: item.meal_description,
-        estimated_calories: Number(item.estimated_calories || 0),
-        source: item.source || source,
-        meal_type: normalizeMealType(item.meal_type || "other"),
-        confidence: normalizeConfidence(item.confidence || "medium"),
-        portion_assumption: item.portion_assumption || null,
-        created_at: item.created_at,
-      }))
+      const mappedLogs = data.map((item) => mapMealLog(item, { source }))
 
       setMealLogs((prev) => [...mappedLogs, ...prev])
     }
@@ -367,12 +333,7 @@ export default function CentroSaludPage() {
 
     if (data) {
       setWaterLogs((prev) => [
-        {
-          id: data.id,
-          amount_liters: Number(data.amount_liters || amountLiters),
-          source: data.source || "manual",
-          created_at: data.created_at,
-        },
+        mapWaterLog(data, amountLiters),
         ...prev,
       ])
     }
@@ -412,14 +373,7 @@ export default function CentroSaludPage() {
       }
 
       if (data) {
-        const newLog = {
-          id: data.id,
-          date: data.date,
-          weight_kg: data.weight_kg !== null ? Number(data.weight_kg) : null,
-          energy_level: data.energy_level !== null ? Number(data.energy_level) : null,
-          notes: data.notes,
-          created_at: data.created_at,
-        }
+        const newLog = mapBodyProgressLog(data)
 
         setBodyProgressLogs((prev) => [newLog, ...prev].slice(0, 5))
 

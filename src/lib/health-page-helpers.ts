@@ -1,3 +1,6 @@
+import { normalizeConfidence, normalizeMealType } from "@/lib/nutrition"
+import type { BodyProgressLog, MealLog, WaterLog } from "@/lib/health-page-models"
+
 export const DAYS_OF_WEEK = [
   { id: "mon", name: "Lunes", num: 1 },
   { id: "tue", name: "Martes", num: 2 },
@@ -21,3 +24,39 @@ export const formatLocalDateTime = (value: string) => {
     return "--/--/---- --:--"
   }
 }
+
+type RawMealLog = Partial<Record<keyof MealLog, unknown>>
+type RawWaterLog = Partial<Record<keyof WaterLog, unknown>>
+type RawBodyProgressLog = Partial<Record<keyof BodyProgressLog, unknown>>
+
+export const mapMealLog = (
+  item: RawMealLog,
+  fallback: Partial<Pick<MealLog, "source" | "meal_type" | "confidence" | "portion_assumption">> = {}
+): MealLog => ({
+  id: String(item.id || ""),
+  meal_description: String(item.meal_description || ""),
+  estimated_calories: Number(item.estimated_calories || 0),
+  source: String(item.source || fallback.source || "text"),
+  meal_type: normalizeMealType(item.meal_type || fallback.meal_type || "other"),
+  confidence: normalizeConfidence(item.confidence || fallback.confidence || "medium"),
+  portion_assumption: item.portion_assumption !== undefined && item.portion_assumption !== null
+    ? String(item.portion_assumption)
+    : fallback.portion_assumption || null,
+  created_at: String(item.created_at || ""),
+})
+
+export const mapWaterLog = (item: RawWaterLog, fallbackAmount = 0): WaterLog => ({
+  id: String(item.id || ""),
+  amount_liters: Number(item.amount_liters || fallbackAmount),
+  source: String(item.source || "manual"),
+  created_at: String(item.created_at || ""),
+})
+
+export const mapBodyProgressLog = (item: RawBodyProgressLog): BodyProgressLog => ({
+  id: String(item.id || ""),
+  date: String(item.date || ""),
+  weight_kg: item.weight_kg !== null && item.weight_kg !== undefined ? Number(item.weight_kg) : null,
+  energy_level: item.energy_level !== null && item.energy_level !== undefined ? Number(item.energy_level) : null,
+  notes: item.notes !== null && item.notes !== undefined ? String(item.notes) : null,
+  created_at: String(item.created_at || ""),
+})
