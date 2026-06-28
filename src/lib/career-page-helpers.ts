@@ -67,6 +67,14 @@ export const getProjectSkills = (project?: Project | null): CareerSkill[] => {
     .filter((skill): skill is CareerSkill => Boolean(skill))
 }
 
+export const getProjectSkillIds = (project?: Project | null) => {
+  return new Set(getProjectSkillLinks(project).map((link) => link.skill_id))
+}
+
+export const getTaskSkillIds = (skillLinks: ProjectTaskSkillLink[]) => {
+  return new Set(skillLinks.map((link) => link.skill_id))
+}
+
 export const groupCareerSkills = (skills: CareerSkill[]): Record<string, CareerSkill[]> => {
   return skills.reduce<Record<string, CareerSkill[]>>((acc, skill) => {
     const category = skill.category || "General"

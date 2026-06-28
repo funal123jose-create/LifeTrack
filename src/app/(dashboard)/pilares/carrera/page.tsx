@@ -22,9 +22,10 @@ import {
   buildEmptyTaskDoc,
   getProjectProfessionalScore,
   getProjectTaskCompletionPct,
-  getProjectSkillLinks,
+  getProjectSkillIds,
   getProjectSkills,
   getProjectTechnicalSummary as getProjectTechnicalSummaryFromMap,
+  getTaskSkillIds,
   groupCareerSkills,
   mapProfessionalScores,
   mapProjectCaseStudy,
@@ -104,13 +105,8 @@ export default function DataCarreraPage() {
 
   const groupedCareerSkills = groupCareerSkills(careerSkills)
 
-  const selectedProjectSkillIds = new Set(
-    getProjectSkillLinks(selectedProject).map((link) => link.skill_id)
-  )
-
-  const selectedTaskSkillIds = new Set(
-    selectedTaskSkillLinks.map((link) => link.skill_id)
-  )
+  const selectedProjectSkillIds = getProjectSkillIds(selectedProject)
+  const selectedTaskSkillIds = getTaskSkillIds(selectedTaskSkillLinks)
 
   const taskSkillCatalog = careerSkills
 
