@@ -29,7 +29,13 @@ import {
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
 import { getErrorMessage } from "@/lib/errors"
 import { PersonalCareBackground } from "@/components/personal-care/personal-care-background"
-import { DEFAULT_ROUTINES, categoryStyles, clampNumber, intensityLabel, scoreTone } from "@/lib/personal-care-page-helpers"
+import {
+  DEFAULT_ROUTINES,
+  categoryStyles,
+  clampNumber,
+  getPersonalCareDailyMetrics,
+  intensityLabel,
+} from "@/lib/personal-care-page-helpers"
 import type { PersonalCareCompletion, PersonalCareRoutine, WeeklyPersonalCareSummary } from "@/lib/personal-care-page-models"
 
 export default function CuidadoPersonalPage() {
@@ -60,14 +66,13 @@ export default function CuidadoPersonalPage() {
   const [newRoutineCategory, setNewRoutineCategory] = useState("bienestar")
   const [newRoutineDescription, setNewRoutineDescription] = useState("")
 
-  const completedRoutineIds = useMemo(() => {
-    return new Set(todayCompletions.filter((item) => item.completed).map((item) => item.routine_id))
-  }, [todayCompletions])
-
-  const activeRoutines = useMemo(() => routines.filter((routine) => routine.active), [routines])
-
-  const todayRoutineCompletionPct =
-    activeRoutines.length > 0 ? Math.round((completedRoutineIds.size / activeRoutines.length) * 100) : 0
+  const personalCareDailyMetrics = useMemo(
+    () => getPersonalCareDailyMetrics(routines, todayCompletions, weeklySummary),
+    [routines, todayCompletions, weeklySummary]
+  )
+  const completedRoutineIds = personalCareDailyMetrics.completedRoutineIds
+  const activeRoutines = personalCareDailyMetrics.activeRoutines
+  const todayRoutineCompletionPct = personalCareDailyMetrics.todayRoutineCompletionPct
 
   const fetchPersonalCareData = useCallback(async () => {
     try {
@@ -437,8 +442,8 @@ export default function CuidadoPersonalPage() {
   const sliderClass =
     "w-full cursor-pointer accent-cyan-400 transition-all"
 
-  const personalScore = weeklySummary ? Math.min(Math.max(Math.round(weeklySummary.personal_care_score), 0), 100) : 0
-  const summaryTone = scoreTone(personalScore)
+  const personalScore = personalCareDailyMetrics.personalScore
+  const summaryTone = personalCareDailyMetrics.summaryTone
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-transparent px-4 pb-14 pt-6 text-slate-100 antialiased md:px-8 [overflow-wrap:anywhere]" style={{ fontFamily: "'Poppins', 'Nunito Sans', 'Inter', 'Manrope', system-ui, sans-serif" }}>

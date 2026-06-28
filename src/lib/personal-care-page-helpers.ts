@@ -1,5 +1,10 @@
 import { Home, Leaf, Scissors, Sparkles, Sun, type LucideIcon } from "lucide-react"
-import type { RoutineTemplate } from "@/lib/personal-care-page-models"
+import type {
+  PersonalCareCompletion,
+  PersonalCareRoutine,
+  RoutineTemplate,
+  WeeklyPersonalCareSummary,
+} from "@/lib/personal-care-page-models"
 
 export const DEFAULT_ROUTINES: RoutineTemplate[] = [
   {
@@ -79,4 +84,28 @@ export const intensityLabel = (intensity?: string | null) => {
 export const clampNumber = (value: number, min = 1, max = 10) => {
   if (Number.isNaN(value)) return min
   return Math.min(Math.max(value, min), max)
+}
+
+export const getPersonalCareDailyMetrics = (
+  routines: PersonalCareRoutine[],
+  completions: PersonalCareCompletion[],
+  weeklySummary: WeeklyPersonalCareSummary | null
+) => {
+  const completedRoutineIds = new Set(
+    completions.filter((item) => item.completed).map((item) => item.routine_id)
+  )
+  const activeRoutines = routines.filter((routine) => routine.active)
+  const todayRoutineCompletionPct =
+    activeRoutines.length > 0 ? Math.round((completedRoutineIds.size / activeRoutines.length) * 100) : 0
+  const personalScore = weeklySummary
+    ? Math.min(Math.max(Math.round(weeklySummary.personal_care_score), 0), 100)
+    : 0
+
+  return {
+    completedRoutineIds,
+    activeRoutines,
+    todayRoutineCompletionPct,
+    personalScore,
+    summaryTone: scoreTone(personalScore),
+  }
 }
