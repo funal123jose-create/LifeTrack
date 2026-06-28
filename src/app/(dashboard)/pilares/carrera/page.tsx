@@ -23,7 +23,9 @@ import {
   getProjectSkillLinks,
   getProjectSkills,
   groupCareerSkills,
+  mapProfessionalScores,
   mapRawProjects,
+  mapTechnicalSummaries,
   sanitizeStatusForDB,
 } from "@/lib/career-page-helpers"
 import type {
@@ -46,7 +48,6 @@ import {
   mapSkillLink,
   splitStack,
   toOptionalString,
-  toRequiredString,
   type CareerSkill,
   type PriorityLevel,
   type ProjectStatus,
@@ -234,27 +235,7 @@ export default function DataCarreraPage() {
 
       if (error) throw error
 
-      const mappedScores: Record<string, ProjectProfessionalScore> = {}
-
-      ;((data || []) as RawProjectProfessionalScore[]).forEach((score) => {
-        const projectId = toRequiredString(score.project_id)
-
-        mappedScores[projectId] = {
-          project_id: projectId,
-          total_tasks: Number(score.total_tasks || 0),
-          completed_tasks: Number(score.completed_tasks || 0),
-          documented_tasks: Number(score.documented_tasks || 0),
-          total_task_skills: Number(score.total_task_skills || 0),
-          total_assets: Number(score.total_assets || 0),
-          task_completion_percentage: Number(score.task_completion_percentage || 0),
-          documentation_percentage: Number(score.documentation_percentage || 0),
-          skill_coverage_percentage: Number(score.skill_coverage_percentage || 0),
-          evidence_coverage_percentage: Number(score.evidence_coverage_percentage || 0),
-          professional_score: Number(score.professional_score || 0),
-        }
-      })
-
-      setProjectScores(mappedScores)
+      setProjectScores(mapProfessionalScores((data || []) as RawProjectProfessionalScore[]))
     } catch (err: unknown) {
       console.error("Error cargando score profesional de proyectos:", getErrorMessage(err))
     }
@@ -301,44 +282,7 @@ export default function DataCarreraPage() {
 
       if (error) throw error
 
-      const mappedSummaries: Record<string, ProjectTechnicalSummary> = {}
-
-      ;((data || []) as RawProjectTechnicalSummary[]).forEach((summary) => {
-        const projectId = toRequiredString(summary.project_id)
-
-        mappedSummaries[projectId] = {
-          project_id: projectId,
-          project_title: toRequiredString(summary.project_title),
-          project_description: toOptionalString(summary.project_description),
-          project_summary: toOptionalString(summary.project_summary),
-          project_status: toOptionalString(summary.project_status),
-          project_priority: toOptionalString(summary.project_priority),
-          start_date: toOptionalString(summary.start_date),
-          end_date: toOptionalString(summary.end_date),
-          total_tasks: Number(summary.total_tasks || 0),
-          completed_tasks: Number(summary.completed_tasks || 0),
-          in_progress_tasks: Number(summary.in_progress_tasks || 0),
-          pending_tasks: Number(summary.pending_tasks || 0),
-          archived_tasks: Number(summary.archived_tasks || 0),
-          documented_tasks: Number(summary.documented_tasks || 0),
-          total_project_skills: Number(summary.total_project_skills || 0),
-          total_task_skills: Number(summary.total_task_skills || 0),
-          tasks_with_skills: Number(summary.tasks_with_skills || 0),
-          total_assets: Number(summary.total_assets || 0),
-          total_images: Number(summary.total_images || 0),
-          total_documents: Number(summary.total_documents || 0),
-          tasks_with_assets: Number(summary.tasks_with_assets || 0),
-          project_stack: toRequiredString(summary.project_stack),
-          task_stack: toRequiredString(summary.task_stack),
-          task_completion_percentage: Number(summary.task_completion_percentage || 0),
-          documentation_percentage: Number(summary.documentation_percentage || 0),
-          skill_coverage_percentage: Number(summary.skill_coverage_percentage || 0),
-          evidence_coverage_percentage: Number(summary.evidence_coverage_percentage || 0),
-          professional_score: Number(summary.professional_score || 0),
-        }
-      })
-
-      setTechnicalSummaries(mappedSummaries)
+      setTechnicalSummaries(mapTechnicalSummaries((data || []) as RawProjectTechnicalSummary[]))
     } catch (err: unknown) {
       console.error("Error cargando resumen técnico de proyectos:", getErrorMessage(err))
     }
