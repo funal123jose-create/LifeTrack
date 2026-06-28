@@ -22,11 +22,13 @@ import {
   buildEmptyTaskDoc,
   getCaseStudySummaryMetrics,
   getProjectProfessionalScore,
+  getProjectStatusCount,
   getProjectTaskCompletionPct,
   getProjectSkillIds,
   getProjectSkills,
   getProjectTechnicalSummary as getProjectTechnicalSummaryFromMap,
   getProfessionalScoreMetrics,
+  getProjectsByStatus,
   getTechnicalSummaryMetrics,
   getTaskSkillIds,
   groupCareerSkills,
@@ -795,11 +797,11 @@ export default function DataCarreraPage() {
               </div>
               <div className="min-w-0 rounded-xl bg-orange-500/[0.08] px-4 py-3 text-center">
                 <p className="break-words text-[9px] font-bold uppercase tracking-[0.10em] text-orange-300/80">Activos</p>
-                <p className="break-words text-2xl font-extrabold text-orange-300">{projects.filter(p => p.status === 'En curso').length}</p>
+                <p className="break-words text-2xl font-extrabold text-orange-300">{getProjectStatusCount(projects, "En curso")}</p>
               </div>
               <div className="min-w-0 rounded-xl bg-emerald-500/[0.08] px-4 py-3 text-center">
                 <p className="break-words text-[9px] font-bold uppercase tracking-[0.10em] text-emerald-300/80">Completados</p>
-                <p className="break-words text-2xl font-extrabold text-emerald-300">{projects.filter(p => p.status === 'Completado').length}</p>
+                <p className="break-words text-2xl font-extrabold text-emerald-300">{getProjectStatusCount(projects, "Completado")}</p>
               </div>
             </div>
           </div>
@@ -872,7 +874,7 @@ export default function DataCarreraPage() {
         ) : (
           <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-3 lg:grid-cols-6">
             {macroColumns.map((col) => {
-              const filtered = projects.filter(p => p.status === col.id)
+              const filtered = getProjectsByStatus(projects, col.id)
               return (
                 <div key={col.id} className="group flex min-w-0 flex-col gap-3">
                   <div className={`relative overflow-hidden rounded-2xl border border-white/[0.06] ${col.bg} p-3 shadow-[0_12px_35px_rgba(0,0,0,0.26)] backdrop-blur-xl transition-all duration-300 ${col.borderGlow}`}>

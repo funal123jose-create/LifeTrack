@@ -84,6 +84,14 @@ export const groupCareerSkills = (skills: CareerSkill[]): Record<string, CareerS
   }, {})
 }
 
+export const getProjectsByStatus = (projects: Project[], status: ProjectStatus) => {
+  return projects.filter((project) => project.status === status)
+}
+
+export const getProjectStatusCount = (projects: Project[], status: ProjectStatus) => {
+  return getProjectsByStatus(projects, status).length
+}
+
 export const getProjectTaskCompletionPct = (project?: Project | null) => {
   const total = project?.project_tasks.length || 0
   const completed = project?.project_tasks.filter((task) => task.status === "COMPLETADO").length || 0
