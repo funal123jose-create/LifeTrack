@@ -38,7 +38,15 @@ import { RegistrationPanel } from "@/components/registration-panel"
 import { DashboardBackground } from "@/components/dashboard/dashboard-background"
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
 import { clampPct, containerVariants, itemVariants, profileImageSrc } from "@/lib/dashboard-page-config"
-import { formatDateShort } from "@/lib/dashboard-page-helpers"
+import {
+  formatDateShort,
+  getCareerActivityLabel,
+  getCareerProfessionalActivityPct,
+  getCareerProfessionalEvents,
+  getLastCareerActivityLabel,
+  getLastCareerActivityText,
+  getProfessionalActivityBreakdown,
+} from "@/lib/dashboard-page-helpers"
 import {
   mapCareerSkillsSummary,
   mapWeeklyPersonalCareSummary,
@@ -959,60 +967,19 @@ export default function DashboardPage() {
     ? Math.min(Math.max(Math.round(weeklyCareerSummary.total_task_completion_percentage || 0), 0), 100)
     : 0
 
-  const careerActivityLabel =
-    weeklyCareerActivity?.activity_intensity === "high"
-      ? "Alta intensidad"
-      : weeklyCareerActivity?.activity_intensity === "medium"
-        ? "Intensidad media"
-        : weeklyCareerActivity?.activity_intensity === "low"
-          ? "Actividad inicial"
-          : "Sin actividad"
+  const careerActivityLabel = getCareerActivityLabel(weeklyCareerActivity)
+  const careerProfessionalEvents = getCareerProfessionalEvents(weeklyCareerActivity)
+  const careerProfessionalActivityPct = getCareerProfessionalActivityPct(weeklyCareerActivity)
 
-  const careerProfessionalEvents = weeklyCareerActivity?.professional_activity_events || 0
+  const lastCareerActivityText = getLastCareerActivityText(weeklyCareerActivity)
 
-  const careerProfessionalActivityPct =
-    weeklyCareerActivity && weeklyCareerActivity.total_events > 0
-      ? Math.round((careerProfessionalEvents / weeklyCareerActivity.total_events) * 100)
-      : 0
+  const lastCareerActivityLabel = getLastCareerActivityLabel(weeklyCareerActivity)
 
-  const lastCareerActivityText = weeklyCareerActivity?.last_event_description || weeklyCareerActivity?.last_event_title || "Sin eventos registrados"
-
-  const lastCareerActivityLabel =
-    weeklyCareerActivity?.last_event_type === "project_skill_assigned"
-      ? "Skill asignada al proyecto"
-      : weeklyCareerActivity?.last_event_type === "task_skill_assigned"
-        ? "Skill aplicada en subtarea"
-        : weeklyCareerActivity?.last_event_type === "task_documented"
-          ? "Subtarea documentada"
-          : weeklyCareerActivity?.last_event_type === "task_documentation_updated"
-            ? "Documentación actualizada"
-            : weeklyCareerActivity?.last_event_type === "task_evidence_uploaded"
-              ? "Evidencia subida"
-              : weeklyCareerActivity?.last_event_title || "Sin actividad reciente"
-
-  const professionalActivityBreakdown = [
-    {
-      label: "Skills",
-      value: weeklyCareerActivity?.skill_activity_events || 0,
-      helper: `${weeklyCareerActivity?.project_skill_assigned_events || 0} proyecto · ${weeklyCareerActivity?.task_skill_assigned_events || 0} subtarea`,
-      icon: Cpu,
-      tone: "border-purple-300/12 bg-purple-500/[0.075] text-purple-200",
-    },
-    {
-      label: "Documentación",
-      value: weeklyCareerActivity?.documentation_activity_events || 0,
-      helper: `${weeklyCareerActivity?.task_documented_events || 0} nueva · ${weeklyCareerActivity?.task_documentation_updated_events || 0} actualizada`,
-      icon: Database,
-      tone: "border-cyan-300/12 bg-cyan-500/[0.075] text-cyan-200",
-    },
-    {
-      label: "Evidencias",
-      value: weeklyCareerActivity?.evidence_activity_events || 0,
-      helper: `${weeklyCareerActivity?.task_evidence_uploaded_events || 0} archivos subidos`,
-      icon: ShieldCheck,
-      tone: "border-emerald-300/12 bg-emerald-500/[0.075] text-emerald-200",
-    },
-  ]
+  const professionalActivityIcons = [Cpu, Database, ShieldCheck]
+  const professionalActivityBreakdown = getProfessionalActivityBreakdown(weeklyCareerActivity).map((item, index) => ({
+    ...item,
+    icon: professionalActivityIcons[index],
+  }))
 
   const skillsUsagePct = careerSkillsSummary && careerSkillsSummary.total_skills > 0
     ? Math.round((careerSkillsSummary.used_skills / careerSkillsSummary.total_skills) * 100)
