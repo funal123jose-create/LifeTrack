@@ -20,12 +20,14 @@ import { cardVariants, containerVariants, macroColumns, microColumns } from "@/l
 import { generateCaseStudyExportHtml } from "@/lib/career-export"
 import {
   buildEmptyTaskDoc,
+  getCaseStudySummaryMetrics,
   getProjectProfessionalScore,
   getProjectTaskCompletionPct,
   getProjectSkillIds,
   getProjectSkills,
   getProjectTechnicalSummary as getProjectTechnicalSummaryFromMap,
   getProfessionalScoreMetrics,
+  getTechnicalSummaryMetrics,
   getTaskSkillIds,
   groupCareerSkills,
   mapProfessionalScores,
@@ -1182,12 +1184,7 @@ export default function DataCarreraPage() {
                       </div>
 
                       <div className="relative mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-                        {[
-                          { label: "Tareas", value: technicalSummary?.total_tasks ?? 0, detail: `${technicalSummary?.completed_tasks ?? 0} completadas` },
-                          { label: "Documentadas", value: technicalSummary?.documented_tasks ?? 0, detail: `${technicalSummary?.documentation_percentage ?? 0}% cobertura` },
-                          { label: "Skills aplicadas", value: technicalSummary?.total_task_skills ?? 0, detail: `${technicalSummary?.tasks_with_skills ?? 0} subtareas` },
-                          { label: "Evidencias", value: technicalSummary?.total_assets ?? 0, detail: `${technicalSummary?.total_images ?? 0} imágenes · ${technicalSummary?.total_documents ?? 0} docs` },
-                        ].map((item) => (
+                        {getTechnicalSummaryMetrics(technicalSummary).map((item) => (
                           <div key={item.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
                             <p className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
                             <p className="mt-2 text-2xl font-extrabold text-slate-100">{item.value}</p>
@@ -1820,12 +1817,7 @@ export default function DataCarreraPage() {
                               </div>
 
                               <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-                                {[
-                                  { label: "Tareas", value: selectedCaseStudy.total_tasks, detail: `${selectedCaseStudy.completed_tasks} completadas` },
-                                  { label: "Documentación", value: selectedCaseStudy.documented_tasks, detail: `${selectedCaseStudy.documentation_percentage}% cobertura` },
-                                  { label: "Skills", value: selectedCaseStudy.total_task_skills, detail: `${selectedCaseStudy.tasks_with_skills} subtareas` },
-                                  { label: "Evidencias", value: selectedCaseStudy.total_assets, detail: `${selectedCaseStudy.total_images} imágenes · ${selectedCaseStudy.total_documents} docs` },
-                                ].map((metric) => (
+                                {getCaseStudySummaryMetrics(selectedCaseStudy).map((metric) => (
                                   <div key={metric.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
                                     <p className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">{metric.label}</p>
                                     <p className="mt-2 text-2xl font-extrabold text-slate-100">{metric.value}</p>

@@ -130,6 +130,52 @@ export const getProfessionalScoreMetrics = (score?: ProjectProfessionalScore | n
   },
 ]
 
+export const getTechnicalSummaryMetrics = (summary?: ProjectTechnicalSummary | null) => [
+  {
+    label: "Tareas",
+    value: summary?.total_tasks ?? 0,
+    detail: `${summary?.completed_tasks ?? 0} completadas`,
+  },
+  {
+    label: "Documentadas",
+    value: summary?.documented_tasks ?? 0,
+    detail: `${summary?.documentation_percentage ?? 0}% cobertura`,
+  },
+  {
+    label: "Skills aplicadas",
+    value: summary?.total_task_skills ?? 0,
+    detail: `${summary?.tasks_with_skills ?? 0} subtareas`,
+  },
+  {
+    label: "Evidencias",
+    value: summary?.total_assets ?? 0,
+    detail: `${summary?.total_images ?? 0} imágenes · ${summary?.total_documents ?? 0} docs`,
+  },
+]
+
+export const getCaseStudySummaryMetrics = (caseStudy: ProjectCaseStudyDetail) => [
+  {
+    label: "Tareas",
+    value: caseStudy.total_tasks,
+    detail: `${caseStudy.completed_tasks} completadas`,
+  },
+  {
+    label: "Documentación",
+    value: caseStudy.documented_tasks,
+    detail: `${caseStudy.documentation_percentage}% cobertura`,
+  },
+  {
+    label: "Skills",
+    value: caseStudy.total_task_skills,
+    detail: `${caseStudy.tasks_with_skills} subtareas`,
+  },
+  {
+    label: "Evidencias",
+    value: caseStudy.total_assets,
+    detail: `${caseStudy.total_images} imágenes · ${caseStudy.total_documents} docs`,
+  },
+]
+
 const normalizeProjectPriority = (priority: unknown): PriorityLevel => {
   return priority === "Baja" || priority === "Media" || priority === "Alta" ? priority : "Media"
 }
