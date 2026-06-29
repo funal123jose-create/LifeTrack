@@ -30,6 +30,7 @@ import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString 
 import { getErrorMessage } from "@/lib/errors"
 import { PersonalCareBackground } from "@/components/personal-care/personal-care-background"
 import { CheckinMetricCard, WeeklySummaryMetricCard } from "@/components/personal-care/personal-care-metric-cards"
+import { fetchPersonalCareOverview } from "@/lib/personal-care-service"
 import {
   DEFAULT_ROUTINES,
   categoryStyles,
@@ -82,139 +83,26 @@ export default function CuidadoPersonalPage() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) return
 
-      const [
-        { data: dailyLog, error: dailyLogError },
-        { data: routinesData, error: routinesError },
-        { data: completionsData, error: completionsError },
-        { data: summaryData, error: summaryError },
-      ] = await Promise.all([
-        supabase
-          .from("personal_care_daily_logs")
-          .select(`
-            mood_level,
-            stress_level,
-            motivation_level,
-            sleep_quality,
-            reflection,
-            gratitude_note,
-            improvement_note
-          `)
-          .eq("user_id", session.user.id)
-          .eq("date", today)
-          .maybeSingle(),
+      const overview = await fetchPersonalCareOverview(supabase, session.user.id, today, currentWeekStart)
 
-        supabase
-          .from("personal_care_routines")
-          .select(`
-            id,
-            user_id,
-            name,
-            category,
-            description,
-            active,
-            created_at,
-            updated_at
-          `)
-          .eq("user_id", session.user.id)
-          .order("created_at", { ascending: true }),
+      if (overview.errors.dailyLog) console.error("Error cargando check-in de hoy:", overview.errors.dailyLog)
+      if (overview.errors.routines) console.error("Error cargando rutinas de cuidado personal:", overview.errors.routines)
+      if (overview.errors.completions) console.error("Error cargando completados de hoy:", overview.errors.completions)
+      if (overview.errors.summary) console.error("Error cargando resumen semanal de cuidado personal:", overview.errors.summary)
 
-        supabase
-          .from("personal_care_routine_completions")
-          .select(`
-            id,
-            routine_id,
-            date,
-            week_start,
-            completed
-          `)
-          .eq("user_id", session.user.id)
-          .eq("date", today),
-
-        supabase
-          .from("vw_weekly_personal_care_summary")
-          .select(`
-            week_start,
-            week_end,
-            active_days,
-            checkin_days,
-            avg_mood_level,
-            avg_stress_level,
-            avg_motivation_level,
-            avg_sleep_quality,
-            reflection_days,
-            gratitude_days,
-            improvement_days,
-            active_routines,
-            completed_routine_events,
-            routine_completed_days,
-            unique_routines_completed,
-            routine_completion_percentage,
-            checkin_completion_percentage,
-            personal_care_score,
-            last_log_date,
-            last_mood_level,
-            last_stress_level,
-            last_motivation_level,
-            last_sleep_quality,
-            last_reflection,
-            last_gratitude_note,
-            last_improvement_note,
-            last_activity_at,
-            care_intensity
-          `)
-          .eq("user_id", session.user.id)
-          .eq("week_start", currentWeekStart)
-          .maybeSingle(),
-      ])
-
-      if (dailyLogError) console.error("Error cargando check-in de hoy:", dailyLogError)
-      if (routinesError) console.error("Error cargando rutinas de cuidado personal:", routinesError)
-      if (completionsError) console.error("Error cargando completados de hoy:", completionsError)
-      if (summaryError) console.error("Error cargando resumen semanal de cuidado personal:", summaryError)
-
-      if (dailyLog) {
-        setMoodLevel(Number(dailyLog.mood_level || 7))
-        setStressLevel(Number(dailyLog.stress_level || 5))
-        setMotivationLevel(Number(dailyLog.motivation_level || 7))
-        setSleepQuality(Number(dailyLog.sleep_quality || 7))
-        setReflection(dailyLog.reflection || "")
-        setGratitudeNote(dailyLog.gratitude_note || "")
-        setImprovementNote(dailyLog.improvement_note || "")
+      if (overview.dailyLog) {
+        setMoodLevel(overview.dailyLog.mood_level)
+        setStressLevel(overview.dailyLog.stress_level)
+        setMotivationLevel(overview.dailyLog.motivation_level)
+        setSleepQuality(overview.dailyLog.sleep_quality)
+        setReflection(overview.dailyLog.reflection || "")
+        setGratitudeNote(overview.dailyLog.gratitude_note || "")
+        setImprovementNote(overview.dailyLog.improvement_note || "")
       }
 
-      setRoutines((routinesData || []) as PersonalCareRoutine[])
-      setTodayCompletions((completionsData || []) as PersonalCareCompletion[])
-
-      setWeeklySummary(summaryData ? {
-        week_start: summaryData.week_start || null,
-        week_end: summaryData.week_end || null,
-        active_days: Number(summaryData.active_days || 0),
-        checkin_days: Number(summaryData.checkin_days || 0),
-        avg_mood_level: Number(summaryData.avg_mood_level || 0),
-        avg_stress_level: Number(summaryData.avg_stress_level || 0),
-        avg_motivation_level: Number(summaryData.avg_motivation_level || 0),
-        avg_sleep_quality: Number(summaryData.avg_sleep_quality || 0),
-        reflection_days: Number(summaryData.reflection_days || 0),
-        gratitude_days: Number(summaryData.gratitude_days || 0),
-        improvement_days: Number(summaryData.improvement_days || 0),
-        active_routines: Number(summaryData.active_routines || 0),
-        completed_routine_events: Number(summaryData.completed_routine_events || 0),
-        routine_completed_days: Number(summaryData.routine_completed_days || 0),
-        unique_routines_completed: Number(summaryData.unique_routines_completed || 0),
-        routine_completion_percentage: Number(summaryData.routine_completion_percentage || 0),
-        checkin_completion_percentage: Number(summaryData.checkin_completion_percentage || 0),
-        personal_care_score: Number(summaryData.personal_care_score || 0),
-        last_log_date: summaryData.last_log_date || null,
-        last_mood_level: summaryData.last_mood_level !== null && summaryData.last_mood_level !== undefined ? Number(summaryData.last_mood_level) : null,
-        last_stress_level: summaryData.last_stress_level !== null && summaryData.last_stress_level !== undefined ? Number(summaryData.last_stress_level) : null,
-        last_motivation_level: summaryData.last_motivation_level !== null && summaryData.last_motivation_level !== undefined ? Number(summaryData.last_motivation_level) : null,
-        last_sleep_quality: summaryData.last_sleep_quality !== null && summaryData.last_sleep_quality !== undefined ? Number(summaryData.last_sleep_quality) : null,
-        last_reflection: summaryData.last_reflection || null,
-        last_gratitude_note: summaryData.last_gratitude_note || null,
-        last_improvement_note: summaryData.last_improvement_note || null,
-        last_activity_at: summaryData.last_activity_at || null,
-        care_intensity: summaryData.care_intensity || "none",
-      } : null)
+      setRoutines(overview.routines)
+      setTodayCompletions(overview.completions)
+      setWeeklySummary(overview.weeklySummary)
     } catch (error) {
       console.error("Error sincronizando cuidado personal:", error)
     } finally {

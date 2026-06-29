@@ -1,5 +1,6 @@
 import { Home, Leaf, Scissors, Sparkles, Sun, type LucideIcon } from "lucide-react"
 import type {
+  PersonalCareDailyLog,
   PersonalCareCompletion,
   PersonalCareRoutine,
   RoutineTemplate,
@@ -84,6 +85,56 @@ export const intensityLabel = (intensity?: string | null) => {
 export const clampNumber = (value: number, min = 1, max = 10) => {
   if (Number.isNaN(value)) return min
   return Math.min(Math.max(value, min), max)
+}
+
+type RawPersonalCareDailyLog = Partial<Record<keyof PersonalCareDailyLog, unknown>>
+type RawWeeklyPersonalCareSummary = Partial<Record<keyof WeeklyPersonalCareSummary, unknown>>
+
+export const mapPersonalCareDailyLog = (log: RawPersonalCareDailyLog): PersonalCareDailyLog => ({
+  mood_level: Number(log.mood_level || 7),
+  stress_level: Number(log.stress_level || 5),
+  motivation_level: Number(log.motivation_level || 7),
+  sleep_quality: Number(log.sleep_quality || 7),
+  reflection: log.reflection ? String(log.reflection) : "",
+  gratitude_note: log.gratitude_note ? String(log.gratitude_note) : "",
+  improvement_note: log.improvement_note ? String(log.improvement_note) : "",
+})
+
+export const mapWeeklyPersonalCareSummary = (
+  summary: RawWeeklyPersonalCareSummary | null | undefined
+): WeeklyPersonalCareSummary | null => {
+  if (!summary) return null
+
+  return {
+    week_start: summary.week_start ? String(summary.week_start) : null,
+    week_end: summary.week_end ? String(summary.week_end) : null,
+    active_days: Number(summary.active_days || 0),
+    checkin_days: Number(summary.checkin_days || 0),
+    avg_mood_level: Number(summary.avg_mood_level || 0),
+    avg_stress_level: Number(summary.avg_stress_level || 0),
+    avg_motivation_level: Number(summary.avg_motivation_level || 0),
+    avg_sleep_quality: Number(summary.avg_sleep_quality || 0),
+    reflection_days: Number(summary.reflection_days || 0),
+    gratitude_days: Number(summary.gratitude_days || 0),
+    improvement_days: Number(summary.improvement_days || 0),
+    active_routines: Number(summary.active_routines || 0),
+    completed_routine_events: Number(summary.completed_routine_events || 0),
+    routine_completed_days: Number(summary.routine_completed_days || 0),
+    unique_routines_completed: Number(summary.unique_routines_completed || 0),
+    routine_completion_percentage: Number(summary.routine_completion_percentage || 0),
+    checkin_completion_percentage: Number(summary.checkin_completion_percentage || 0),
+    personal_care_score: Number(summary.personal_care_score || 0),
+    last_log_date: summary.last_log_date ? String(summary.last_log_date) : null,
+    last_mood_level: summary.last_mood_level !== null && summary.last_mood_level !== undefined ? Number(summary.last_mood_level) : null,
+    last_stress_level: summary.last_stress_level !== null && summary.last_stress_level !== undefined ? Number(summary.last_stress_level) : null,
+    last_motivation_level: summary.last_motivation_level !== null && summary.last_motivation_level !== undefined ? Number(summary.last_motivation_level) : null,
+    last_sleep_quality: summary.last_sleep_quality !== null && summary.last_sleep_quality !== undefined ? Number(summary.last_sleep_quality) : null,
+    last_reflection: summary.last_reflection ? String(summary.last_reflection) : null,
+    last_gratitude_note: summary.last_gratitude_note ? String(summary.last_gratitude_note) : null,
+    last_improvement_note: summary.last_improvement_note ? String(summary.last_improvement_note) : null,
+    last_activity_at: summary.last_activity_at ? String(summary.last_activity_at) : null,
+    care_intensity: summary.care_intensity ? String(summary.care_intensity) : "none",
+  }
 }
 
 export const getPersonalCareDailyMetrics = (

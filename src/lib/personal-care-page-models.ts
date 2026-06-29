@@ -17,6 +17,16 @@ export type PersonalCareCompletion = {
   completed: boolean
 }
 
+export type PersonalCareDailyLog = {
+  mood_level: number
+  stress_level: number
+  motivation_level: number
+  sleep_quality: number
+  reflection: string | null
+  gratitude_note: string | null
+  improvement_note: string | null
+}
+
 export type WeeklyPersonalCareSummary = {
   week_start: string | null
   week_end: string | null
