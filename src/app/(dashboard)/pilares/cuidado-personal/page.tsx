@@ -29,6 +29,7 @@ import {
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
 import { getErrorMessage } from "@/lib/errors"
 import { PersonalCareBackground } from "@/components/personal-care/personal-care-background"
+import { CheckinMetricCard, WeeklySummaryMetricCard } from "@/components/personal-care/personal-care-metric-cards"
 import {
   DEFAULT_ROUTINES,
   categoryStyles,
@@ -551,35 +552,18 @@ export default function CuidadoPersonalPage() {
                       helper: "Calidad percibida del descanso",
                       accent: "text-purple-300",
                     },
-                  ].map((metric) => {
-                    const Icon = metric.icon
-
-                    return (
-                      <div key={metric.label} className="min-w-0 rounded-[1.4rem] border border-white/[0.065] bg-slate-950/34 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
-                        <div className="mb-3 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className={`flex h-9 w-9 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.04] ${metric.accent}`}>
-                              <Icon size={16} />
-                            </span>
-                            <div>
-                              <p className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{metric.label}</p>
-                              <p className="text-xs font-medium text-slate-600">{metric.helper}</p>
-                            </div>
-                          </div>
-                          <p className={`text-2xl font-extrabold ${metric.accent}`}>{metric.value}/10</p>
-                        </div>
-
-                        <input
-                          type="range"
-                          min={1}
-                          max={10}
-                          value={metric.value}
-                          onChange={(event) => metric.setter(Number(event.target.value))}
-                          className={sliderClass}
-                        />
-                      </div>
-                    )
-                  })}
+                  ].map((metric) => (
+                    <CheckinMetricCard
+                      key={metric.label}
+                      label={metric.label}
+                      value={metric.value}
+                      helper={metric.helper}
+                      Icon={metric.icon}
+                      accent={metric.accent}
+                      sliderClassName={sliderClass}
+                      onChange={metric.setter}
+                    />
+                  ))}
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-3">
@@ -681,23 +665,15 @@ export default function CuidadoPersonalPage() {
                       helper: "Mientras menor, mejor",
                       icon: Flame,
                     },
-                  ].map((item) => {
-                    const Icon = item.icon
-
-                    return (
-                      <div key={item.label} className="min-w-0 rounded-[1.35rem] border border-white/[0.065] bg-slate-950/34 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
-                        <div className="mb-3 flex items-center justify-between">
-                          <Icon size={16} className="text-cyan-300" />
-                          <span className="rounded-full border border-white/[0.05] bg-white/[0.04] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-slate-500">
-                            semana
-                          </span>
-                        </div>
-                        <p className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{item.label}</p>
-                        <p className="mt-1 text-2xl font-extrabold text-white">{item.value}</p>
-                        <p className="mt-1 break-words text-xs font-medium text-slate-600">{item.helper}</p>
-                      </div>
-                    )
-                  })}
+                  ].map((item) => (
+                    <WeeklySummaryMetricCard
+                      key={item.label}
+                      label={item.label}
+                      value={item.value}
+                      helper={item.helper}
+                      Icon={item.icon}
+                    />
+                  ))}
                 </div>
 
                 <div className="min-w-0 rounded-[1.5rem] border border-white/[0.065] bg-slate-950/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
