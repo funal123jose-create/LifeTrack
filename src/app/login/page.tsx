@@ -2,15 +2,18 @@
 
 import { useState } from "react"
 import {
+  Activity,
   ArrowRight,
-  BrainCircuit,
+  BarChart3,
   CheckCircle2,
+  ChevronRight,
   Fingerprint,
-  LineChart,
+  Flame,
+  HeartPulse,
   Loader2,
   LockKeyhole,
   Mail,
-  Orbit,
+  Play,
   ShieldCheck,
   Sparkles,
   Zap,
@@ -22,36 +25,24 @@ import { Label } from "@/components/ui/label"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 
-const systemSignals = [
-  { label: "Salud fisica", value: "20%", tone: "from-emerald-300 to-cyan-300" },
-  { label: "Data & Carrera", value: "32%", tone: "from-amber-300 to-orange-400" },
-  { label: "Cuidado personal", value: "21%", tone: "from-fuchsia-300 to-violet-400" },
+const leftStats = [
+  { label: "Salud", value: "20%", tone: "from-cyan-200 to-emerald-300" },
+  { label: "Carrera", value: "32%", tone: "from-blue-200 to-cyan-300" },
+  { label: "Cuidado", value: "21%", tone: "from-violet-200 to-fuchsia-300" },
 ]
 
-const floatingNodes = [
-  { className: "left-[8%] top-[28%] h-2 w-2 bg-cyan-200", delay: 0 },
-  { className: "left-[34%] top-[14%] h-1.5 w-1.5 bg-blue-200", delay: 0.7 },
-  { className: "left-[58%] top-[74%] h-2 w-2 bg-emerald-200", delay: 1.2 },
-  { className: "right-[16%] top-[22%] h-1.5 w-1.5 bg-fuchsia-200", delay: 1.7 },
-  { className: "right-[9%] bottom-[18%] h-2 w-2 bg-cyan-100", delay: 2.2 },
+const navItems = ["Inicio", "Habitos", "Carrera", "Salud", "Cuidado"]
+
+const accessBenefits = [
+  { icon: BarChart3, label: "Dashboard vivo" },
+  { icon: HeartPulse, label: "Rutinas y salud" },
+  { icon: ShieldCheck, label: "Datos privados" },
 ]
 
-const featureCards = [
-  {
-    icon: LineChart,
-    title: "Dashboard vivo",
-    description: "KPIs, progreso semanal y senales claras para decidir el siguiente paso.",
-  },
-  {
-    icon: BrainCircuit,
-    title: "Portafolio tecnico",
-    description: "Proyectos, subtareas, skills, evidencias y caso profesional exportable.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Datos privados",
-    description: "Sesion autenticada y registros asociados a tu propio usuario.",
-  },
+const floatingMetrics = [
+  { label: "Habitos activos", value: "+12", className: "left-[11%] top-[23%]" },
+  { label: "Foco semanal", value: "84%", className: "right-[13%] top-[18%]" },
+  { label: "Racha personal", value: "7d", className: "bottom-[24%] left-[18%]" },
 ]
 
 export default function LoginPage() {
@@ -85,366 +76,307 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#050914] font-sans text-white lifetrack-shell lg:h-screen lg:overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(59,130,246,0.28),transparent_30%),radial-gradient(circle_at_84%_18%,rgba(168,85,247,0.2),transparent_28%),radial-gradient(circle_at_64%_82%,rgba(20,184,166,0.18),transparent_34%)]" />
+    <main className="relative min-h-screen overflow-x-hidden bg-[#111419] font-sans text-white lg:h-screen lg:overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(29,78,216,0.20),transparent_28%),radial-gradient(circle_at_72%_76%,rgba(34,211,238,0.13),transparent_28%),linear-gradient(90deg,#111419_0%,#12151b_58%,#17181d_100%)]" />
+
+      <section className="relative z-10 grid min-h-screen grid-cols-1 gap-3 p-3 lg:h-screen lg:grid-cols-[minmax(0,1.52fr)_minmax(420px,0.88fr)] lg:gap-0 lg:p-4 xl:p-5">
         <motion.div
-          animate={{ opacity: [0.18, 0.34, 0.22], backgroundPosition: ["0px 0px", "64px 32px", "0px 0px"] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.052)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(circle_at_center,black,transparent_72%)]"
-        />
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-          className="absolute left-1/2 top-1/2 h-[760px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/10"
-        />
-        <motion.div
-          animate={{ rotate: -360, scale: [1, 1.04, 1] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-          className="absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-300/10"
-        />
-        <motion.div
-          animate={{ x: [0, 24, -10, 0], y: [0, -18, 12, 0], scale: [1, 1.08, 0.98, 1] }}
-          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -left-28 top-24 h-80 w-80 rounded-full bg-blue-500/20 blur-[120px]"
-        />
-        <motion.div
-          animate={{ x: [0, -18, 12, 0], y: [0, 16, -8, 0], scale: [1, 0.96, 1.08, 1] }}
-          transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -right-20 bottom-12 h-96 w-96 rounded-full bg-fuchsia-500/20 blur-[130px]"
-        />
-        {floatingNodes.map((node) => (
-          <motion.span
-            key={node.className}
-            animate={{ opacity: [0.18, 0.85, 0.18], y: [0, -18, 0], scale: [0.8, 1.25, 0.8] }}
-            transition={{ duration: 3.8, delay: node.delay, repeat: Infinity, ease: "easeInOut" }}
-            className={`absolute rounded-full shadow-[0_0_24px_currentColor] ${node.className}`}
-          />
-        ))}
-      </div>
+          initial={{ opacity: 0, x: -18 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="relative min-h-[640px] overflow-hidden rounded-[1.15rem] border border-cyan-200/10 bg-[#102a63] shadow-[0_32px_120px_rgba(0,0,0,0.45)] lg:min-h-[calc(100vh-2rem)] xl:min-h-[calc(100vh-2.5rem)]"
+        >
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(7,23,64,0.92),rgba(29,78,216,0.72)_45%,rgba(124,58,237,0.58)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.16),transparent_18%),radial-gradient(circle_at_66%_18%,rgba(34,211,238,0.16),transparent_20%),radial-gradient(circle_at_16%_58%,rgba(147,197,253,0.18),transparent_23%)]" />
+          <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(rgba(255,255,255,0.55)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.44)_1px,transparent_1px)] [background-size:68px_68px]" />
+          <div className="absolute inset-x-0 bottom-0 h-[44%] bg-[linear-gradient(0deg,rgba(3,7,18,0.34),transparent)]" />
 
-      <motion.div
-        animate={{ opacity: [0.35, 1, 0.35], scaleX: [0.75, 1, 0.75] }}
-        transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-        className="pointer-events-none absolute inset-x-0 top-0 h-px origin-center bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent"
-      />
-
-      <section className="relative z-10 mx-auto grid min-h-screen w-full max-w-[1660px] grid-cols-1 gap-7 px-5 py-4 sm:px-8 lg:h-screen lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_540px] lg:overflow-hidden lg:px-8 lg:py-5 xl:px-10">
-        <div className="relative z-10 flex min-h-0 flex-col gap-5 py-2">
-          <motion.header
-            initial={{ opacity: 0, y: -18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="flex items-center justify-between gap-4"
-          >
-            <div className="flex min-w-0 items-center gap-3">
-              <motion.div
-                whileHover={{ rotate: -8, scale: 1.06 }}
-                animate={{ boxShadow: ["0 0 26px rgba(34,211,238,0.20)", "0 0 48px rgba(34,211,238,0.34)", "0 0 26px rgba(34,211,238,0.20)"] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-300/10"
-              >
-                <Zap className="h-5 w-5 text-cyan-200" fill="currentColor" />
-                <motion.span
-                  animate={{ scale: [1, 1.35, 1], opacity: [0.75, 1, 0.75] }}
-                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,0.9)]"
-                />
-              </motion.div>
-              <div className="min-w-0">
-                <p className="text-xl font-black tracking-tight">
-                  Life<span className="text-cyan-300">Track</span>
-                </p>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
-                  Personal OS
-                </p>
-              </div>
-            </div>
-
-            <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-slate-300 backdrop-blur md:flex">
-              <span className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(110,231,183,0.9)]" />
-              Sistema operativo personal
-            </div>
-          </motion.header>
-
-          <div className="grid min-h-0 items-start gap-6 pt-[6vh] lg:pt-[7vh] xl:pt-[8vh]">
-            <motion.div
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-              className="max-w-[640px]"
-            >
-              <motion.div
-                animate={{ opacity: [0.78, 1, 0.78] }}
-                transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
-                className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.06] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-cyan-200"
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                Centro de control privado
-              </motion.div>
-
-              <h1 className="text-balance text-5xl font-black leading-[0.92] tracking-tight text-white sm:text-6xl 2xl:text-[4.35rem]">
-                Mide tu progreso.
-                <span className="block bg-gradient-to-r from-cyan-200 via-blue-300 to-fuchsia-300 bg-clip-text text-transparent">
-                  Convierte tu vida en datos.
-                </span>
-              </h1>
-
-              <p className="mt-5 max-w-[590px] text-base leading-7 text-slate-400 sm:text-lg">
-                Un sistema premium para conectar salud, carrera y cuidado personal en un solo tablero con evidencias, metricas y foco profesional.
-              </p>
-
-              <div className="mt-7 grid max-w-[560px] grid-cols-1 gap-3 sm:grid-cols-3">
-                {systemSignals.map((signal, index) => (
-                  <motion.div
-                    key={signal.label}
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.55, delay: 0.25 + index * 0.1, ease: "easeOut" }}
-                    whileHover={{ y: -6, scale: 1.02 }}
-                    className="rounded-2xl border border-white/10 bg-white/[0.045] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl"
-                  >
-                    <p className="text-xs font-semibold text-slate-500">{signal.label}</p>
-                    <p className={`mt-2 bg-gradient-to-r ${signal.tone} bg-clip-text text-3xl font-black text-transparent`}>
-                      {signal.value}
-                    </p>
-                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: signal.value }}
-                        transition={{ duration: 1.2, delay: 0.5 + index * 0.12, ease: "easeOut" }}
-                        className={`h-full rounded-full bg-gradient-to-r ${signal.tone}`}
-                      />
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <div className="mt-5 grid max-w-[640px] grid-cols-1 gap-3 sm:grid-cols-3">
-                {featureCards.map((item, index) => {
-                  const Icon = item.icon
-
-                  return (
-                    <motion.article
-                      key={item.title}
-                      initial={{ opacity: 0, y: 14 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.65 + index * 0.08, ease: "easeOut" }}
-                      whileHover={{ y: -4, borderColor: "rgba(103,232,249,0.28)" }}
-                      className="group min-h-[124px] rounded-2xl border border-white/[0.08] bg-white/[0.035] p-4 backdrop-blur-xl transition duration-300 hover:border-cyan-300/25 hover:bg-white/[0.06]"
-                    >
-                      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-cyan-200 transition group-hover:scale-105">
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <h2 className="text-sm font-bold text-white">{item.title}</h2>
-                      <p className="mt-2 text-sm leading-6 text-slate-500">{item.description}</p>
-                    </motion.article>
-                  )
-                })}
-              </div>
-            </motion.div>
-
-          </div>
-        </div>
-
-        <div className="pointer-events-none absolute left-[50%] top-[46%] z-0 hidden h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 2xl:block">
-          <div className="absolute inset-8 rounded-full bg-cyan-300/10 blur-3xl" />
           <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.25, ease: "easeOut" }}
-            className="relative h-full w-full rounded-full border border-white/10 bg-white/[0.025] p-7 shadow-[0_30px_120px_rgba(8,47,73,0.5)] backdrop-blur"
-          >
+            animate={{ y: [0, -18, 0], rotate: [0, 5, 0] }}
+            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -left-20 top-28 h-72 w-72 rounded-[5rem] bg-white/10 blur-sm"
+          />
+          <motion.div
+            animate={{ y: [0, 22, 0], rotate: [0, -7, 0] }}
+            transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute right-16 top-20 h-80 w-72 rounded-[6rem] bg-cyan-200/10 blur-sm"
+          />
+          <motion.div
+            animate={{ opacity: [0.28, 0.58, 0.28], scale: [1, 1.06, 1] }}
+            transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-20 right-20 h-[340px] w-[520px] rounded-full bg-blue-200/12 blur-3xl"
+          />
+
+          {floatingMetrics.map((metric, index) => (
             <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-6 rounded-full border border-dashed border-cyan-200/20"
-            />
-            <motion.div
-              animate={{ rotate: -360 }}
-              transition={{ duration: 11, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-16 rounded-full border border-fuchsia-200/10"
-            />
-            <motion.div
-              animate={{ scale: [1, 1.035, 1], opacity: [0.86, 1, 0.86] }}
-              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-              className="flex h-full w-full items-center justify-center rounded-full border border-cyan-300/20 bg-[#07111f]/80"
+              key={metric.label}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.35 + index * 0.12, ease: "easeOut" }}
+              className={`absolute hidden rounded-2xl border border-white/12 bg-white/[0.08] px-4 py-3 shadow-[0_20px_50px_rgba(15,23,42,0.22)] backdrop-blur-md xl:block ${metric.className}`}
             >
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-cyan-100/70">{metric.label}</p>
+              <p className="mt-1 text-2xl font-black tracking-tight text-white">{metric.value}</p>
+            </motion.div>
+          ))}
+
+          <div className="relative flex min-h-full flex-col px-7 py-7 sm:px-12 sm:py-10 lg:px-16 xl:px-24">
+            <motion.header
+              initial={{ opacity: 0, y: -14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.1, ease: "easeOut" }}
+              className="flex items-center justify-between gap-4"
+            >
+              <div className="flex items-center gap-3">
+                <motion.div
+                  whileHover={{ rotate: -8, scale: 1.06 }}
+                  className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-100/20 bg-white/10 shadow-[0_0_34px_rgba(34,211,238,0.28)]"
+                >
+                  <Zap className="h-5 w-5 text-cyan-100" fill="currentColor" />
+                  <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,0.9)]" />
+                </motion.div>
+                <div>
+                  <p className="text-lg font-black tracking-tight text-white">
+                    Life<span className="text-cyan-200">Track</span>
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-cyan-100/55">Personal OS</p>
+                </div>
+              </div>
+
+              <div className="hidden items-center gap-2 rounded-full border border-white/12 bg-white/[0.08] px-3 py-2 text-xs font-bold text-cyan-50/80 backdrop-blur-md md:flex">
+                <Sparkles className="h-3.5 w-3.5 text-cyan-100" />
+                Seguimiento inteligente
+              </div>
+            </motion.header>
+
+            <div className="flex flex-1 items-center py-14 lg:py-10">
               <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 6.5, repeat: Infinity, ease: "linear" }}
+                initial={{ opacity: 0, y: 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.75, delay: 0.2, ease: "easeOut" }}
+                className="w-full max-w-[760px]"
               >
-                <Orbit className="h-24 w-24 text-cyan-200/80" />
-              </motion.div>
-            </motion.div>
-            <motion.div
-              animate={{ scale: [1, 1.08, 1], opacity: [0.82, 1, 0.82] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute left-10 top-20 rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-xs font-bold text-emerald-200"
-            >
-              Salud activa
-            </motion.div>
-            <motion.div
-              animate={{ scale: [1, 1.08, 1], opacity: [0.82, 1, 0.82] }}
-              transition={{ duration: 1.6, delay: 0.35, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute right-4 top-1/2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-xs font-bold text-amber-200"
-            >
-              Carrera
-            </motion.div>
-            <motion.div
-              animate={{ scale: [1, 1.08, 1], opacity: [0.82, 1, 0.82] }}
-              transition={{ duration: 1.6, delay: 0.7, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute bottom-16 left-12 rounded-2xl border border-fuchsia-300/20 bg-fuchsia-300/10 px-3 py-2 text-xs font-bold text-fuchsia-200"
-            >
-              Cuidado
-            </motion.div>
-          </motion.div>
-        </div>
-
-        <aside className="relative z-20 flex min-h-0 items-center justify-center py-2">
-          <div className="w-full max-w-[520px]">
-            <motion.div
-              initial={{ opacity: 0, x: 32, scale: 0.98 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.18, ease: "easeOut" }}
-              whileHover={{ y: -4 }}
-              className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/55 p-1 shadow-[0_30px_120px_rgba(0,0,0,0.48)] backdrop-blur-2xl"
-            >
-              <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/80 to-transparent" />
-              <motion.div
-                animate={{ x: [0, -12, 0], y: [0, 12, 0], opacity: [0.45, 0.8, 0.45] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-24 -top-24 h-52 w-52 rounded-full bg-cyan-300/10 blur-3xl"
-              />
-              <motion.div
-                animate={{ x: [0, 14, 0], y: [0, -10, 0], opacity: [0.4, 0.76, 0.4] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-28 left-8 h-56 w-56 rounded-full bg-fuchsia-400/10 blur-3xl"
-              />
-
-              <div className="relative rounded-[1.75rem] border border-white/[0.06] bg-[#08111f]/80 p-6 sm:p-7">
-                <div className="mb-6 flex items-start justify-between gap-4">
-                  <div>
-                    <motion.div
-                      animate={{ rotate: [0, 3, -3, 0], scale: [1, 1.04, 1] }}
-                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                      className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-blue-300/20 bg-blue-300/10 text-blue-200"
-                    >
-                      <Fingerprint className="h-6 w-6" />
-                    </motion.div>
-                    <h2 className="text-3xl font-black tracking-tight text-white">Acceso neural</h2>
-                    <p className="mt-2 text-sm leading-6 text-slate-400">
-                      Entra a tu sistema y continua registrando progreso real.
-                    </p>
-                  </div>
-
-                  <motion.div
-                    animate={{ opacity: [0.72, 1, 0.72] }}
-                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-                    className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-200"
-                  >
-                    Seguro
-                  </motion.div>
+                <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-cyan-100/18 bg-white/[0.08] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-cyan-50 shadow-[0_14px_42px_rgba(8,47,73,0.24)] backdrop-blur-md">
+                  <Activity className="h-4 w-4" />
+                  Centro de control personal
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, delay: 0.45, ease: "easeOut" }}
-                    className="space-y-2"
-                  >
-                    <Label htmlFor="email" className="ml-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                      Identificador
-                    </Label>
-                    <div className="relative transition-transform duration-200 focus-within:scale-[1.01]">
-                      <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                      <Input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="usuario@lifetrack.com"
-                        required
-                        className="h-[52px] rounded-2xl border-white/10 bg-white/[0.055] pl-11 text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/50 focus:ring-cyan-300/20 [-webkit-text-fill-color:white] [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_rgba(15,23,42,0.96)] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
-                      />
-                    </div>
-                  </motion.div>
+                <h1 className="max-w-[720px] text-balance text-[clamp(3.4rem,6.7vw,6.7rem)] font-black leading-[0.96] tracking-[-0.045em] text-white drop-shadow-[0_22px_55px_rgba(15,23,42,0.30)]">
+                  Mide tu progreso.
+                  <span className="block">Convierte tu vida en datos.</span>
+                </h1>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, delay: 0.55, ease: "easeOut" }}
-                    className="space-y-2"
-                  >
-                    <div className="ml-1 flex items-center justify-between gap-4">
-                      <Label htmlFor="password" className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                        Clave maestra
-                      </Label>
-                      <a href="#" className="text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-300 transition hover:text-cyan-100">
-                        Recuperar
-                      </a>
-                    </div>
-                    <div className="relative transition-transform duration-200 focus-within:scale-[1.01]">
-                      <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                      <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••••••"
-                        required
-                        className="h-[52px] rounded-2xl border-white/10 bg-white/[0.055] pl-11 text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/50 focus:ring-cyan-300/20 [-webkit-text-fill-color:white] [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_rgba(15,23,42,0.96)] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
-                      />
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, delay: 0.65, ease: "easeOut" }}
-                  >
-                    <Button
-                      type="submit"
-                      disabled={isLoading}
-                      className="group relative mt-2 h-[52px] w-full overflow-hidden rounded-2xl border-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-fuchsia-500 text-base font-black text-white shadow-[0_18px_45px_-18px_rgba(34,211,238,0.7)] transition hover:scale-[1.01] hover:from-cyan-300 hover:via-blue-400 hover:to-fuchsia-400 active:scale-[0.99]"
-                    >
-                      <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition duration-700 group-hover:translate-x-full" />
-                      {isLoading ? (
-                        <Loader2 className="relative z-10 h-5 w-5 animate-spin" />
-                      ) : (
-                        <>
-                          <span className="relative z-10">Entrar al centro de control</span>
-                          <ArrowRight className="relative z-10 h-5 w-5 transition group-hover:translate-x-1" />
-                        </>
-                      )}
-                    </Button>
-                  </motion.div>
-                </form>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: 0.75, ease: "easeOut" }}
-                  className="mt-6 rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4"
-                >
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
-                    <p className="text-sm leading-6 text-slate-400">
-                      Sesion protegida por Supabase Auth. Tus registros se cargan solo cuando entras con tu usuario.
-                    </p>
-                  </div>
-                </motion.div>
-
-                <p className="mt-6 text-center text-xs text-slate-500">
-                  Sin acceso activo?{" "}
-                  <span className="font-bold text-cyan-300 transition hover:text-cyan-100">
-                    Contactar administrador
-                  </span>
+                <p className="mt-7 max-w-[610px] text-base leading-8 text-blue-50/78 sm:text-lg">
+                  Organiza salud, carrera y cuidado personal en un solo sistema visual para tomar mejores decisiones cada semana.
                 </p>
-              </div>
-            </motion.div>
+
+                <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <motion.button
+                    type="button"
+                    whileHover={{ y: -3, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group inline-flex h-16 w-fit items-center gap-4 rounded-full bg-[#15191f] px-5 pr-7 text-sm font-black text-white shadow-[0_24px_60px_rgba(0,0,0,0.38)] transition"
+                  >
+                    <span className="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-cyan-100 transition group-hover:bg-cyan-300/20">
+                      <Play className="h-5 w-5 fill-current" />
+                    </span>
+                    Ver experiencia
+                  </motion.button>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    {leftStats.map((stat, index) => (
+                      <motion.div
+                        key={stat.label}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.45, delay: 0.45 + index * 0.08, ease: "easeOut" }}
+                        className="min-w-[92px] rounded-2xl border border-white/12 bg-white/[0.075] px-3 py-2.5 backdrop-blur-md"
+                      >
+                        <p className="text-[11px] font-bold text-blue-50/58">{stat.label}</p>
+                        <p className={`mt-1 bg-gradient-to-r ${stat.tone} bg-clip-text text-xl font-black text-transparent`}>
+                          {stat.value}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            <motion.nav
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.55, ease: "easeOut" }}
+              className="flex flex-wrap gap-x-10 gap-y-3 text-sm font-semibold text-blue-50/62"
+            >
+              {navItems.map((item) => (
+                <span key={item} className="transition hover:text-white">
+                  {item}
+                </span>
+              ))}
+            </motion.nav>
           </div>
+        </motion.div>
+
+        <aside className="relative flex min-h-[640px] items-center justify-center overflow-hidden rounded-[1.15rem] border border-white/[0.03] bg-[#181a20] px-6 py-10 shadow-[inset_1px_0_0_rgba(255,255,255,0.04)] lg:min-h-[calc(100vh-2rem)] lg:rounded-l-none xl:min-h-[calc(100vh-2.5rem)] xl:px-12">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_60%_18%,rgba(37,99,235,0.16),transparent_26%),radial-gradient(circle_at_24%_86%,rgba(168,85,247,0.14),transparent_28%)]" />
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-cyan-200/18 to-transparent" />
+
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10 w-full max-w-[430px]"
+          >
+            <div className="mb-8">
+              <motion.div
+                animate={{ rotate: [0, 6, -6, 0], opacity: [0.74, 1, 0.74] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+                className="mb-7 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-blue-100"
+              >
+                <Flame className="h-4 w-4" />
+              </motion.div>
+
+              <h2 className="max-w-[360px] text-balance text-3xl font-black leading-tight tracking-[-0.035em] text-white sm:text-4xl">
+                Entra a tu sistema de progreso personal
+              </h2>
+              <p className="mt-4 max-w-[360px] text-sm leading-7 text-slate-400">
+                Continua midiendo habitos, avances profesionales y bienestar desde tu tablero privado de LifeTrack.
+              </p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.35, ease: "easeOut" }}
+                className="space-y-2"
+              >
+                <Label htmlFor="email" className="sr-only">
+                  Correo electronico
+                </Label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="usuario@lifetrack.com"
+                    required
+                    className="h-[54px] rounded-lg border-white/[0.075] bg-[#1d2027] pl-12 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition placeholder:text-slate-500 hover:border-blue-300/18 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20 [-webkit-text-fill-color:white] [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_rgba(29,32,39,0.98)] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                  />
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.43, ease: "easeOut" }}
+                className="space-y-2"
+              >
+                <Label htmlFor="password" className="sr-only">
+                  Clave de acceso
+                </Label>
+                <div className="relative">
+                  <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Clave de acceso"
+                    required
+                    className="h-[54px] rounded-lg border-white/[0.075] bg-[#1d2027] pl-12 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition placeholder:text-slate-500 hover:border-blue-300/18 focus:border-blue-400/70 focus:ring-2 focus:ring-blue-500/20 [-webkit-text-fill-color:white] [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_rgba(29,32,39,0.98)] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                  />
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.51, ease: "easeOut" }}
+                className="flex items-center justify-between gap-4 pt-1"
+              >
+                <label className="flex min-w-0 items-center gap-3 text-xs font-semibold leading-5 text-slate-400">
+                  <span className="grid h-5 w-5 shrink-0 place-items-center rounded-md bg-blue-500 text-white shadow-[0_0_18px_rgba(59,130,246,0.36)]">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  </span>
+                  Sesion protegida por Supabase Auth
+                </label>
+                <a href="#" className="shrink-0 text-xs font-bold text-blue-300 transition hover:text-cyan-200">
+                  Ayuda
+                </a>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.59, ease: "easeOut" }}
+                className="pt-3"
+              >
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="group relative h-[56px] w-full overflow-hidden rounded-lg border-0 bg-gradient-to-r from-blue-500 via-blue-500 to-cyan-400 text-sm font-black text-white shadow-[0_18px_42px_rgba(37,99,235,0.30)] transition hover:translate-y-[-1px] hover:from-blue-400 hover:to-cyan-300 active:translate-y-0 disabled:opacity-70"
+                >
+                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition duration-700 group-hover:translate-x-full" />
+                  {isLoading ? (
+                    <Loader2 className="relative z-10 h-5 w-5 animate-spin" />
+                  ) : (
+                    <>
+                      <span className="relative z-10">Entrar a LifeTrack</span>
+                      <ArrowRight className="relative z-10 h-4 w-4 transition group-hover:translate-x-1" />
+                    </>
+                  )}
+                </Button>
+              </motion.div>
+            </form>
+
+            <div className="my-7 flex items-center gap-4">
+              <div className="h-px flex-1 bg-white/[0.08]" />
+              <span className="text-xs font-semibold text-slate-500">Tu avance en un solo lugar</span>
+              <div className="h-px flex-1 bg-white/[0.08]" />
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              {accessBenefits.map((benefit, index) => {
+                const Icon = benefit.icon
+
+                return (
+                  <motion.div
+                    key={benefit.label}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.42, delay: 0.7 + index * 0.08, ease: "easeOut" }}
+                    whileHover={{ y: -3 }}
+                    className="rounded-xl border border-white/[0.07] bg-white/[0.035] p-3 text-center transition hover:border-blue-300/20 hover:bg-white/[0.055]"
+                  >
+                    <div className="mx-auto grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-[#20242d] text-cyan-100">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <p className="mt-2 text-[11px] font-bold leading-4 text-slate-400">{benefit.label}</p>
+                  </motion.div>
+                )
+              })}
+            </div>
+
+            <p className="mt-8 text-center text-xs font-semibold text-slate-500">
+              Sin acceso activo?{" "}
+              <span className="font-black text-blue-300 transition hover:text-cyan-200">
+                Contactar administrador
+              </span>
+            </p>
+
+            <div className="mt-7 flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600">
+              <Fingerprint className="h-3.5 w-3.5" />
+              Privado
+              <ChevronRight className="h-3.5 w-3.5" />
+              Seguro
+              <ChevronRight className="h-3.5 w-3.5" />
+              Medible
+            </div>
+          </motion.div>
         </aside>
       </section>
     </main>
