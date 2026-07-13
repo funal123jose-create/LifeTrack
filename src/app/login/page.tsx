@@ -90,20 +90,9 @@ export default function LoginPage() {
             <div className="absolute left-[16%] bottom-[31%] h-64 w-72 rounded-[44%] bg-cyan-100/12 blur-[1px]" />
           </div>
 
-          <div className="pointer-events-none absolute bottom-[-7%] left-[-2%] h-[43%] w-[78%] rotate-[12deg] rounded-[2.5rem] border border-white/10 bg-white/[0.10] opacity-45 blur-[0.2px] shadow-[0_28px_90px_rgba(15,23,42,0.24)]" />
-          <div className="pointer-events-none absolute bottom-[10%] left-[2%] h-[16%] w-[68%] rotate-[12deg] rounded-xl bg-white/[0.12] opacity-35">
-            <div className="absolute inset-x-8 top-5 grid grid-cols-8 gap-4">
-              {Array.from({ length: 24 }).map((_, index) => (
-                <span key={index} className="h-3 rounded-sm bg-white/18" />
-              ))}
-            </div>
-          </div>
-          <div className="pointer-events-none absolute right-[7%] top-[16%] hidden w-[34%] space-y-3 font-mono text-[12px] leading-none text-blue-50/20 lg:block">
-            <p>{"const progreso = medir(habitos)"}</p>
-            <p>{"if (enfoque) sincronizarSemana()"}</p>
-            <p>{"salud.map((dia) => energia + datos)"}</p>
-            <p>{"career.track({ skills, evidencia })"}</p>
-            <p>{"return vida.convertidaEnDatos()"}</p>
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute inset-0 bg-[url('/images/login-code-laptop.png')] bg-cover bg-[position:center_62%] opacity-30 mix-blend-screen saturate-125" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(88,54,235,0.58),rgba(69,105,238,0.34)_48%,rgba(96,91,238,0.46)),linear-gradient(0deg,rgba(43,18,118,0.34),transparent_54%)]" />
           </div>
 
           <motion.div
