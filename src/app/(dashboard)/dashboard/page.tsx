@@ -1055,7 +1055,7 @@ export default function DashboardPage() {
 
   return (
     <div
-      className="relative min-h-screen overflow-hidden bg-background px-2 pb-12 pt-4 text-slate-100 antialiased selection:bg-slate-700/60 selection:text-white md:px-4 [overflow-wrap:anywhere]"
+      className="relative min-h-screen overflow-hidden bg-[#111419] px-2 pb-12 pt-4 text-slate-100 antialiased selection:bg-blue-500/30 selection:text-white md:px-4 [overflow-wrap:anywhere]"
       style={{ fontFamily: "'Poppins', 'Nunito Sans', 'Inter', 'Manrope', system-ui, sans-serif" }}
     >
       <DashboardBackground />
@@ -1068,52 +1068,52 @@ export default function DashboardPage() {
       >
         <motion.section
           variants={itemVariants}
-          className="relative overflow-hidden rounded-[2rem] border border-white/[0.075] bg-[linear-gradient(135deg,rgba(10,17,30,0.96),rgba(8,16,30,0.92))] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.26)] backdrop-blur-2xl md:p-8"
+          className="relative overflow-hidden rounded-[1.15rem] border border-white/[0.035] bg-[linear-gradient(118deg,rgba(17,20,25,0.96),rgba(18,21,27,0.94)_58%,rgba(28,25,45,0.90)_100%)] p-6 shadow-[0_32px_120px_rgba(0,0,0,0.36)] backdrop-blur-2xl md:p-8"
         >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(59,130,246,0.17),transparent_25%),radial-gradient(circle_at_100%_0%,rgba(168,85,247,0.13),transparent_22%),radial-gradient(circle_at_78%_100%,rgba(249,115,22,0.10),transparent_28%)]" />
-          <div className="pointer-events-none absolute inset-0 opacity-[0.20] bg-[linear-gradient(rgba(255,255,255,0.028)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.024)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(circle_at_center,black,transparent_78%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(37,99,235,0.20),transparent_25%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.16),transparent_24%),radial-gradient(circle_at_72%_92%,rgba(34,211,238,0.12),transparent_28%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(88,54,235,0.10),transparent_38%,rgba(34,211,238,0.06))]" />
 
           <div className="relative grid gap-8 lg:grid-cols-[1.18fr_0.82fr] lg:items-center">
             <div className="min-w-0 space-y-6">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-300">
-                  <Sparkles size={13} className="text-blue-300" />
+                <span className="inline-flex items-center gap-2 rounded-full border border-cyan-100/18 bg-white/[0.08] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.15em] text-cyan-50 shadow-[0_14px_42px_rgba(8,47,73,0.18)] backdrop-blur-md">
+                  <Sparkles size={13} className="text-cyan-100" />
                   Panel personal
                 </span>
-                <span className="rounded-full border border-white/[0.06] bg-white/[0.025] px-3 py-1.5 text-xs text-slate-500">
+                <span className="rounded-full border border-white/[0.045] bg-white/[0.035] px-3 py-1.5 text-xs font-semibold text-slate-400">
                   Semana {formatDateShort(getCurrentWeekStartString())} - {formatDateShort(getCurrentWeekEndString())}
                 </span>
               </div>
 
               <div className="min-w-0 max-w-4xl">
-                <h1 className="break-words text-balance text-[2.35rem] font-extrabold leading-[0.94] tracking-[-0.08em] text-white md:text-[4.35rem]">
-                  Hola, <span className="bg-gradient-to-r from-slate-100 via-blue-200 to-sky-300 bg-clip-text text-transparent">{displayName}</span>
+                <h1 className="break-words text-balance text-[2.35rem] font-black leading-[0.94] tracking-[-0.055em] text-white drop-shadow-[0_22px_55px_rgba(15,23,42,0.30)] md:text-[4.35rem]">
+                  Hola, <span className="bg-gradient-to-r from-white via-cyan-200 to-blue-300 bg-clip-text text-transparent">{displayName}</span>
                 </h1>
-                <p className="mt-4 max-w-3xl break-words text-[15px] font-medium leading-7 text-slate-400 md:text-base">
+                <p className="mt-4 max-w-3xl break-words text-[15px] font-medium leading-7 text-slate-400/95 md:text-base">
                   Este dashboard te ayuda a analizar tu avance general y tu desempeño por pilares: <span className="text-emerald-300">Salud</span>, <span className="text-amber-300">Data/Carrera</span> y <span className="text-purple-300">Cuidado Personal</span>. La idea es que entiendas rápido qué va bien, qué necesita atención y dónde enfocar tu siguiente acción.
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-[1.25rem] border border-white/[0.075] bg-white/[0.045] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] backdrop-blur-xl">
+                <div className="rounded-[1.05rem] border border-white/[0.055] bg-white/[0.035] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl">
                   <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Avance general</p>
                   <div className="mt-3 flex items-center gap-3">
-                    <DashboardProgressRing value={globalProgress} color="#60a5fa" size="h-16 w-16" inner="h-[48px] w-[48px]" label={`${globalProgress}%`} />
+                    <DashboardProgressRing value={globalProgress} color="#60a5fa" size="h-16 w-16" inner="h-[36px] w-[36px]" label={`${globalProgress}%`} />
                     <p className="text-sm leading-6 text-slate-400">Promedio real de los tres pilares.</p>
                   </div>
                 </div>
 
-                <div className="rounded-[1.25rem] border border-white/[0.075] bg-white/[0.045] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] backdrop-blur-xl">
+                <div className="rounded-[1.05rem] border border-white/[0.055] bg-white/[0.035] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl">
                   <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Momento actual</p>
                   <p className="mt-3 text-lg font-bold text-white">{healthInsightSummary}</p>
                   <p className="mt-2 text-xs leading-5 text-slate-500">Resumen rápido del estado de tu sistema personal.</p>
                 </div>
 
-                <div className="rounded-[1.25rem] border border-white/[0.075] bg-white/[0.045] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] backdrop-blur-xl">
+                <div className="rounded-[1.05rem] border border-white/[0.055] bg-white/[0.035] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl">
                   <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Acción rápida</p>
                   <Button
                     onClick={() => setIsPanelOpen(true)}
-                    className="mt-3 h-12 w-full rounded-2xl bg-white text-sm font-bold text-slate-950 transition hover:-translate-y-0.5 hover:bg-slate-100 active:scale-[0.98]"
+                    className="mt-3 h-12 w-full rounded-lg bg-gradient-to-r from-blue-500 via-blue-500 to-cyan-400 text-sm font-black text-white shadow-[0_18px_42px_rgba(37,99,235,0.30)] transition hover:-translate-y-0.5 hover:from-blue-400 hover:to-cyan-300 active:scale-[0.98]"
                   >
                     <Plus size={17} />
                     Registrar entrada
@@ -1307,7 +1307,7 @@ export default function DashboardPage() {
                           }
                           color="#60a5fa"
                           size="h-16 w-16"
-                          inner="h-[46px] w-[46px]"
+                          inner="h-[36px] w-[36px]"
                           label={
                             weeklyHealthSummary?.avg_energy_level
                               ? `${weeklyHealthSummary.avg_energy_level.toFixed(1)}`
@@ -1317,7 +1317,7 @@ export default function DashboardPage() {
                         <p className="mt-2 text-xs font-bold text-slate-300">Energía</p>
                       </div>
                       <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
-                        <DashboardProgressRing value={weeklyTrainingPct} color="#34d399" size="h-16 w-16" inner="h-[46px] w-[46px]" label={`${weeklyTrainingPct}%`} />
+                        <DashboardProgressRing value={weeklyTrainingPct} color="#34d399" size="h-16 w-16" inner="h-[36px] w-[36px]" label={`${weeklyTrainingPct}%`} />
                         <p className="mt-2 text-xs font-bold text-slate-300">Rutina</p>
                       </div>
                     </div>
@@ -1662,11 +1662,11 @@ export default function DashboardPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
-                        <DashboardProgressRing value={weeklyPersonalCheckinPct} color="#c084fc" size="h-16 w-16" inner="h-[46px] w-[46px]" label={`${weeklyPersonalCheckins}`} />
+                        <DashboardProgressRing value={weeklyPersonalCheckinPct} color="#c084fc" size="h-16 w-16" inner="h-[36px] w-[36px]" label={`${weeklyPersonalCheckins}`} />
                         <p className="mt-2 text-xs font-bold text-slate-300">Check-ins</p>
                       </div>
                       <div className="rounded-2xl border border-white/[0.05] bg-black/20 p-3 text-center">
-                        <DashboardProgressRing value={weeklyPersonalRoutinePct} color="#f472b6" size="h-16 w-16" inner="h-[46px] w-[46px]" label={`${weeklyPersonalCompletedRoutines}`} />
+                        <DashboardProgressRing value={weeklyPersonalRoutinePct} color="#f472b6" size="h-16 w-16" inner="h-[36px] w-[36px]" label={`${weeklyPersonalCompletedRoutines}`} />
                         <p className="mt-2 text-xs font-bold text-slate-300">Rutinas</p>
                       </div>
                     </div>

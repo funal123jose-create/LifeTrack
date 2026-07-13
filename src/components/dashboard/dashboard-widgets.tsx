@@ -15,9 +15,9 @@ type DashboardSectionHeaderProps = {
 export function DashboardSectionHeader({ title, subtitle, accentClassName }: DashboardSectionHeaderProps) {
   return (
     <div className="relative flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-      <div className="pointer-events-none absolute -left-4 top-1 hidden h-16 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent md:block" />
+      <div className="pointer-events-none absolute -left-4 top-1 hidden h-16 w-px bg-gradient-to-b from-transparent via-cyan-200/22 to-transparent md:block" />
       <div className="min-w-0">
-        <div className={`mb-3 inline-flex max-w-full items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-bold tracking-[0.14em] uppercase shadow-[0_10px_26px_rgba(0,0,0,0.14)] backdrop-blur-xl ${accentClassName}`}>
+        <div className={`mb-3 inline-flex max-w-full items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-black tracking-[0.14em] uppercase shadow-[0_14px_42px_rgba(8,47,73,0.18)] backdrop-blur-xl ${accentClassName}`}>
           <Sparkles size={12} className="drop-shadow-[0_0_10px_rgba(255,255,255,0.24)]" />
           <span className="truncate">Dashboard analítico</span>
         </div>
@@ -26,7 +26,7 @@ export function DashboardSectionHeader({ title, subtitle, accentClassName }: Das
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-5xl break-words text-balance text-[clamp(1.5rem,2.3vw,2.15rem)] font-extrabold tracking-[-0.04em] text-white drop-shadow-[0_14px_30px_rgba(0,0,0,0.22)]"
+          className="max-w-5xl break-words text-balance text-[clamp(1.5rem,2.3vw,2.15rem)] font-black tracking-[-0.04em] text-white drop-shadow-[0_14px_30px_rgba(0,0,0,0.22)]"
         >
           {title}
         </motion.h2>
@@ -59,14 +59,14 @@ export function DashboardKpiCard({
     <motion.div
       whileHover={{ y: -4, scale: 1.008 }}
       transition={{ type: "spring", stiffness: 280, damping: 22 }}
-      className={`group relative isolate min-w-0 overflow-hidden rounded-[1.55rem] border p-5 shadow-[0_24px_55px_rgba(0,0,0,0.24)] transition-all duration-300 hover:border-white/[0.18] hover:shadow-[0_28px_64px_rgba(0,0,0,0.30)] ${shellClassName}`}
+      className={`group relative isolate min-w-0 overflow-hidden rounded-[1.2rem] border p-5 shadow-[0_24px_55px_rgba(0,0,0,0.24)] transition-all duration-300 hover:border-white/[0.13] hover:shadow-[0_28px_64px_rgba(0,0,0,0.30)] ${shellClassName}`}
     >
       <div className="pointer-events-none absolute inset-0 opacity-80 bg-[radial-gradient(circle_at_100%_0%,rgba(255,255,255,0.28),transparent_25%),radial-gradient(circle_at_0%_100%,rgba(255,255,255,0.12),transparent_28%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.10),transparent_34%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
       <div className="pointer-events-none absolute inset-x-5 bottom-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
       <div className="relative z-10 mb-5 flex items-start justify-between gap-4">
-        <span className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] transition-transform duration-300 group-hover:-translate-y-0.5 ${iconClassName}`}>
+        <span className={`flex h-11 w-11 items-center justify-center rounded-xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] transition-transform duration-300 group-hover:-translate-y-0.5 ${iconClassName}`}>
           <Icon size={18} />
         </span>
         {typeof progress === "number" ? (
@@ -102,11 +102,11 @@ export function DashboardSoftMetric({ title, value, helper, Icon, colorClasses }
     <motion.div
       whileHover={{ y: -3 }}
       transition={{ type: "spring", stiffness: 320, damping: 24 }}
-      className="group relative isolate min-w-0 overflow-hidden rounded-[1.35rem] border border-white/[0.075] bg-white/[0.045] p-4 shadow-[0_12px_32px_rgba(0,0,0,0.16)] backdrop-blur-xl transition-all duration-300 hover:border-white/[0.14] hover:bg-white/[0.06]"
+      className="group relative isolate min-w-0 overflow-hidden rounded-[1.15rem] border border-white/[0.055] bg-white/[0.035] p-4 shadow-[0_12px_32px_rgba(0,0,0,0.16)] backdrop-blur-xl transition-all duration-300 hover:border-cyan-200/[0.14] hover:bg-white/[0.055]"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
       <div className="mb-3 flex items-center justify-between">
-        <span className={`flex h-10 w-10 items-center justify-center rounded-2xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-transform duration-300 group-hover:-translate-y-0.5 ${colorClasses}`}>
+        <span className={`flex h-10 w-10 items-center justify-center rounded-xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-transform duration-300 group-hover:-translate-y-0.5 ${colorClasses}`}>
           <Icon size={16} />
         </span>
       </div>
@@ -144,13 +144,13 @@ export function DashboardInsightCard({
     <motion.div
       whileHover={{ y: -4, scale: 1.006 }}
       transition={{ type: "spring", stiffness: 280, damping: 22 }}
-      className={`group relative isolate overflow-hidden rounded-[1.55rem] border p-5 shadow-[0_18px_45px_rgba(0,0,0,0.18)] transition-all duration-300 hover:border-white/[0.14] hover:shadow-[0_24px_56px_rgba(0,0,0,0.24)] ${accentShell}`}
+      className={`group relative isolate overflow-hidden rounded-[1.2rem] border p-5 shadow-[0_18px_45px_rgba(0,0,0,0.18)] transition-all duration-300 hover:border-white/[0.12] hover:shadow-[0_24px_56px_rgba(0,0,0,0.24)] ${accentShell}`}
     >
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_38%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/28 to-transparent" />
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <span className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-transform duration-300 group-hover:-translate-y-0.5 ${accentText}`}>
+          <span className={`flex h-11 w-11 items-center justify-center rounded-xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-transform duration-300 group-hover:-translate-y-0.5 ${accentText}`}>
             <Icon size={17} />
           </span>
           <div>
