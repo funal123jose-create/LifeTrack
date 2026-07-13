@@ -39,12 +39,6 @@ const accessBenefits = [
   { icon: ShieldCheck, label: "Datos privados" },
 ]
 
-const floatingMetrics = [
-  { label: "Habitos activos", value: "+12", className: "left-[11%] top-[23%]" },
-  { label: "Foco semanal", value: "84%", className: "right-[13%] top-[18%]" },
-  { label: "Racha personal", value: "7d", className: "bottom-[24%] left-[18%]" },
-]
-
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -84,12 +78,33 @@ export default function LoginPage() {
           initial={{ opacity: 0, x: -18 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="relative min-h-[640px] overflow-hidden rounded-[1.15rem] border border-cyan-200/10 bg-[#102a63] shadow-[0_32px_120px_rgba(0,0,0,0.45)] lg:min-h-[calc(100vh-2rem)] xl:min-h-[calc(100vh-2.5rem)]"
+          className="relative min-h-[640px] overflow-hidden rounded-[1.15rem] border border-white/[0.035] bg-[#102a63] shadow-[0_32px_120px_rgba(0,0,0,0.45)] lg:min-h-[calc(100vh-2rem)] xl:min-h-[calc(100vh-2.5rem)]"
         >
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(7,23,64,0.92),rgba(29,78,216,0.72)_45%,rgba(124,58,237,0.58)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.16),transparent_18%),radial-gradient(circle_at_66%_18%,rgba(34,211,238,0.16),transparent_20%),radial-gradient(circle_at_16%_58%,rgba(147,197,253,0.18),transparent_23%)]" />
-          <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(rgba(255,255,255,0.55)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.44)_1px,transparent_1px)] [background-size:68px_68px]" />
-          <div className="absolute inset-x-0 bottom-0 h-[44%] bg-[linear-gradient(0deg,rgba(3,7,18,0.34),transparent)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(88,54,235,0.94),rgba(69,105,238,0.82)_46%,rgba(96,91,238,0.72)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_28%,rgba(255,255,255,0.16),transparent_20%),radial-gradient(circle_at_62%_22%,rgba(34,211,238,0.13),transparent_22%),radial-gradient(circle_at_82%_68%,rgba(167,139,250,0.18),transparent_28%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-[46%] bg-[linear-gradient(0deg,rgba(18,24,70,0.28),transparent)]" />
+
+          <div className="pointer-events-none absolute inset-0 opacity-[0.20]">
+            <div className="absolute left-[6%] top-[23%] h-56 w-80 rounded-[45%] bg-white/18 blur-[1px]" />
+            <div className="absolute right-[12%] top-[9%] h-72 w-64 rounded-[42%] bg-blue-100/12 blur-[1px]" />
+            <div className="absolute left-[16%] bottom-[31%] h-64 w-72 rounded-[44%] bg-cyan-100/12 blur-[1px]" />
+          </div>
+
+          <div className="pointer-events-none absolute bottom-[-7%] left-[-2%] h-[43%] w-[78%] rotate-[12deg] rounded-[2.5rem] border border-white/10 bg-white/[0.10] opacity-45 blur-[0.2px] shadow-[0_28px_90px_rgba(15,23,42,0.24)]" />
+          <div className="pointer-events-none absolute bottom-[10%] left-[2%] h-[16%] w-[68%] rotate-[12deg] rounded-xl bg-white/[0.12] opacity-35">
+            <div className="absolute inset-x-8 top-5 grid grid-cols-8 gap-4">
+              {Array.from({ length: 24 }).map((_, index) => (
+                <span key={index} className="h-3 rounded-sm bg-white/18" />
+              ))}
+            </div>
+          </div>
+          <div className="pointer-events-none absolute right-[7%] top-[16%] hidden w-[34%] space-y-3 font-mono text-[12px] leading-none text-blue-50/20 lg:block">
+            <p>{"const progreso = medir(habitos)"}</p>
+            <p>{"if (enfoque) sincronizarSemana()"}</p>
+            <p>{"salud.map((dia) => energia + datos)"}</p>
+            <p>{"career.track({ skills, evidencia })"}</p>
+            <p>{"return vida.convertidaEnDatos()"}</p>
+          </div>
 
           <motion.div
             animate={{ y: [0, -18, 0], rotate: [0, 5, 0] }}
@@ -106,19 +121,6 @@ export default function LoginPage() {
             transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
             className="absolute bottom-20 right-20 h-[340px] w-[520px] rounded-full bg-blue-200/12 blur-3xl"
           />
-
-          {floatingMetrics.map((metric, index) => (
-            <motion.div
-              key={metric.label}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.35 + index * 0.12, ease: "easeOut" }}
-              className={`absolute hidden rounded-2xl border border-white/12 bg-white/[0.08] px-4 py-3 shadow-[0_20px_50px_rgba(15,23,42,0.22)] backdrop-blur-md xl:block ${metric.className}`}
-            >
-              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-cyan-100/70">{metric.label}</p>
-              <p className="mt-1 text-2xl font-black tracking-tight text-white">{metric.value}</p>
-            </motion.div>
-          ))}
 
           <div className="relative flex min-h-full flex-col px-7 py-7 sm:px-12 sm:py-10 lg:px-16 xl:px-24">
             <motion.header
@@ -218,9 +220,9 @@ export default function LoginPage() {
           </div>
         </motion.div>
 
-        <aside className="relative flex min-h-[640px] items-center justify-center overflow-hidden rounded-[1.15rem] border border-white/[0.03] bg-[#181a20] px-6 py-10 shadow-[inset_1px_0_0_rgba(255,255,255,0.04)] lg:min-h-[calc(100vh-2rem)] lg:rounded-l-none xl:min-h-[calc(100vh-2.5rem)] xl:px-12">
+        <aside className="relative flex min-h-[640px] items-center justify-center overflow-hidden rounded-[1.15rem] border border-white/[0.015] bg-[#181a20] px-6 py-10 shadow-[inset_1px_0_0_rgba(255,255,255,0.018)] lg:min-h-[calc(100vh-2rem)] lg:rounded-l-none xl:min-h-[calc(100vh-2.5rem)] xl:px-12">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_60%_18%,rgba(37,99,235,0.16),transparent_26%),radial-gradient(circle_at_24%_86%,rgba(168,85,247,0.14),transparent_28%)]" />
-          <div className="pointer-events-none absolute left-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-cyan-200/18 to-transparent" />
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/[0.035] to-transparent" />
 
           <motion.div
             initial={{ opacity: 0, x: 24 }}
