@@ -78,7 +78,7 @@ export default function LoginPage() {
           initial={{ opacity: 0, x: -18 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="relative min-h-[640px] overflow-hidden rounded-[1.15rem] border border-white/[0.035] bg-[#102a63] shadow-[0_32px_120px_rgba(0,0,0,0.45)] lg:min-h-[calc(100vh-2rem)] xl:min-h-[calc(100vh-2.5rem)]"
+          className="relative min-h-[640px] overflow-hidden rounded-l-[1.15rem] rounded-r-none border border-white/[0.035] bg-[#102a63] shadow-[0_32px_120px_rgba(0,0,0,0.45)] lg:min-h-[calc(100vh-2rem)] xl:min-h-[calc(100vh-2.5rem)]"
         >
           <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(88,54,235,0.94),rgba(69,105,238,0.82)_46%,rgba(96,91,238,0.72)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_28%,rgba(255,255,255,0.16),transparent_20%),radial-gradient(circle_at_62%_22%,rgba(34,211,238,0.13),transparent_22%),radial-gradient(circle_at_82%_68%,rgba(167,139,250,0.18),transparent_28%)]" />
