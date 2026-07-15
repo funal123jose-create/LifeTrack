@@ -164,9 +164,10 @@ export default function LoginPage() {
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
                   <motion.button
                     type="button"
+                    aria-label="Vista previa decorativa de LifeTrack"
                     whileHover={{ y: -3, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="group inline-flex h-16 w-fit items-center gap-4 rounded-full bg-[#15191f] px-5 pr-7 text-sm font-black text-white shadow-[0_24px_60px_rgba(0,0,0,0.38)] transition"
+                    className="group inline-flex h-16 w-fit cursor-default items-center gap-4 rounded-full bg-[#15191f] px-5 pr-7 text-sm font-black text-white shadow-[0_24px_60px_rgba(0,0,0,0.38)] transition"
                   >
                     <span className="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-cyan-100 transition group-hover:bg-cyan-300/20">
                       <Play className="h-5 w-5 fill-current" />

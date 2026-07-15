@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { publicEnv } from "@/lib/env/public"
 
-const PRIVATE_ROUTES = ['/dashboard', '/pilares']
+const PRIVATE_ROUTES = ['/dashboard', '/pilares', '/portafolio', '/historial', '/calendario']
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
@@ -56,5 +56,16 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard', '/dashboard/:path*', '/pilares', '/pilares/:path*'],
+  matcher: [
+    '/dashboard',
+    '/dashboard/:path*',
+    '/pilares',
+    '/pilares/:path*',
+    '/portafolio',
+    '/portafolio/:path*',
+    '/historial',
+    '/historial/:path*',
+    '/calendario',
+    '/calendario/:path*',
+  ],
 }

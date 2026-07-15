@@ -7,6 +7,9 @@ import { useTheme } from "next-themes"
 import { motion } from "framer-motion"
 import {
   LayoutGrid,
+  BriefcaseBusiness,
+  CalendarDays,
+  History,
   Zap,
   LogOut,
   Sun,
@@ -20,6 +23,9 @@ import { Button } from "@/components/ui/button"
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutGrid },
   { title: "Pilares", url: "/pilares", icon: Zap },
+  { title: "Portafolio", url: "/portafolio", icon: BriefcaseBusiness },
+  { title: "Historial", url: "/historial", icon: History },
+  { title: "Calendario", url: "/calendario", icon: CalendarDays },
 ]
 
 function subscribeToClientMount(onStoreChange: () => void) {
@@ -106,7 +112,17 @@ export function AppSidebar() {
             <PanelTop size={13} className="text-slate-500" />
             <span className="text-slate-500">/</span>
             <span>
-              {pathname === "/pilares" ? "Pilares" : pathname.startsWith("/pilares/") ? "Detalle" : "Dashboard"}
+              {pathname === "/pilares"
+                ? "Pilares"
+                : pathname.startsWith("/pilares/")
+                  ? "Detalle"
+                  : pathname === "/portafolio"
+                    ? "Portafolio"
+                    : pathname === "/historial"
+                      ? "Historial"
+                      : pathname === "/calendario"
+                        ? "Calendario"
+                        : "Dashboard"}
             </span>
           </div>
         </div>
