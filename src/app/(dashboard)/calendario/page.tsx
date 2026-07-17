@@ -307,7 +307,9 @@ export default function CalendarioPage() {
   )
 
   return (
-    <div className="relative min-h-[calc(100vh-72px)] overflow-hidden py-6 text-slate-100">
+    <div
+      className="relative min-h-screen overflow-x-hidden py-4 text-slate-100 [font-family:var(--font-geist-sans),system-ui,sans-serif] sm:py-6"
+    >
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[#070b12]" />
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_12%_15%,rgba(37,99,235,0.18),transparent_34%),radial-gradient(circle_at_84%_10%,rgba(168,85,247,0.18),transparent_30%),radial-gradient(circle_at_82%_82%,rgba(249,115,22,0.12),transparent_30%),radial-gradient(circle_at_22%_90%,rgba(16,185,129,0.14),transparent_34%)]" />
 
@@ -320,16 +322,16 @@ export default function CalendarioPage() {
               <CalendarDays size={14} />
               Calendario de progreso
             </div>
-            <h1 className="mt-5 text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 max-w-4xl text-balance text-[clamp(2.35rem,5vw,4.9rem)] font-black leading-[0.97] tracking-[-0.045em] text-white">
               Visualiza tus habitos y avances en el tiempo.
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
+            <p className="mt-5 max-w-3xl text-base leading-8 text-slate-400">
               Una lectura mensual basada en registros reales: habitos, rutinas, salud, cuidado personal y eventos
               planificados por fecha.
             </p>
           </div>
 
-          <div className="grid w-full gap-3 sm:grid-cols-2 xl:w-[560px]">
+          <div className="grid w-full min-w-0 gap-3 sm:grid-cols-2 xl:w-[min(560px,100%)]">
             <StatTile label="Actividad" value={stats.activeDays.toString()} detail="Dias con registros" accent="from-blue-400 to-cyan-300" />
             <StatTile label="Completados" value={stats.completedDays.toString()} detail="Dias con avance fuerte" accent="from-emerald-400 to-teal-300" />
             <StatTile label="Eventos" value={stats.totalEvents.toString()} detail="Registros del mes" accent="from-violet-400 to-fuchsia-300" />
@@ -338,7 +340,7 @@ export default function CalendarioPage() {
         </div>
       </section>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(310px,380px)]">
         <section className="rounded-[2rem] border border-white/[0.06] bg-[#0d131d]/82 p-4 shadow-[0_26px_90px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-5">
           <div className="flex flex-col gap-4 border-b border-white/[0.06] pb-4 md:flex-row md:items-center md:justify-between">
             <div>
@@ -359,7 +361,7 @@ export default function CalendarioPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => setMonthDate((current) => addMonths(current, -1))}
@@ -390,13 +392,13 @@ export default function CalendarioPage() {
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-7 gap-2 text-center text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+          <div className="mt-5 hidden grid-cols-7 gap-2 text-center text-[11px] font-black uppercase tracking-[0.18em] text-slate-500 sm:grid">
             {WEEKDAY_LABELS.map((day) => (
               <span key={day}>{day}</span>
             ))}
           </div>
 
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-7">
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-7 sm:gap-2 xl:gap-3">
             {calendarMonth.days.map((day) => (
               <CalendarCell
                 key={day.date}

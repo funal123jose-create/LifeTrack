@@ -90,7 +90,7 @@ export function AppSidebar() {
   }, [displayName])
 
   return (
-    <header className="fixed left-0 top-0 z-50 w-full border-b border-white/[0.04] bg-[#080c14]/80 backdrop-blur-md">
+    <header className="relative z-50 w-full border-b border-white/[0.04] bg-[#080c14]/80 backdrop-blur-md">
       <div className="mx-auto flex h-[72px] w-full max-w-[1600px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
 
         {/* LADO IZQUIERDO: LOGO Y PATH */}
@@ -128,7 +128,7 @@ export function AppSidebar() {
         </div>
 
         {/* NAVEGACIÓN PRINCIPAL */}
-        <nav className="hidden items-center gap-1 rounded-xl border border-white/[0.02] bg-slate-900/40 p-1 md:flex">
+        <nav className="hidden min-w-0 items-center gap-1 rounded-xl border border-white/[0.02] bg-slate-900/40 p-1 lg:flex">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive =
@@ -216,7 +216,7 @@ export function AppSidebar() {
       </div>
 
       {/* MENÚ MÓVIL */}
-      <div className="flex w-full gap-1 overflow-x-auto border-t border-white/[0.02] bg-slate-950/20 px-4 py-1.5 md:hidden">
+      <div className="flex w-full gap-1 overflow-x-auto border-t border-white/[0.02] bg-slate-950/20 px-4 py-1.5 lg:hidden">
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive =

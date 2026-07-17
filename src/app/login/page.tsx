@@ -70,15 +70,15 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#111419] font-sans text-white lg:h-screen lg:overflow-hidden">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#111419] font-sans text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(29,78,216,0.20),transparent_28%),radial-gradient(circle_at_72%_76%,rgba(34,211,238,0.13),transparent_28%),linear-gradient(90deg,#111419_0%,#12151b_58%,#17181d_100%)]" />
 
-      <section className="relative z-10 grid min-h-screen grid-cols-1 gap-3 p-3 lg:h-screen lg:grid-cols-[minmax(0,1.52fr)_minmax(420px,0.88fr)] lg:gap-0 lg:p-4 xl:p-5">
+      <section className="relative z-10 grid min-h-screen grid-cols-1 gap-3 p-3 lg:min-h-[100svh] lg:grid-cols-[minmax(0,1.52fr)_minmax(360px,0.88fr)] lg:gap-0 lg:p-4 xl:grid-cols-[minmax(0,1.52fr)_minmax(420px,0.88fr)] xl:p-5">
         <motion.div
           initial={{ opacity: 0, x: -18 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="relative min-h-[640px] overflow-hidden rounded-l-[1.15rem] rounded-r-none border border-white/[0.035] bg-[#102a63] shadow-[0_32px_120px_rgba(0,0,0,0.45)] lg:min-h-[calc(100vh-2rem)] xl:min-h-[calc(100vh-2.5rem)]"
+          className="relative min-h-[560px] overflow-hidden rounded-[1.15rem] border border-white/[0.035] bg-[#102a63] shadow-[0_32px_120px_rgba(0,0,0,0.45)] lg:min-h-[calc(100svh-2rem)] lg:rounded-l-[1.15rem] lg:rounded-r-none xl:min-h-[calc(100svh-2.5rem)]"
         >
           <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(88,54,235,0.94),rgba(69,105,238,0.82)_46%,rgba(96,91,238,0.72)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_28%,rgba(255,255,255,0.16),transparent_20%),radial-gradient(circle_at_62%_22%,rgba(34,211,238,0.13),transparent_22%),radial-gradient(circle_at_82%_68%,rgba(167,139,250,0.18),transparent_28%)]" />
@@ -111,7 +111,7 @@ export default function LoginPage() {
             className="absolute bottom-20 right-20 h-[340px] w-[520px] rounded-full bg-blue-200/12 blur-3xl"
           />
 
-          <div className="relative flex min-h-full flex-col px-7 py-7 sm:px-12 sm:py-10 lg:px-16 xl:px-24">
+          <div className="relative flex min-h-full flex-col px-5 py-6 sm:px-10 sm:py-9 lg:px-10 xl:px-20 2xl:px-24">
             <motion.header
               initial={{ opacity: 0, y: -14 }}
               animate={{ opacity: 1, y: 0 }}
@@ -140,7 +140,7 @@ export default function LoginPage() {
               </div>
             </motion.header>
 
-            <div className="flex flex-1 items-center py-14 lg:py-10">
+            <div className="flex flex-1 items-center py-10 sm:py-12 lg:py-6 xl:py-10">
               <motion.div
                 initial={{ opacity: 0, y: 22 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -152,7 +152,7 @@ export default function LoginPage() {
                   Centro de control personal
                 </div>
 
-                <h1 className="max-w-[720px] text-balance text-[clamp(3.4rem,6.7vw,6.7rem)] font-black leading-[0.96] tracking-[-0.045em] text-white drop-shadow-[0_22px_55px_rgba(15,23,42,0.30)]">
+                <h1 className="max-w-[720px] text-balance text-[clamp(2.65rem,6.1vw,6.45rem)] font-black leading-[0.96] tracking-[-0.045em] text-white drop-shadow-[0_22px_55px_rgba(15,23,42,0.30)]">
                   Mide tu progreso.
                   <span className="block">Convierte tu vida en datos.</span>
                 </h1>
@@ -161,7 +161,7 @@ export default function LoginPage() {
                   Organiza salud, carrera y cuidado personal en un solo sistema visual para tomar mejores decisiones cada semana.
                 </p>
 
-                <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
                   <motion.button
                     type="button"
                     aria-label="Vista previa decorativa de LifeTrack"
@@ -175,14 +175,14 @@ export default function LoginPage() {
                     Ver experiencia
                   </motion.button>
 
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid w-full grid-cols-3 gap-3 sm:w-auto">
                     {leftStats.map((stat, index) => (
                       <motion.div
                         key={stat.label}
                         initial={{ opacity: 0, y: 14 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.45, delay: 0.45 + index * 0.08, ease: "easeOut" }}
-                        className="min-w-[92px] rounded-2xl border border-white/12 bg-white/[0.075] px-3 py-2.5 backdrop-blur-md"
+                        className="min-w-0 rounded-2xl border border-white/12 bg-white/[0.075] px-3 py-2.5 backdrop-blur-md sm:min-w-[92px]"
                       >
                         <p className="text-[11px] font-bold text-blue-50/58">{stat.label}</p>
                         <p className={`mt-1 bg-gradient-to-r ${stat.tone} bg-clip-text text-xl font-black text-transparent`}>
@@ -210,7 +210,7 @@ export default function LoginPage() {
           </div>
         </motion.div>
 
-        <aside className="relative flex min-h-[640px] items-center justify-center overflow-hidden rounded-[1.15rem] border border-white/[0.015] bg-[#181a20] px-6 py-10 shadow-[inset_1px_0_0_rgba(255,255,255,0.018)] lg:min-h-[calc(100vh-2rem)] lg:rounded-l-none xl:min-h-[calc(100vh-2.5rem)] xl:px-12">
+        <aside className="relative flex min-h-[560px] items-center justify-center overflow-hidden rounded-[1.15rem] border border-white/[0.015] bg-[#181a20] px-5 py-8 shadow-[inset_1px_0_0_rgba(255,255,255,0.018)] sm:px-6 sm:py-10 lg:min-h-[calc(100svh-2rem)] lg:rounded-l-none xl:min-h-[calc(100svh-2.5rem)] xl:px-12">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_60%_18%,rgba(37,99,235,0.16),transparent_26%),radial-gradient(circle_at_24%_86%,rgba(168,85,247,0.14),transparent_28%)]" />
           <div className="pointer-events-none absolute left-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/[0.035] to-transparent" />
 

@@ -7,7 +7,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="min-h-screen w-full bg-background antialiased">
         <AppSidebar />
 
-        <main className="min-h-screen w-full pt-[72px]">
+        <main className="min-h-screen w-full">
           <div className="mx-auto w-full max-w-[1600px] px-4 pb-12 sm:px-6 lg:px-8">
             {children}
           </div>
