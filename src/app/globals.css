@@ -130,13 +130,6 @@ svg {
   max-width: 100%;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
 /* Scrollbar minimalista */
 ::-webkit-scrollbar {
   width: 6px;
