@@ -281,7 +281,7 @@ export default function PilaresMenuPage() {
                     </div>
 
                     <Link href={pilar.href} className="block w-full">
-                      <Button className="group/btn relative h-12 w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-white text-xs font-bold uppercase tracking-[0.08em] text-slate-950 shadow-[0_16px_35px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-100">
+                      <Button className="group/btn relative h-12 w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-white text-xs font-extrabold uppercase tracking-[0.08em] text-slate-950 shadow-[0_16px_35px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-100">
                         <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/10 to-transparent transition-transform duration-700 group-hover/btn:translate-x-full" />
                         <span className="relative flex items-center justify-center gap-2">
                           {pilar.actionText}
