@@ -24,7 +24,7 @@ import {
   NotebookPen,
   BatteryCharging,
   Activity,
-  ArrowLeft,
+  ChevronLeft,
 } from "lucide-react"
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
 import { getErrorMessage } from "@/lib/errors"
@@ -339,11 +339,8 @@ export default function CuidadoPersonalPage() {
       <PersonalCareBackground />
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1480px] flex-col gap-5">
-        <Link href="/pilares" className="w-fit">
-          <Button className="h-9 rounded-full border border-white/[0.08] bg-black/24 px-4 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 shadow-[0_14px_34px_rgba(0,0,0,0.22)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-purple-300/18 hover:bg-purple-500/[0.08] hover:text-purple-100 active:scale-[0.98]">
-            <ArrowLeft size={13} />
-            <span>[ Volver a pilares ]</span>
-          </Button>
+        <Link href="/pilares" className="group flex w-fit items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.018] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-purple-400/35 hover:bg-purple-500/[0.08] hover:text-purple-200">
+          <ChevronLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1.5" /> [ VOLVER A PILARES ]
         </Link>
 
         <motion.div

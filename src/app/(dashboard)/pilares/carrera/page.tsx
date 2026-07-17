@@ -772,13 +772,8 @@ export default function DataCarreraPage() {
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="relative z-10 space-y-4"
       >
-        <Link href="/pilares" className="w-fit">
-          <Button
-            variant="ghost"
-            className="group flex h-9 items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.035] px-4 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl transition-all hover:border-orange-400/25 hover:bg-orange-500/[0.07] hover:text-orange-300"
-          >
-            <ChevronLeft size={16} className="transition-transform duration-300 group-hover:-translate-x-1" /> Volver a Pilares
-          </Button>
+        <Link href="/pilares" className="group flex w-fit items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.018] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-orange-400/35 hover:bg-orange-500/[0.08] hover:text-orange-200">
+          <ChevronLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1.5" /> [ VOLVER A PILARES ]
         </Link>
 
         <div className="relative overflow-hidden rounded-[2rem] border border-orange-300/[0.10] bg-[linear-gradient(135deg,rgba(18,13,10,0.92),rgba(8,11,18,0.76))] p-6 shadow-[0_28px_80px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:p-8">

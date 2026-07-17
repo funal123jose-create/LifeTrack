@@ -892,13 +892,8 @@ export default function CentroSaludPage() {
       <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col gap-8">
         {/* Retorno al menú general sin alterarlo */}
         <div className="relative z-10 flex items-center justify-between">
-          <Link href="/pilares">
-            <Button
-              variant="ghost"
-              className="group flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.035] px-4 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl transition-all hover:border-emerald-400/25 hover:bg-emerald-500/[0.07] hover:text-emerald-300"
-            >
-              <ChevronLeft size={16} className="transition-transform duration-300 group-hover:-translate-x-1" /> Volver a Pilares
-            </Button>
+          <Link href="/pilares" className="group flex w-fit items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.018] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-emerald-400/35 hover:bg-emerald-500/[0.08] hover:text-emerald-200">
+            <ChevronLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1.5" /> [ VOLVER A PILARES ]
           </Link>
         </div>
 
