@@ -8,6 +8,9 @@ export type MealLog = {
   meal_type: MealType
   confidence: ConfidenceLevel
   portion_assumption: string | null
+  protein_g: number | null
+  carbs_g: number | null
+  fat_g: number | null
   created_at: string
 }
 
@@ -17,6 +20,9 @@ export type RawNutritionMeal = {
   estimated_calories?: unknown
   confidence?: unknown
   portion_assumption?: unknown
+  protein_g?: unknown
+  carbs_g?: unknown
+  fat_g?: unknown
 }
 
 export type WaterLog = {

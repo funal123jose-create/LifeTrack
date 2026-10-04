@@ -1,5 +1,6 @@
 import { normalizeConfidence, normalizeMealType, type NutritionMeal } from "@/lib/nutrition"
 import type { BodyProgressLog, MealLog, RawNutritionMeal, WaterLog } from "@/lib/health-page-models"
+import { ROUTINE_TYPES, type RoutineType } from "@/lib/health-training"
 
 export const DAYS_OF_WEEK = [
   { id: "mon", name: "Lunes", num: 1 },
@@ -70,6 +71,9 @@ export const mapMealLog = (
   portion_assumption: item.portion_assumption !== undefined && item.portion_assumption !== null
     ? String(item.portion_assumption)
     : fallback.portion_assumption || null,
+  protein_g: item.protein_g == null ? null : Number(item.protein_g),
+  carbs_g: item.carbs_g == null ? null : Number(item.carbs_g),
+  fat_g: item.fat_g == null ? null : Number(item.fat_g),
   created_at: String(item.created_at || ""),
 })
 
@@ -97,6 +101,9 @@ export const mapNutritionMealsFromAI = (items: RawNutritionMeal[]): NutritionMea
       estimated_calories: Math.max(0, Math.round(Number(item.estimated_calories || 0))),
       confidence: normalizeConfidence(String(item.confidence || "medium")),
       portion_assumption: String(item.portion_assumption || "Porción promedio estimada por IA").trim(),
+      protein_g: item.protein_g == null ? null : Number(item.protein_g),
+      carbs_g: item.carbs_g == null ? null : Number(item.carbs_g),
+      fat_g: item.fat_g == null ? null : Number(item.fat_g),
     }))
     .filter((item) => item.description && item.estimated_calories > 0)
 }
@@ -126,10 +133,10 @@ export const getDailyHealthMetrics = (
   waterIngested: number,
   caloriesIngested: number,
   isWorkoutDay: boolean,
-  bmrTarget: number
+  bmrTarget: number,
+  waterGoal = 3
 ) => {
   const currentCalorieTarget = getCurrentCalorieTarget(isWorkoutDay, bmrTarget)
-  const waterGoal = 3
 
   return {
     currentCalorieTarget,
@@ -141,28 +148,10 @@ export const getDailyHealthMetrics = (
 
 export const getRoutineCompletionPercentage = (
   dayId: string,
-  fuerzaDescriptions: Record<string, string>,
-  cardioDescriptions: Record<string, string>,
-  fuerzaChecked: Record<string, boolean>,
-  cardioChecked: Record<string, boolean>
+  descriptions: Record<RoutineType, Record<string, string>>,
+  checked: Record<RoutineType, Record<string, boolean>>
 ) => {
-  const hasFuerza = (fuerzaDescriptions[dayId] || "").trim() !== ""
-  const hasCardio = (cardioDescriptions[dayId] || "").trim() !== ""
-
-  if (!hasFuerza && !hasCardio) return null
-
-  let totalTasks = 0
-  let completedTasks = 0
-
-  if (hasFuerza) {
-    totalTasks++
-    if (fuerzaChecked[dayId]) completedTasks++
-  }
-
-  if (hasCardio) {
-    totalTasks++
-    if (cardioChecked[dayId]) completedTasks++
-  }
-
-  return Math.round((completedTasks / totalTasks) * 100)
+  const planned = ROUTINE_TYPES.filter((type) => (descriptions[type][dayId] || "").trim())
+  if (!planned.length) return null
+  return Math.round(planned.filter((type) => checked[type][dayId]).length / planned.length * 100)
 }

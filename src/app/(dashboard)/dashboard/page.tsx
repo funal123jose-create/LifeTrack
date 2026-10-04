@@ -1,15 +1,11 @@
 "use client"
 
 import { useEffect, useState, useCallback, useRef } from "react"
-import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import {
   Activity,
-  Plus,
   BrainCircuit,
-  Sparkles,
   TrendingUp,
   BarChart2,
   HeartPulse,
@@ -35,7 +31,7 @@ import {
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { RegistrationPanel } from "@/components/registration-panel"
-import { DashboardBackground } from "@/components/dashboard/dashboard-background"
+import { DashboardMockupView, type DashboardMockupData } from "@/components/dashboard/dashboard-mockup-view"
 import { DashboardProgressBar, DashboardProgressRing } from "@/components/dashboard/dashboard-progress"
 import {
   DashboardInsightCard,
@@ -44,7 +40,7 @@ import {
   DashboardSoftMetric,
 } from "@/components/dashboard/dashboard-widgets"
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
-import { containerVariants, itemVariants, profileImageSrc } from "@/lib/dashboard-page-config"
+import { containerVariants, itemVariants } from "@/lib/dashboard-page-config"
 import {
   formatDateShort,
   getCareerActivityLabel,
@@ -94,6 +90,7 @@ export default function DashboardPage() {
 
   // --- NUEVAS MÉTRICAS DE SALUD HISTÓRICA ---
   const [latestWeightKg, setLatestWeightKg] = useState<number | null>(null)
+  const [recentWeights, setRecentWeights] = useState<number[]>([])
   const [latestEnergyLevel, setLatestEnergyLevel] = useState<number | null>(null)
   const [bodyProgressCount, setBodyProgressCount] = useState(0)
   const [todayMealCount, setTodayMealCount] = useState(0)
@@ -236,7 +233,7 @@ export default function DashboardPage() {
       const todayStr = getLocalDateString()
 
       const [
-        { data: latestProgress, error: latestProgressError },
+        { data: recentProgress, error: latestProgressError },
         { count: progressCount, error: progressCountError },
         { count: mealsCount, error: mealsCountError },
         { data: waterRows, error: waterRowsError },
@@ -247,8 +244,7 @@ export default function DashboardPage() {
           .eq("user_id", session.user.id)
           .order("date", { ascending: false })
           .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
+          .limit(7),
 
         supabase
           .from("body_progress_logs")
@@ -273,7 +269,9 @@ export default function DashboardPage() {
       if (mealsCountError) console.error("Error contando comidas de hoy:", mealsCountError)
       if (waterRowsError) console.error("Error cargando agua de hoy:", waterRowsError)
 
+      const latestProgress = recentProgress?.[0]
       setLatestWeightKg(latestProgress?.weight_kg !== null && latestProgress?.weight_kg !== undefined ? Number(latestProgress.weight_kg) : null)
+      setRecentWeights((recentProgress || []).map((entry) => Number(entry.weight_kg)).filter(Number.isFinite).reverse())
       setLatestEnergyLevel(latestProgress?.energy_level !== null && latestProgress?.energy_level !== undefined ? Number(latestProgress.energy_level) : null)
       setBodyProgressCount(progressCount || 0)
       setTodayMealCount(mealsCount || 0)
@@ -1053,117 +1051,98 @@ export default function DashboardPage() {
     />
   )
 
+  const dashboardMockupData: DashboardMockupData = {
+    name: displayName,
+    photo: "/images/lifetrack/jose-cutout.webp",
+    week: `Semana ${formatDateShort(getCurrentWeekStartString())} - ${formatDateShort(getCurrentWeekEndString())}`,
+    progress: { general: globalProgress, health: healthProgress, career: careerProgress, care: personalCareProgress },
+    health: {
+      planned: weeklyPlannedDays,
+      completed: weeklyCompletedDays,
+      trainingPct: weeklyTrainingPct,
+      waterLiters: weeklyHealthSummary?.total_water_liters ?? null,
+      waterPct: weeklyWaterPct,
+      calories: weeklyHealthSummary?.avg_daily_calories ?? null,
+      calorieTarget: weeklyHealthSummary?.avg_calorie_target ?? null,
+      caloriePct: caloriesBalancePct,
+      energy: weeklyHealthSummary?.avg_energy_level || latestEnergyLevel,
+      weight: latestWeightKg,
+      weightRecords: bodyProgressCount,
+      recentWeights,
+    },
+    career: {
+      activeProjects,
+      totalProjects,
+      completedTasks: completedCareerTasks,
+      totalTasks: totalCareerTasks,
+      taskPct: weeklyCareerSummary ? totalCareerPct : careerProgress,
+      weeklyPct: weeklyCareerPct,
+      weeklyCompleted: weeklyCareerSummary?.tasks_completed_week ?? null,
+      usedSkills: careerSkillsSummary?.used_skills ?? null,
+      totalSkills: careerSkillsSummary?.total_skills ?? null,
+      skillsPct: skillsUsagePct,
+      events: careerProfessionalEvents,
+      activityPct: careerProfessionalActivityPct,
+      totalSkillLinks: careerSkillsSummary?.total_skill_project_links ?? 0,
+      topSkills: topCareerSkills.map((skill) => ({ name: skill.name, projectsCount: skill.projects_count, color: skill.color })),
+    },
+    care: {
+      checkins: weeklyPersonalCheckins,
+      checkinPct: weeklyPersonalCheckinPct,
+      routines: weeklyPersonalCompletedRoutines,
+      activeRoutines: weeklyPersonalActiveRoutines,
+      routinePct: weeklyPersonalRoutinePct,
+      mood: weeklyPersonalCareSummary?.avg_mood_level || null,
+      stress: weeklyPersonalCareSummary?.avg_stress_level || null,
+      motivation: weeklyPersonalCareSummary?.avg_motivation_level || null,
+      sleepQuality: weeklyPersonalCareSummary?.avg_sleep_quality || null,
+      reflections: weeklyPersonalCareSummary?.reflection_days ?? 0,
+    },
+    insights: {
+      health: {
+        good: weeklyCompletedDays > 0
+          ? `Ya existe actividad real: ${weeklyCompletedDays} de ${weeklyPlannedDays} días completados.`
+          : "Tienes una base de planificación creada para empezar a medir constancia.",
+        improve: weeklyTrainingPct < 50
+          ? "El cumplimiento de rutina aún es bajo y eso limita el avance global."
+          : "Todavía puedes seguir empujando consistencia en agua, comida o energía.",
+        recommendation: "Completar más días de rutina y sostener hidratación diaria.",
+      },
+      career: {
+        good: completedCareerTasks > 0
+          ? `Se observa ejecución real: ${completedCareerTasks} subtareas completadas y ${activeProjects} proyectos activos.`
+          : "Ya tienes estructura de proyectos y tareas lista para medir progreso profesional.",
+        improve: careerProfessionalEvents === 0
+          ? "Aún falta transformar avance en evidencia profesional más visible."
+          : "Todavía puedes equilibrar mejor actividad operativa con actividad demostrable.",
+        recommendation: "Cerrar subtareas y documentar skills, evidencias y documentación del trabajo realizado.",
+      },
+      care: {
+        good: weeklyPersonalCheckins > 0
+          ? `Ya comenzaste seguimiento emocional con ${weeklyPersonalCheckins} check-ins registrados.`
+          : "El pilar ya está conectado y listo para captar hábitos personales.",
+        improve: weeklyPersonalCheckins < 3
+          ? "La constancia de check-ins aún es baja y eso reduce la calidad del análisis."
+          : "Aún se puede mejorar la regularidad entre check-ins y rutinas personales.",
+        recommendation: "Mantener check-ins más frecuentes y reforzar rutinas activas de cuidado.",
+      },
+    },
+  }
+
   return (
-    <div
-      className="relative min-h-screen overflow-hidden bg-[#111419] px-2 pb-12 pt-4 text-slate-100 antialiased selection:bg-blue-500/30 selection:text-white md:px-4 [overflow-wrap:anywhere]"
-      style={{ fontFamily: "'Poppins', 'Nunito Sans', 'Inter', 'Manrope', system-ui, sans-serif" }}
-    >
-      <DashboardBackground />
+    <div className="dashboard-redesign relative min-h-screen overflow-hidden bg-transparent px-2 pb-8 pt-2 font-sans text-slate-100 antialiased selection:bg-blue-500/30 selection:text-white sm:px-4 [overflow-wrap:anywhere]">
 
       <motion.div
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="relative z-10 mx-auto flex w-full max-w-[1540px] flex-col gap-6"
+        className="relative z-10 mx-auto flex w-full max-w-[1760px] flex-col gap-3"
       >
-        <motion.section
-          variants={itemVariants}
-          className="relative overflow-hidden rounded-[1.15rem] border border-white/[0.035] bg-[linear-gradient(118deg,rgba(17,20,25,0.96),rgba(18,21,27,0.94)_58%,rgba(28,25,45,0.90)_100%)] p-6 shadow-[0_32px_120px_rgba(0,0,0,0.36)] backdrop-blur-2xl md:p-8"
-        >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(37,99,235,0.20),transparent_25%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.16),transparent_24%),radial-gradient(circle_at_72%_92%,rgba(34,211,238,0.12),transparent_28%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(88,54,235,0.10),transparent_38%,rgba(34,211,238,0.06))]" />
+        <DashboardMockupView data={dashboardMockupData} onRegister={() => setIsPanelOpen(true)} />
 
-          <div className="relative grid gap-8 lg:grid-cols-[1.18fr_0.82fr] lg:items-center">
-            <div className="min-w-0 space-y-6">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full border border-cyan-100/18 bg-white/[0.08] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.15em] text-cyan-50 shadow-[0_14px_42px_rgba(8,47,73,0.18)] backdrop-blur-md">
-                  <Sparkles size={13} className="text-cyan-100" />
-                  Panel personal
-                </span>
-                <span className="rounded-full border border-white/[0.045] bg-white/[0.035] px-3 py-1.5 text-xs font-semibold text-slate-400">
-                  Semana {formatDateShort(getCurrentWeekStartString())} - {formatDateShort(getCurrentWeekEndString())}
-                </span>
-              </div>
-
-              <div className="min-w-0 max-w-4xl">
-                <h1 className="break-words text-balance text-[2.35rem] font-black leading-[0.94] tracking-[-0.055em] text-white drop-shadow-[0_22px_55px_rgba(15,23,42,0.30)] md:text-[4.35rem]">
-                  Hola, <span className="bg-gradient-to-r from-white via-cyan-200 to-blue-300 bg-clip-text text-transparent">{displayName}</span>
-                </h1>
-                <p className="mt-4 max-w-3xl break-words text-[15px] font-medium leading-7 text-slate-400/95 md:text-base">
-                  Este dashboard te ayuda a analizar tu avance general y tu desempeño por pilares: <span className="text-emerald-300">Salud</span>, <span className="text-amber-300">Data/Carrera</span> y <span className="text-purple-300">Cuidado Personal</span>. La idea es que entiendas rápido qué va bien, qué necesita atención y dónde enfocar tu siguiente acción.
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-[1.05rem] border border-white/[0.055] bg-white/[0.035] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Avance general</p>
-                  <div className="mt-3 flex items-center gap-3">
-                    <DashboardProgressRing value={globalProgress} color="#60a5fa" size="h-16 w-16" inner="h-[36px] w-[36px]" label={`${globalProgress}%`} />
-                    <p className="text-sm leading-6 text-slate-400">Promedio real de los tres pilares.</p>
-                  </div>
-                </div>
-
-                <div className="rounded-[1.05rem] border border-white/[0.055] bg-white/[0.035] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Momento actual</p>
-                  <p className="mt-3 text-lg font-bold text-white">{healthInsightSummary}</p>
-                  <p className="mt-2 text-xs leading-5 text-slate-500">Resumen rápido del estado de tu sistema personal.</p>
-                </div>
-
-                <div className="rounded-[1.05rem] border border-white/[0.055] bg-white/[0.035] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Acción rápida</p>
-                  <Button
-                    onClick={() => setIsPanelOpen(true)}
-                    className="mt-3 h-12 w-full rounded-lg bg-gradient-to-r from-blue-500 via-blue-500 to-cyan-400 text-sm font-black text-white shadow-[0_18px_42px_rgba(37,99,235,0.30)] transition hover:-translate-y-0.5 hover:from-blue-400 hover:to-cyan-300 active:scale-[0.98]"
-                  >
-                    <Plus size={17} />
-                    Registrar entrada
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-5 sm:flex-row lg:flex-col lg:items-end">
-              <div className="flex justify-center lg:w-full lg:justify-end">
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(96,165,250,0.35),transparent_55%)] blur-3xl" />
-                  <div className="relative rounded-full bg-gradient-to-br from-white/35 via-blue-200/18 to-purple-200/24 p-[5px] shadow-[0_30px_70px_rgba(0,0,0,0.32)]">
-                    <Image
-                      src={profileImageSrc}
-                      alt="Foto de perfil"
-                      width={224}
-                      height={224}
-                      sizes="(min-width: 768px) 224px, 192px"
-                      className="h-48 w-48 rounded-full border border-white/[0.14] bg-[#09111f]/90 object-cover p-2 md:h-56 md:w-56"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid w-full gap-3 sm:flex-1 sm:grid-cols-2 lg:w-[360px] lg:grid-cols-2">
-                <div className="rounded-[1.15rem] border border-white/[0.065] bg-white/[0.035] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Salud</p>
-                  <p className="mt-2 text-2xl font-extrabold tracking-[-0.05em] text-white">{healthProgress}%</p>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">{weeklyCompletedDays}/{weeklyPlannedDays} días de rutina</p>
-                </div>
-                <div className="rounded-[1.15rem] border border-white/[0.065] bg-white/[0.035] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Carrera</p>
-                  <p className="mt-2 text-2xl font-extrabold tracking-[-0.05em] text-white">{careerProgress}%</p>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">{completedCareerTasks}/{totalCareerTasks} subtareas</p>
-                </div>
-                <div className="rounded-[1.15rem] border border-white/[0.065] bg-white/[0.035] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Cuidado personal</p>
-                  <p className="mt-2 text-2xl font-extrabold tracking-[-0.05em] text-white">{personalCareProgress}%</p>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">{weeklyPersonalCheckins}/7 check-ins</p>
-                </div>
-                <div className="rounded-[1.15rem] border border-white/[0.065] bg-white/[0.035] p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Status</p>
-                  <p className="mt-2 text-lg font-bold text-white">{personalCareIntensityLabel}</p>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">Intensidad actual del cuidado personal</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.section>
+        <details className="group rounded-xl border border-sky-200/10 bg-[#081725]/80 p-3 text-slate-200">
+          <summary className="cursor-pointer list-none text-xs font-bold text-sky-200 focus-visible:outline-2 focus-visible:outline-sky-300">Explorar análisis detallado de todos los pilares</summary>
+          <div className="mt-5 space-y-6">
 
         <motion.section variants={itemVariants} className="space-y-4">
           {sectionHeader(
@@ -1178,7 +1157,7 @@ export default function DashboardPage() {
               `${globalProgress}%`,
               "Promedio consolidado de Salud, Data/Carrera y Cuidado Personal.",
               Gauge,
-              "border-blue-300/16 bg-gradient-to-br from-[#0f2145] via-[#1d4f96] to-[#3aa0ff]",
+              "border-blue-300/20 bg-gradient-to-br from-[#102949] via-[#174477] to-[#1b5e9b]",
               "border-white/18 bg-white/12 text-white",
               globalProgress
             )}
@@ -1187,7 +1166,7 @@ export default function DashboardPage() {
               `${healthProgress}%`,
               `${weeklyCompletedDays}/${weeklyPlannedDays} días de rutina completados esta semana.`,
               HeartPulse,
-              "border-emerald-300/16 bg-gradient-to-br from-[#0f3328] via-[#0f8a61] to-[#34f5a2]",
+              "border-emerald-300/20 bg-gradient-to-br from-[#0d3027] via-[#0e604b] to-[#0b7b5d]",
               "border-white/18 bg-white/12 text-white",
               healthProgress
             )}
@@ -1196,7 +1175,7 @@ export default function DashboardPage() {
               `${careerProgress}%`,
               `${completedCareerTasks}/${totalCareerTasks} subtareas completadas y ${activeProjects} proyectos activos.`,
               BrainCircuit,
-              "border-orange-300/16 bg-gradient-to-br from-[#3b210d] via-[#b14d16] to-[#ff9f43]",
+              "border-orange-300/20 bg-gradient-to-br from-[#39220f] via-[#754020] to-[#a65a22]",
               "border-white/18 bg-white/12 text-white",
               careerProgress
             )}
@@ -1205,7 +1184,7 @@ export default function DashboardPage() {
               `${personalCareProgress}%`,
               `${weeklyPersonalCheckins}/7 check-ins y ${weeklyPersonalCompletedRoutines} rutinas completadas.`,
               UserRound,
-              "border-purple-300/16 bg-gradient-to-br from-[#271447] via-[#7230bd] to-[#c084fc]",
+              "border-purple-300/20 bg-gradient-to-br from-[#271742] via-[#533080] to-[#6936a2]",
               "border-white/18 bg-white/12 text-white",
               personalCareProgress
             )}
@@ -1811,6 +1790,9 @@ export default function DashboardPage() {
             )}
           </div>
         </motion.section>
+
+          </div>
+        </details>
 
         <RegistrationPanel open={isPanelOpen} setOpen={setIsPanelOpen} />
       </motion.div>

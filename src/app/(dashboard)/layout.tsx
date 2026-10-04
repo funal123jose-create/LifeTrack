@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar"
+import { DashboardContentShell } from "@/components/dashboard/dashboard-content-shell"
 import { TooltipProvider } from "@/components/ui/tooltip"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -8,9 +9,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <AppSidebar />
 
         <main className="min-h-screen w-full">
-          <div className="mx-auto w-full max-w-[1600px] px-4 pb-12 sm:px-6 lg:px-8">
+          <DashboardContentShell>
             {children}
-          </div>
+          </DashboardContentShell>
         </main>
       </div>
     </TooltipProvider>

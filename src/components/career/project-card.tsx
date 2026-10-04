@@ -26,19 +26,21 @@ export function ProjectCard({ project, score, onSelect }: ProjectCardProps) {
   const hiddenProjectSkillCount = getHiddenProjectSkillCount(project)
 
   return (
-    <motion.div
+    <motion.button
+      type="button"
+      aria-label={`Abrir proyecto ${project.title}`}
       key={project.id}
       variants={cardVariants}
       layoutId={`card-${project.id}`}
       onClick={() => onSelect(project)}
       whileHover={{
-        y: -7,
-        scale: 1.025,
+        y: -2,
+        scale: 1.008,
         borderColor: "rgba(249, 115, 22, 0.42)",
-        boxShadow: "0 24px 45px -18px rgba(249, 115, 22, 0.34)",
+        boxShadow: "0 14px 30px -14px rgba(249, 115, 22, 0.28)",
       }}
       transition={{ type: "spring", stiffness: 360, damping: 22 }}
-      className="group/card relative cursor-pointer overflow-hidden rounded-[1.15rem] border border-white/[0.065] bg-gradient-to-b from-white/[0.075] via-slate-900/70 to-slate-950/70 p-4 shadow-[0_16px_38px_rgba(0,0,0,0.24)] backdrop-blur-2xl"
+      className="group/card relative w-full shrink-0 cursor-pointer overflow-hidden rounded-md border border-orange-300/20 bg-[linear-gradient(155deg,rgba(12,37,51,.96),rgba(7,23,36,.98))] p-3 text-left shadow-[0_8px_22px_rgba(0,7,15,.18)] outline-none transition-colors focus-visible:border-orange-300 focus-visible:ring-2 focus-visible:ring-orange-300/40"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_0%,rgba(249,115,22,0.15),transparent_30%)] opacity-0 transition-opacity duration-500 group-hover/card:opacity-100" />
       <div className="absolute right-0 top-0 h-16 w-16 rounded-bl-full bg-gradient-to-br from-white/[0.07] to-transparent transition-all group-hover/card:from-orange-500/15" />
@@ -117,6 +119,6 @@ export function ProjectCard({ project, score, onSelect }: ProjectCardProps) {
           <span className={scoreTone.text}>{scoreTone.label}</span>
         </div>
       </div>
-    </motion.div>
+    </motion.button>
   )
 }

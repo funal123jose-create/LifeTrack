@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
@@ -42,6 +43,15 @@ export function AppSidebar() {
   const [displayName, setDisplayName] = React.useState("Cargando...")
 
   const supabase = createClient()
+  const hasCommandHeader = pathname === "/dashboard" || pathname === "/pilares" || pathname === "/pilares/salud" || pathname === "/pilares/carrera" || pathname === "/pilares/cuidado-personal"
+  const redesignedRoute = pathname === "/dashboard" || pathname === "/pilares" || pathname.startsWith("/pilares/")
+  const pillarTone = pathname === "/pilares/salud"
+    ? "border-emerald-300/25 bg-emerald-400/10 text-emerald-200"
+    : pathname === "/pilares/carrera"
+      ? "border-orange-300/25 bg-orange-400/10 text-orange-200"
+      : pathname === "/pilares/cuidado-personal"
+        ? "border-violet-300/25 bg-violet-400/10 text-violet-200"
+        : "border-sky-300/25 bg-sky-400/10 text-sky-200"
 
   React.useEffect(() => {
     let isActive = true
@@ -90,17 +100,17 @@ export function AppSidebar() {
   }, [displayName])
 
   return (
-    <header className="relative z-50 w-full border-b border-white/[0.04] bg-[#080c14]/80 backdrop-blur-md">
-      <div className="mx-auto flex h-[72px] w-full max-w-[1600px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header className={`relative z-50 w-full backdrop-blur-md ${hasCommandHeader ? "border-0 bg-transparent px-2 pt-2 sm:px-4" : redesignedRoute ? "border-b border-white/[0.04] bg-[#071425]/95" : "border-b border-white/[0.04] bg-[#080c14]/80"}`}>
+      <div className={`mx-auto flex w-full items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 ${hasCommandHeader ? "h-[58px] max-w-[1728px] rounded-2xl border border-sky-200/15 bg-[#0b1c31]/90 shadow-[0_12px_35px_rgba(0,0,0,.2)]" : "h-[72px] max-w-[1600px]"}`}>
 
         {/* LADO IZQUIERDO: LOGO Y PATH */}
         <div className="flex min-w-0 items-center gap-4">
           <Link href="/dashboard" className="group flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-500/15 bg-blue-500/10 text-blue-400 transition-all group-hover:bg-blue-500/20">
-              <Zap size={16} fill="currentColor" />
+            <div className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all ${hasCommandHeader ? "group-hover:brightness-125" : "border border-blue-500/15 bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20"}`}>
+              {hasCommandHeader ? <Image src="/images/lifetrack/lifetrack-mark.png" width={30} height={20} alt="" className="h-auto mix-blend-screen" /> : <Zap size={16} fill="currentColor" />}
             </div>
             <div className="min-w-0">
-              <span className="block text-sm font-bold tracking-tight text-slate-100">
+              <span className={`block font-bold tracking-tight text-slate-100 ${hasCommandHeader ? "text-lg" : "text-sm"}`}>
                 Life<span className="font-medium text-blue-400">Track</span>
               </span>
             </div>
@@ -108,7 +118,7 @@ export function AppSidebar() {
 
           <div className="hidden h-5 w-px bg-white/[0.06] sm:block" />
 
-          <div className="hidden items-center gap-1.5 text-xs text-slate-400 sm:flex">
+          <div className={`hidden items-center gap-1.5 text-xs text-slate-400 sm:flex ${hasCommandHeader ? "lg:hidden" : ""}`}>
             <PanelTop size={13} className="text-slate-500" />
             <span className="text-slate-500">/</span>
             <span>
@@ -125,10 +135,11 @@ export function AppSidebar() {
                         : "Dashboard"}
             </span>
           </div>
+          {hasCommandHeader && <p className="hidden max-w-[150px] text-[9px] font-bold uppercase leading-3 tracking-[.09em] text-slate-400 2xl:block">Disciplina hoy.<br />Una vida extraordinaria mañana.</p>}
         </div>
 
         {/* NAVEGACIÓN PRINCIPAL */}
-        <nav className="hidden min-w-0 items-center gap-1 rounded-xl border border-white/[0.02] bg-slate-900/40 p-1 lg:flex">
+        <nav className={`hidden min-w-0 items-center gap-1 rounded-xl border p-1 lg:flex ${hasCommandHeader ? "border-transparent bg-transparent" : redesignedRoute ? "border-sky-300/10 bg-[#10233a]/70" : "border-white/[0.02] bg-slate-900/40"}`}>
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive =
@@ -139,13 +150,13 @@ export function AppSidebar() {
               <Link
                 key={item.title}
                 href={item.url}
-                className={`group relative flex h-8 items-center gap-2 overflow-hidden rounded-lg px-3.5 text-xs font-medium transition-all duration-200 ${
+                className={`group relative flex h-8 items-center gap-2 overflow-hidden rounded-lg border px-3.5 text-xs font-medium transition-all duration-200 ${
                   isActive
-                    ? "text-blue-300"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? hasCommandHeader ? pathname === "/pilares/carrera" || pathname === "/pilares/cuidado-personal" ? pillarTone : "border-sky-300/20 bg-sky-400/10 text-sky-100" : redesignedRoute ? pillarTone : "border-transparent text-blue-300"
+                    : "border-transparent text-slate-400 hover:text-slate-200"
                 }`}
               >
-                {isActive && (
+                {isActive && !redesignedRoute && (
                   <motion.span
                     layoutId="top-nav-active-underline"
                     className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-[0_0_14px_rgba(96,165,250,0.75)]"
@@ -156,15 +167,15 @@ export function AppSidebar() {
                 <span
                   className={`absolute inset-0 rounded-lg transition-opacity duration-200 ${
                     isActive
-                      ? "bg-blue-500/[0.035] opacity-100"
+                      ? redesignedRoute ? "opacity-0" : "bg-blue-500/[0.035] opacity-100"
                       : "bg-white/[0.035] opacity-0 group-hover:opacity-100"
                   }`}
                 />
 
                 <Icon
-                  size={13}
+                  size={hasCommandHeader ? 16 : 13}
                   className={`relative z-10 transition-colors ${
-                    isActive ? "text-blue-300" : "text-slate-500 group-hover:text-slate-400"
+                    isActive ? redesignedRoute ? "text-current" : "text-blue-300" : "text-slate-500 group-hover:text-slate-400"
                   }`}
                 />
                 <span className="relative z-10">{item.title}</span>
@@ -190,7 +201,7 @@ export function AppSidebar() {
 
           <div className="hidden items-center gap-2.5 rounded-lg border border-white/[0.05] bg-white/[0.01] p-1 pr-3 sm:flex">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-blue-500/10 bg-blue-500/10 text-[11px] font-bold text-blue-400">
-              {initials}
+              {hasCommandHeader ? <Image src="/images/jose-dashboard.png" width={24} height={24} alt="" className="h-full w-full rounded-md object-cover" /> : initials}
             </div>
             <p className="max-w-[100px] truncate text-xs font-medium text-slate-300">
               {displayName}
@@ -216,7 +227,7 @@ export function AppSidebar() {
       </div>
 
       {/* MENÚ MÓVIL */}
-      <div className="flex w-full gap-1 overflow-x-auto border-t border-white/[0.02] bg-slate-950/20 px-4 py-1.5 lg:hidden">
+      <div className={`flex w-full gap-1 overflow-x-auto border-t border-white/[0.02] px-4 py-1.5 lg:hidden ${redesignedRoute ? "bg-[#081827]" : "bg-slate-950/20"}`}>
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive =
@@ -227,13 +238,13 @@ export function AppSidebar() {
             <Link
               key={item.title}
               href={item.url}
-              className={`relative flex items-center gap-1.5 overflow-hidden rounded-md px-3 py-1.5 text-xs font-medium transition ${
+              className={`relative flex items-center gap-1.5 overflow-hidden rounded-md border px-3 py-1.5 text-xs font-medium transition ${hasCommandHeader ? "shrink-0" : ""} ${
                 isActive
-                  ? "text-blue-300"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? redesignedRoute ? pillarTone : "border-transparent text-blue-300"
+                  : "border-transparent text-slate-400 hover:text-slate-200"
               }`}
             >
-              {isActive && (
+              {isActive && !redesignedRoute && (
                 <motion.span
                   layoutId="mobile-nav-active-underline"
                   className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-[0_0_14px_rgba(96,165,250,0.75)]"

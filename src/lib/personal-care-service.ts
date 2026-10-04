@@ -10,6 +10,7 @@ import type {
   WeeklyPersonalCareSummary,
 } from "@/lib/personal-care-page-models"
 import type { Database } from "@/types/database"
+import type { CareLog } from "@/lib/personal-care-analytics"
 
 type SupabaseClient = ReturnType<typeof createClient<Database>>
 
@@ -129,4 +130,38 @@ export const fetchPersonalCareOverview = async (
       summary: summaryError,
     },
   }
+}
+
+export async function fetchPersonalCareHistory(supabase: SupabaseClient, userId: string, start: string, end: string) {
+  const logs: CareLog[] = []
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await supabase
+      .from("personal_care_daily_logs")
+      .select("date,mood_level,stress_level,motivation_level,sleep_quality")
+      .eq("user_id", userId)
+      .gte("date", start)
+      .lte("date", end)
+      .order("date", { ascending: true })
+      .range(offset, offset + 999)
+    if (error) throw error
+    logs.push(...(data || []))
+    if (!data || data.length < 1000) break
+  }
+
+  const completions: PersonalCareCompletion[] = []
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await supabase
+      .from("personal_care_routine_completions")
+      .select("id,routine_id,date,week_start,completed")
+      .eq("user_id", userId)
+      .gte("date", start)
+      .lte("date", end)
+      .order("date", { ascending: true })
+      .order("id", { ascending: true })
+      .range(offset, offset + 999)
+    if (error) throw error
+    completions.push(...(data || []))
+    if (!data || data.length < 1000) break
+  }
+  return { logs, completions }
 }

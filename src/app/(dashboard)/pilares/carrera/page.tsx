@@ -7,25 +7,25 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  FolderPlus, ChevronLeft, BrainCircuit, CheckCircle2,
+  FolderPlus, CheckCircle2,
   Trash2, Plus, ListTodo, X, Activity, Sparkles,
   Tags, Database, Cpu, Layers3, Save, BookOpen,
   ExternalLink, Download, FileArchive,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { CyberBackground } from "@/components/career/cyber-background"
+import { CareerCommandOverview } from "@/components/career/career-command-overview"
+import { CareerSelect } from "@/components/career/career-filters"
 import { MetricGrid } from "@/components/career/metric-grid"
 import { ProjectCard } from "@/components/career/project-card"
 import { RichTaskDocumentEditor } from "@/components/career/rich-task-document-editor"
 import { TaskCard } from "@/components/career/task-card"
-import Link from "next/link"
+import type { CareerActivity, CareerDocument, CareerEvidence } from "@/lib/career-overview"
 import { containerVariants, macroColumns, microColumns } from "@/lib/career-page-config"
 import { generateCaseStudyExportHtml } from "@/lib/career-export"
 import {
   buildEmptyTaskDoc,
   getCaseStudySummaryMetrics,
   getProjectProfessionalScore,
-  getProjectStatusCount,
   getProjectSkillIds,
   getProjectSkills,
   getProjectTechnicalSummary as getProjectTechnicalSummaryFromMap,
@@ -83,6 +83,10 @@ export default function DataCarreraPage() {
   const [projectScores, setProjectScores] = useState<Record<string, ProjectProfessionalScore>>({})
   const [technicalSummaries, setTechnicalSummaries] = useState<Record<string, ProjectTechnicalSummary>>({})
   const [careerSkills, setCareerSkills] = useState<CareerSkill[]>([])
+  const [careerEvidence, setCareerEvidence] = useState<CareerEvidence[]>([])
+  const [careerActivity, setCareerActivity] = useState<CareerActivity[]>([])
+  const [careerDocuments, setCareerDocuments] = useState<CareerDocument[]>([])
+  const [careerView, setCareerView] = useState<"overview" | "board">("overview")
   const [loading, setLoading] = useState(true)
   const [loadingSkills, setLoadingSkills] = useState(true)
   const [newTitle, setNewTitle] = useState("")
@@ -159,11 +163,14 @@ export default function DataCarreraPage() {
       const { data, error } = await supabase
         .from('projects')
         .select(`
-          id, title, summary, description, status, priority, start_date, end_date,
+          id, title, summary, description, status, priority, start_date, end_date, created_at,
           project_tasks (
             id,
             title,
             status,
+            created_at,
+            updated_at,
+            completed_at,
             project_task_skills (
               id,
               skill_id,
@@ -292,6 +299,60 @@ export default function DataCarreraPage() {
     }
   }, [supabase])
 
+  const fetchCareerEvidence = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return
+      const allEvidence: CareerEvidence[] = []
+      for (let offset = 0; ; offset += 500) {
+        const { data, error } = await supabase
+          .from("project_task_assets")
+          .select("id, project_id, task_id, file_name, file_url, mime_type, asset_type, section_key, created_at")
+          .eq("user_id", session.user.id)
+          .order("created_at", { ascending: false })
+          .order("id", { ascending: false })
+          .range(offset, offset + 499)
+        if (error) throw error
+        allEvidence.push(...(data || []))
+        if (!data || data.length < 500) break
+      }
+      setCareerEvidence(allEvidence)
+    } catch (err: unknown) {
+      console.error("Error cargando evidencias recientes:", getErrorMessage(err))
+    }
+  }, [supabase])
+
+  const fetchCareerHistory = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return
+      const allActivity: CareerActivity[] = []
+      for (let offset = 0; ; offset += 500) {
+        const { data, error } = await supabase.from("project_activity_logs")
+          .select("id, project_id, task_id, event_type, event_title, created_at")
+          .eq("user_id", session.user.id).order("created_at", { ascending: false })
+          .order("id", { ascending: false }).range(offset, offset + 499)
+        if (error) throw error
+        allActivity.push(...(data || []))
+        if (!data || data.length < 500) break
+      }
+      const allDocuments: CareerDocument[] = []
+      for (let offset = 0; ; offset += 500) {
+        const { data, error } = await supabase.from("project_task_docs")
+          .select("id, project_id, task_id, title, objective, content, technical_notes, result_summary, reference_links, updated_at")
+          .eq("user_id", session.user.id).order("id", { ascending: false })
+          .range(offset, offset + 499)
+        if (error) throw error
+        allDocuments.push(...(data || []))
+        if (!data || data.length < 500) break
+      }
+      setCareerActivity(allActivity)
+      setCareerDocuments(allDocuments)
+    } catch (err: unknown) {
+      console.error("Error cargando historial profesional:", getErrorMessage(err))
+    }
+  }, [supabase])
+
   const fetchProjectCaseStudy = useCallback(async (projectId: string) => {
     try {
       setLoadingCaseStudy(true)
@@ -377,12 +438,14 @@ export default function DataCarreraPage() {
       fetchProjects()
       fetchProfessionalScores()
       fetchTechnicalSummaries()
+      fetchCareerEvidence()
+      fetchCareerHistory()
     })
 
     return () => {
       isActive = false
     }
-  }, [fetchCareerSkills, fetchProjects, fetchProfessionalScores, fetchTechnicalSummaries])
+  }, [fetchCareerSkills, fetchProjects, fetchProfessionalScores, fetchTechnicalSummaries, fetchCareerEvidence, fetchCareerHistory])
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -762,55 +825,13 @@ export default function DataCarreraPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col gap-6 overflow-x-hidden bg-[#02040a] px-4 pb-12 pt-6 font-sans text-slate-100 antialiased selection:bg-orange-500/[0.10] selection:text-orange-100 md:px-8 [overflow-wrap:anywhere]" style={{ fontFamily: "'Poppins', 'Nunito Sans', 'Inter', 'Manrope', system-ui, sans-serif" }}>
-      <CyberBackground />
-
-      {/* HEADER PRINCIPAL */}
-      <motion.div
-        initial={{ opacity: 0, y: -18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        className="relative z-10 space-y-4"
-      >
-        <Link href="/pilares" className="group flex w-fit items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.018] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-orange-400/35 hover:bg-orange-500/[0.08] hover:text-orange-200">
-          <ChevronLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1.5" /> [ VOLVER A PILARES ]
-        </Link>
-
-        <div className="relative overflow-hidden rounded-[2rem] border border-orange-300/[0.10] bg-[linear-gradient(135deg,rgba(18,13,10,0.92),rgba(8,11,18,0.76))] p-6 shadow-[0_28px_80px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:p-8">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(249,115,22,0.12),transparent_28%),radial-gradient(circle_at_80%_0%,rgba(251,191,36,0.075),transparent_28%),radial-gradient(circle_at_92%_80%,rgba(59,130,246,0.045),transparent_30%)]" />
-          <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-orange-500/[0.055] blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-orange-300/35 to-transparent" />
-
-          <div className="relative flex min-w-0 flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="min-w-0 space-y-3">
-              <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.045] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.20em] text-orange-200/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                <BrainCircuit size={14} className="animate-spin text-amber-300 [animation-duration:7s]" /> MATRIX CENTRAL TERMINAL
-              </div>
-              <h2 className="max-w-5xl text-4xl font-extrabold uppercase leading-[0.9] tracking-[-0.035em]er md:text-7xl">
-                Pilar <span className="bg-gradient-to-r from-orange-300 via-amber-200 to-slate-100 bg-clip-text text-transparent">Data & Carrera</span>
-              </h2>
-              <p className="max-w-2xl break-words text-xs font-medium leading-relaxed text-slate-400 md:text-sm">
-                Centro visual para controlar proyectos, avances y subtareas con una experiencia tipo dashboard premium.
-              </p>
-            </div>
-
-            <div className="grid min-w-0 grid-cols-3 gap-2 rounded-2xl border border-white/[0.07] bg-black/24 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl">
-              <div className="min-w-0 rounded-xl bg-[#080b12]/68 px-4 py-3 text-center">
-                <p className="break-words text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">Nodos</p>
-                <p className="break-words text-2xl font-extrabold text-white">{projects.length}</p>
-              </div>
-              <div className="min-w-0 rounded-xl bg-orange-500/[0.08] px-4 py-3 text-center">
-                <p className="break-words text-[9px] font-bold uppercase tracking-[0.10em] text-orange-300/80">Activos</p>
-                <p className="break-words text-2xl font-extrabold text-orange-300">{getProjectStatusCount(projects, "En curso")}</p>
-              </div>
-              <div className="min-w-0 rounded-xl bg-emerald-500/[0.08] px-4 py-3 text-center">
-                <p className="break-words text-[9px] font-bold uppercase tracking-[0.10em] text-emerald-300/80">Completados</p>
-                <p className="break-words text-2xl font-extrabold text-emerald-300">{getProjectStatusCount(projects, "Completado")}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+    <div className="lifetrack-redesign career-page relative min-h-screen w-full overflow-x-hidden bg-transparent px-2 pb-12 pt-2 font-sans text-slate-100 antialiased selection:bg-orange-500/20 selection:text-orange-100 sm:px-4 [overflow-wrap:anywhere]">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1728px] flex-col gap-3">
+      {careerView === "overview" && (loading ? <div className="flex min-h-[320px] items-center justify-center text-sm text-slate-400" role="status">Cargando proyectos...</div> : <CareerCommandOverview projects={projects} scores={projectScores} summaries={technicalSummaries} skills={careerSkills} evidence={careerEvidence} activity={careerActivity} documents={careerDocuments} view={careerView} onViewChange={setCareerView} onOpenProject={setSelectedProject} onOpenCaseStudy={fetchProjectCaseStudy} onShowBoard={() => setCareerView("board")} />)}
+      {careerView === "board" && <div className="career-board relative isolate space-y-3 overflow-hidden rounded-xl border border-orange-300/20 bg-[#071a29] p-2 sm:p-3">
+      <div className="career-board-atmosphere pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
+      <div className="career-board-beam pointer-events-none absolute inset-y-0 -z-10 w-px" aria-hidden="true" />
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-orange-300/20 bg-[#0a2230]/90 p-3 shadow-[inset_0_1px_rgba(255,255,255,.04)]"><div><h1 className="text-lg font-bold text-white">Tablero de proyectos</h1><p className="text-xs text-slate-400">Gestiona proyectos, subtareas, skills y documentación.</p></div><div className="inline-flex rounded-md border border-orange-300/25 bg-[#081824] p-1" role="group" aria-label="Vista de Data y Carrera"><button type="button" onClick={() => setCareerView("overview")} aria-pressed={false} className="rounded px-3 py-1.5 text-[11px] text-slate-300 transition-all hover:-translate-y-0.5 hover:bg-orange-400/10 hover:text-white motion-reduce:transform-none">Resumen</button><button type="button" aria-pressed className="rounded border border-orange-300/35 bg-orange-500/25 px-3 py-1.5 text-[11px] font-semibold text-orange-100 shadow-[0_0_15px_rgba(249,115,22,.16)]">Tablero</button></div></div>
 
       {/* FORMULARIO DE INICIALIZACIÓN */}
       <motion.div
@@ -819,17 +840,16 @@ export default function DataCarreraPage() {
         transition={{ duration: 0.62, ease: "easeOut", delay: 0.08 }}
         className="relative z-10"
       >
-        <Card className="group relative overflow-hidden rounded-[1.75rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(8,11,18,0.80),rgba(18,13,10,0.52))] shadow-[0_22px_68px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+        <Card className="group relative overflow-hidden rounded-lg border border-orange-300/20 bg-[#0a2230]/90 shadow-[0_16px_38px_rgba(0,7,15,.22)] backdrop-blur-xl">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(249,115,22,0.060),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.045),transparent_35%)] opacity-90" />
           <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-50 transition-all duration-700 group-hover:opacity-100" />
-          <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-orange-500/[0.055] blur-3xl transition-all duration-700 group-hover:bg-orange-400/[0.10]" />
 
           <CardHeader className="relative pb-3">
-            <CardTitle className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-slate-300">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-orange-400/20 bg-orange-500/[0.055] shadow-[0_0_22px_rgba(249,115,22,0.15)]">
-                <FolderPlus size={16} className="animate-pulse text-orange-300" />
+            <CardTitle className="flex items-center gap-2 text-sm font-bold text-white">
+              <span className="flex h-8 w-8 items-center justify-center rounded-md border border-orange-400/25 bg-orange-500/10">
+                <FolderPlus size={16} className="text-orange-300" />
               </span>
-              INICIALIZAR NODO DE DATA-STREAM
+              Nuevo proyecto
             </CardTitle>
           </CardHeader>
           <CardContent className="relative">
@@ -840,7 +860,7 @@ export default function DataCarreraPage() {
                   placeholder="Ej. Dashboard Core Analytics"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="h-12 rounded-2xl border-white/[0.08] bg-black/30 text-xs font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-300 placeholder:text-slate-700 focus:border-orange-300/35 focus:ring-2 focus:ring-orange-500/10"
+                  className="h-10 rounded-md border-orange-300/20 bg-[#081824] text-xs font-bold text-white transition-all duration-300 placeholder:text-slate-500 focus:border-orange-300/55 focus:ring-2 focus:ring-orange-500/10"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
@@ -849,14 +869,14 @@ export default function DataCarreraPage() {
                   placeholder="Ej. Power BI, Modelado Estrella, DAX Avanzado, SQL Server"
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  className="h-12 rounded-2xl border-white/[0.08] bg-black/30 text-xs font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-300 placeholder:text-slate-700 focus:border-orange-300/35 focus:ring-2 focus:ring-orange-500/10"
+                  className="h-10 rounded-md border-orange-300/20 bg-[#081824] text-xs font-medium text-white transition-all duration-300 placeholder:text-slate-500 focus:border-orange-300/55 focus:ring-2 focus:ring-orange-500/10"
                 />
               </div>
               <Button
                 type="submit"
-                className="h-12 rounded-2xl border border-orange-300/14 bg-orange-500/[0.12] text-[10px] font-extrabold uppercase tracking-[0.10em] text-orange-100 shadow-[0_14px_34px_rgba(0,0,0,0.26)] transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-300/24 hover:bg-orange-500/[0.18] active:scale-[0.98]"
+                className="h-10 rounded-md border border-orange-300/35 bg-orange-500/20 text-xs font-semibold text-orange-100 transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-300/65 hover:bg-orange-500/30 active:scale-[0.98] motion-reduce:transform-none"
               >
-                Desplegar Nodo
+                Crear proyecto
               </Button>
             </form>
           </CardContent>
@@ -876,21 +896,21 @@ export default function DataCarreraPage() {
             <div className="animate-pulse text-[10px] font-extrabold uppercase tracking-[0.45em] text-orange-300/75">Sincronizando Matriz Cuántica...</div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-3 lg:grid-cols-6">
+          <div className="career-board-scroll grid grid-flow-col auto-cols-[minmax(244px,1fr)] gap-2.5 overflow-x-auto pb-2">
             {macroColumns.map((col) => {
               const filtered = getProjectsByStatus(projects, col.id)
               return (
-                <div key={col.id} className="group flex min-w-0 flex-col gap-3">
-                  <div className={`relative overflow-hidden rounded-2xl border border-white/[0.06] ${col.bg} p-3 shadow-[0_12px_35px_rgba(0,0,0,0.26)] backdrop-blur-xl transition-all duration-300 ${col.borderGlow}`}>
-                    <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <div key={col.id} className="group/column flex h-[clamp(420px,58vh,680px)] min-w-0 flex-col overflow-hidden rounded-lg border border-orange-300/20 bg-[#0a2230]/88 shadow-[inset_0_1px_rgba(255,255,255,.035),0_14px_34px_rgba(0,7,15,.18)] transition-[border-color,box-shadow] duration-300 hover:border-orange-300/40 hover:shadow-[0_0_22px_rgba(249,115,22,.07)]">
+                  <div className={`relative shrink-0 border-b border-orange-300/15 ${col.bg} p-3`}>
+                    <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-orange-400/45 via-orange-300/10 to-transparent" />
                     <div className="flex items-center justify-between">
                       <div className="flex min-w-0 items-center gap-2">
                         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-black/25">
                           <col.icon size={13} className={`${col.color} shrink-0`} />
                         </span>
-                        <span className="truncate text-[9px] font-extrabold uppercase tracking-[0.15em] text-slate-300">{col.label}</span>
+                        <span className="truncate text-[11px] font-bold text-slate-100">{col.label}</span>
                       </div>
-                      <span className={`rounded-lg border border-white/5 bg-black/42 px-2 py-1 font-mono text-[9px] font-extrabold ${col.color}`}>{filtered.length}</span>
+                      <span className={`rounded-md border border-orange-300/20 bg-[#081824] px-2 py-1 font-mono text-[10px] font-bold ${col.color}`}>{filtered.length}</span>
                     </div>
                   </div>
 
@@ -898,12 +918,12 @@ export default function DataCarreraPage() {
                     variants={containerVariants}
                     initial="hidden"
                     animate="show"
-                    className="flex min-h-[420px] flex-col gap-3 rounded-[1.35rem] border border-dashed border-white/[0.045] bg-black/18 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.025)] backdrop-blur-sm"
+                    className="career-board-scroll flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain p-2"
                   >
                     <AnimatePresence mode="popLayout">
                       {filtered.length === 0 ? (
-                        <div className="flex h-28 items-center justify-center rounded-2xl border border-dashed border-white/[0.04] bg-white/[0.015] text-[9px] font-extrabold uppercase tracking-[0.3em] text-slate-700">
-                          [ vacío ]
+                        <div className="flex h-24 items-center justify-center rounded-md border border-dashed border-orange-300/15 bg-[#081824]/70 text-[11px] text-slate-400">
+                          Sin proyectos
                         </div>
                       ) : (
                         filtered.map((project) => (
@@ -923,6 +943,7 @@ export default function DataCarreraPage() {
           </div>
         )}
       </div>
+      </div>}
 
       {/* POPUP MODAL CONTROL PANEL */}
       <AnimatePresence>
@@ -1143,26 +1164,28 @@ export default function DataCarreraPage() {
 
                     <div className="relative space-y-2">
                       <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">📊 Estado Macro</label>
-                      <select
-                        className="h-12 w-full cursor-pointer rounded-2xl border border-white/10 bg-black/42 px-3 text-xs font-bold text-slate-200 outline-none transition-all focus:border-orange-400/60 focus:ring-2 focus:ring-orange-500/10"
+                      <CareerSelect
+                        label="Estado del proyecto"
+                        fullWidth
                         value={selectedProject.status}
-                        onChange={(e) => {
-                          const nextSt = e.target.value as ProjectStatus
+                        onChange={(value) => {
+                          const nextSt = value as ProjectStatus
                           setSelectedProject({ ...selectedProject, status: nextSt })
                           handleUpdateProjectFields({ status: nextSt })
                         }}
                       >
                         {macroColumns.map(c => <option key={c.id} value={c.id} className="bg-[#02040a]">{c.label}</option>)}
-                      </select>
+                      </CareerSelect>
                     </div>
 
                     <div className="relative space-y-2">
                       <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">⚠️ Prioridad Crítica</label>
-                      <select
-                        className="h-12 w-full cursor-pointer rounded-2xl border border-white/10 bg-black/42 px-3 text-xs font-bold text-slate-200 outline-none transition-all focus:border-orange-400/60 focus:ring-2 focus:ring-orange-500/10"
+                      <CareerSelect
+                        label="Prioridad del proyecto"
+                        fullWidth
                         value={selectedProject.priority}
-                        onChange={(e) => {
-                          const nextPr = e.target.value as PriorityLevel
+                        onChange={(value) => {
+                          const nextPr = value as PriorityLevel
                           setSelectedProject({ ...selectedProject, priority: nextPr })
                           handleUpdateProjectFields({ priority: nextPr })
                         }}
@@ -1170,7 +1193,7 @@ export default function DataCarreraPage() {
                         <option value="Baja" className="bg-[#02040a]">🟢 Baja Presión</option>
                         <option value="Media" className="bg-[#02040a]">🟡 Media Estándar</option>
                         <option value="Alta" className="bg-[#02040a]">🔴 Alta Prioridad</option>
-                      </select>
+                      </CareerSelect>
                     </div>
                   </div>
 
@@ -1564,6 +1587,10 @@ export default function DataCarreraPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
+        )}
+      </AnimatePresence>
+
             <AnimatePresence>
               {selectedCaseStudy && (
                 <motion.div
@@ -1612,6 +1639,7 @@ export default function DataCarreraPage() {
                           <button
                             type="button"
                             onClick={() => setSelectedCaseStudy(null)}
+                            aria-label="Cerrar caso técnico"
                             className="rounded-xl p-2.5 text-slate-400 transition-all duration-200 hover:bg-white/8 hover:text-white"
                           >
                             <X size={20} />
@@ -1815,10 +1843,7 @@ export default function DataCarreraPage() {
                 </motion.div>
               )}
             </AnimatePresence>
-
-          </div>
-        )}
-      </AnimatePresence>
+      </div>
     </div>
   )
 }

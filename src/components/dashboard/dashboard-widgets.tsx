@@ -59,15 +59,15 @@ export function DashboardKpiCard({
     <motion.div
       whileHover={{ y: -4, scale: 1.008 }}
       transition={{ type: "spring", stiffness: 280, damping: 22 }}
-      className={`group relative isolate min-w-0 overflow-hidden rounded-[1.2rem] border p-5 shadow-[0_24px_55px_rgba(0,0,0,0.24)] transition-all duration-300 hover:border-white/[0.13] hover:shadow-[0_28px_64px_rgba(0,0,0,0.30)] ${shellClassName}`}
+      className={`group relative isolate min-w-0 overflow-hidden rounded-xl border p-4 shadow-[0_18px_45px_rgba(0,0,0,0.24)] transition-all duration-300 hover:border-white/[0.13] hover:shadow-[0_24px_55px_rgba(0,0,0,0.30)] ${shellClassName}`}
     >
       <div className="pointer-events-none absolute inset-0 opacity-80 bg-[radial-gradient(circle_at_100%_0%,rgba(255,255,255,0.28),transparent_25%),radial-gradient(circle_at_0%_100%,rgba(255,255,255,0.12),transparent_28%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.10),transparent_34%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
       <div className="pointer-events-none absolute inset-x-5 bottom-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-      <div className="relative z-10 mb-5 flex items-start justify-between gap-4">
-        <span className={`flex h-11 w-11 items-center justify-center rounded-xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] transition-transform duration-300 group-hover:-translate-y-0.5 ${iconClassName}`}>
-          <Icon size={18} />
+      <div className="relative z-10 mb-3 flex items-start justify-between gap-4">
+        <span className={`flex h-9 w-9 items-center justify-center rounded-lg border shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] transition-transform duration-300 group-hover:-translate-y-0.5 ${iconClassName}`}>
+          <Icon size={16} />
         </span>
         {typeof progress === "number" ? (
           <span className="rounded-full border border-white/[0.10] bg-black/24 px-2.5 py-1 text-[11px] font-bold text-white/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
@@ -76,12 +76,12 @@ export function DashboardKpiCard({
         ) : null}
       </div>
 
-      <p className="relative z-10 break-words text-sm font-semibold text-white/82">{title}</p>
-      <p className="relative z-10 mt-2 break-words text-[clamp(1.9rem,3vw,2.35rem)] font-extrabold leading-none tracking-[-0.06em] text-white">{value}</p>
-      <p className="relative z-10 mt-2 min-h-[48px] break-words text-sm leading-6 text-white/72">{helper}</p>
+      <p className="relative z-10 break-words text-xs font-semibold text-white/82">{title}</p>
+      <p className="relative z-10 mt-1.5 break-words text-3xl font-extrabold leading-none text-white">{value}</p>
+      <p className="relative z-10 mt-2 min-h-10 break-words text-xs leading-5 text-white/72">{helper}</p>
 
       {typeof progress === "number" ? (
-        <div className="relative z-10 mt-5">
+        <div className="relative z-10 mt-3">
           <DashboardProgressBar value={progress} fillClassName="bg-white/95" />
         </div>
       ) : null}

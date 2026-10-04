@@ -17,6 +17,20 @@ export type NutritionMeal = {
   estimated_calories: number
   confidence?: ConfidenceLevel
   portion_assumption?: string | null
+  protein_g?: number | null
+  carbs_g?: number | null
+  fat_g?: number | null
+  foods?: NutritionFood[]
+}
+
+export type NutritionFood = {
+  name: string
+  portion: string
+  estimated_grams: number | null
+  estimated_calories: number | null
+  protein_g: number | null
+  carbs_g: number | null
+  fat_g: number | null
 }
 
 export type NutritionResponse = {
@@ -30,6 +44,10 @@ type RawNutritionMeal = {
   estimated_calories?: unknown
   confidence?: unknown
   portion_assumption?: unknown
+  protein_g?: unknown
+  carbs_g?: unknown
+  fat_g?: unknown
+  foods?: unknown
 }
 
 type RawNutritionPayload = {
@@ -61,6 +79,14 @@ const CONFIDENCE_CLASSES: Record<ConfidenceLevel, string> = {
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null
+}
+
+const sanitizeMacro = (value: unknown) => {
+  if (value === null || value === undefined) return null
+  const amount = Number(value)
+  return Number.isFinite(amount) && amount >= 0 && amount <= 1000
+    ? Math.round(amount * 10) / 10
+    : null
 }
 
 export const normalizeMealType = (value: unknown): MealType => {
@@ -102,40 +128,23 @@ export const getConfidenceClass = (confidence: string) => {
   return CONFIDENCE_CLASSES[normalizeConfidence(confidence)]
 }
 
-const applyRealisticCalorieFloor = (meal: NutritionMeal): NutritionMeal => {
-  const text = meal.description.toLowerCase()
-  let floor = 0
-
-  if (text.includes("pollo a la brasa")) floor = Math.max(floor, 850)
-  if (text.includes("arroz con pollo")) floor = Math.max(floor, 650)
-  if (text.includes("papa a la huanca") || text.includes("huancaína") || text.includes("huancaina")) floor = Math.max(floor, 300)
-
-  if (
-    text.includes("arroz con pollo") &&
-    (text.includes("papa a la huanca") || text.includes("huancaína") || text.includes("huancaina"))
-  ) {
-    floor = Math.max(floor, 950)
-  }
-
-  if (text.includes("lomo saltado")) floor = Math.max(floor, 850)
-  if (text.includes("tallarín") || text.includes("tallarin")) floor = Math.max(floor, 650)
-  if (text.includes("chaufa")) floor = Math.max(floor, 700)
-  if (text.includes("tamal")) floor = Math.max(floor, 320)
-  if (text.includes("jugo") && !text.includes("sin azúcar") && !text.includes("sin azucar")) floor = Math.max(floor, 120)
-  if (text.includes("pringles") || text.includes("papitas") || text.includes("snack")) floor = Math.max(floor, 250)
-  if (text.includes("tortilla de huevo")) floor = Math.max(floor, 160)
-  if (text.includes("tortilla de maíz") || text.includes("tortilla de maiz")) floor = Math.max(floor, 60)
-
-  if (floor > 0 && meal.estimated_calories < floor) {
-    return {
-      ...meal,
-      estimated_calories: floor,
-      confidence: meal.confidence || "medium",
-      portion_assumption: meal.portion_assumption || "Porción peruana promedio ajustada por piso calórico",
-    }
-  }
-
-  return meal
+const sanitizeFoods = (value: unknown): NutritionFood[] => {
+  if (!Array.isArray(value)) return []
+  return value.flatMap((item) => {
+    if (!isRecord(item)) return []
+    const name = String(item.name || "").trim().slice(0, 120)
+    const portion = String(item.portion || "").trim().slice(0, 120)
+    if (!name || !portion) return []
+    return [{
+      name,
+      portion,
+      estimated_grams: sanitizeMacro(item.estimated_grams),
+      estimated_calories: sanitizeMacro(item.estimated_calories),
+      protein_g: sanitizeMacro(item.protein_g),
+      carbs_g: sanitizeMacro(item.carbs_g),
+      fat_g: sanitizeMacro(item.fat_g),
+    }]
+  })
 }
 
 export const sanitizeNutritionResponse = (value: unknown): NutritionResponse => {
@@ -149,13 +158,23 @@ export const sanitizeNutritionResponse = (value: unknown): NutritionResponse => 
 
     if (!description || estimatedCalories <= 0) return []
 
-    return applyRealisticCalorieFloor({
+    const foods = sanitizeFoods(mealItem.foods)
+    const macroFromFoods = (key: "protein_g" | "carbs_g" | "fat_g") =>
+      foods.length && foods.every((food) => food[key] !== null)
+        ? Math.round(foods.reduce((sum, food) => sum + Number(food[key]), 0) * 10) / 10
+        : null
+
+    return [{
       meal_type: normalizeMealType(mealItem.meal_type),
       description,
       estimated_calories: estimatedCalories,
       confidence: normalizeConfidence(mealItem.confidence),
       portion_assumption: String(mealItem.portion_assumption || "Porcion promedio").trim(),
-    })
+      protein_g: macroFromFoods("protein_g") ?? sanitizeMacro(mealItem.protein_g),
+      carbs_g: macroFromFoods("carbs_g") ?? sanitizeMacro(mealItem.carbs_g),
+      fat_g: macroFromFoods("fat_g") ?? sanitizeMacro(mealItem.fat_g),
+      foods,
+    }]
   })
 
   const calculatedTotal = meals.reduce((sum, item) => sum + item.estimated_calories, 0)

@@ -1,13 +1,16 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
+import Image from "next/image"
+import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import Link from "next/link"
+import { PersonalCareCommandCenter } from "@/components/personal-care/personal-care-command-center"
 import {
   Sparkles,
+  ArrowLeft,
   ShieldCheck,
   Plus,
   Save,
@@ -16,21 +19,21 @@ import {
   Circle,
   Moon,
   SmilePlus,
-  Flame,
   HeartHandshake,
+  Flame,
   Target,
   RefreshCw,
   CalendarCheck2,
   NotebookPen,
   BatteryCharging,
   Activity,
-  ChevronLeft,
 } from "lucide-react"
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
 import { getErrorMessage } from "@/lib/errors"
-import { PersonalCareBackground } from "@/components/personal-care/personal-care-background"
 import { CheckinMetricCard, WeeklySummaryMetricCard } from "@/components/personal-care/personal-care-metric-cards"
 import { fetchPersonalCareOverview } from "@/lib/personal-care-service"
+import { fetchPersonalCareHistory } from "@/lib/personal-care-service"
+import { carePeriodBounds, type CareLog, type CarePeriod } from "@/lib/personal-care-analytics"
 import {
   DEFAULT_ROUTINES,
   categoryStyles,
@@ -63,6 +66,11 @@ export default function CuidadoPersonalPage() {
   const [routines, setRoutines] = useState<PersonalCareRoutine[]>([])
   const [todayCompletions, setTodayCompletions] = useState<PersonalCareCompletion[]>([])
   const [weeklySummary, setWeeklySummary] = useState<WeeklyPersonalCareSummary | null>(null)
+  const [historyLogs, setHistoryLogs] = useState<CareLog[]>([])
+  const [historyCompletions, setHistoryCompletions] = useState<PersonalCareCompletion[]>([])
+  const [historyError, setHistoryError] = useState(false)
+  const [carePeriod, setCarePeriod] = useState<CarePeriod>({ kind: "week", anchor: today })
+  const [careView, setCareView] = useState<"overview" | "manage">("overview")
 
   const [newRoutineName, setNewRoutineName] = useState("")
   const [newRoutineCategory, setNewRoutineCategory] = useState("bienestar")
@@ -83,7 +91,15 @@ export default function CuidadoPersonalPage() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) return
 
-      const overview = await fetchPersonalCareOverview(supabase, session.user.id, today, currentWeekStart)
+      const bounds = carePeriodBounds(carePeriod)
+      const [overviewResult, historyResult] = await Promise.allSettled([
+        fetchPersonalCareOverview(supabase, session.user.id, today, currentWeekStart),
+        fetchPersonalCareHistory(supabase, session.user.id, bounds.start, bounds.end),
+      ])
+      if (overviewResult.status === "rejected") throw overviewResult.reason
+      const overview = overviewResult.value
+      setHistoryError(historyResult.status === "rejected")
+      if (historyResult.status === "rejected") console.error("Error cargando historial de cuidado personal:", historyResult.reason)
 
       if (overview.errors.dailyLog) console.error("Error cargando check-in de hoy:", overview.errors.dailyLog)
       if (overview.errors.routines) console.error("Error cargando rutinas de cuidado personal:", overview.errors.routines)
@@ -103,12 +119,14 @@ export default function CuidadoPersonalPage() {
       setRoutines(overview.routines)
       setTodayCompletions(overview.completions)
       setWeeklySummary(overview.weeklySummary)
+      setHistoryLogs(historyResult.status === "fulfilled" ? historyResult.value.logs : [])
+      setHistoryCompletions(historyResult.status === "fulfilled" ? historyResult.value.completions : [])
     } catch (error) {
       console.error("Error sincronizando cuidado personal:", error)
     } finally {
       setLoading(false)
     }
-  }, [supabase, today, currentWeekStart])
+  }, [supabase, today, currentWeekStart, carePeriod])
 
   useEffect(() => {
     let isActive = true
@@ -329,80 +347,47 @@ export default function CuidadoPersonalPage() {
   }
 
   const sliderClass =
-    "w-full cursor-pointer accent-cyan-400 transition-all"
-
-  const personalScore = personalCareDailyMetrics.personalScore
-  const summaryTone = personalCareDailyMetrics.summaryTone
+    "w-full cursor-pointer accent-violet-400 transition-all"
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-transparent px-4 pb-14 pt-6 text-slate-100 antialiased md:px-8 [overflow-wrap:anywhere]" style={{ fontFamily: "'Poppins', 'Nunito Sans', 'Inter', 'Manrope', system-ui, sans-serif" }}>
-      <PersonalCareBackground />
+    <div className={`lifetrack-redesign care-page ${careView === "manage" ? "care-manage" : ""} relative min-h-screen overflow-hidden bg-transparent px-2 pb-14 pt-2 font-sans text-slate-100 antialiased sm:px-4 [overflow-wrap:anywhere]`}>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1480px] flex-col gap-5">
-        <Link href="/pilares" className="group flex w-fit items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.018] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-purple-400/35 hover:bg-purple-500/[0.08] hover:text-purple-200">
-          <ChevronLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1.5" /> [ VOLVER A PILARES ]
-        </Link>
-
-        <motion.div
-          initial={{ opacity: 0, y: -18, filter: "blur(6px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-[2.2rem] border border-purple-300/[0.11] bg-[linear-gradient(135deg,rgba(18,12,27,0.92),rgba(6,11,20,0.76))] p-5 shadow-[0_30px_88px_rgba(0,0,0,0.34)] backdrop-blur-2xl md:p-7"
-        >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_12%,rgba(168,85,247,0.18),transparent_30%),radial-gradient(circle_at_78%_0%,rgba(45,212,191,0.12),transparent_34%),radial-gradient(circle_at_90%_90%,rgba(249,115,22,0.07),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.045),transparent_38%)]" />
-          <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-purple-300/35 to-transparent" />
-
-          <div className="relative flex min-w-0 flex-col justify-between gap-8 xl:flex-row xl:items-end">
-            <div className="min-w-0 max-w-4xl space-y-4">
-              <div className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-purple-300/16 bg-purple-500/[0.10] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-purple-200 shadow-[0_10px_28px_rgba(168,85,247,0.08)]">
-                <HeartHandshake size={14} className="shrink-0 animate-pulse" />
-                <span className="truncate">Pilar de bienestar personal</span>
-              </div>
-
-              <div className="space-y-3">
-                <h1 className="text-4xl font-extrabold uppercase leading-[0.9] tracking-[-0.065em] text-white md:text-7xl">
-                  Cuidado <span className="bg-gradient-to-r from-purple-200 via-cyan-200 to-orange-200 bg-clip-text text-transparent">Personal</span>
-                </h1>
-                <p className="max-w-3xl break-words text-sm font-medium leading-relaxed text-slate-400 md:text-base">
-                  Registra cómo te sientes, cuida tus rutinas personales y convierte el autocuidado en una métrica semanal clara y accionable.
-                </p>
-              </div>
-            </div>
-
-            <div className={`min-w-0 rounded-[1.6rem] border px-6 py-5 text-right shadow-[0_18px_46px_rgba(0,0,0,0.18)] backdrop-blur-xl ${summaryTone}`}>
-              <p className="text-5xl font-extrabold tracking-[-0.035em]">{loading ? "..." : `${personalScore}%`}</p>
-              <p className="mt-1 text-[9px] font-extrabold uppercase tracking-[0.16em] text-slate-500">
-                score semanal
-              </p>
-              <p className="mt-2 text-xs font-bold text-slate-400">
-                {intensityLabel(weeklySummary?.care_intensity)}
-              </p>
-            </div>
+      <div className="relative z-10 mx-auto flex w-full max-w-[1728px] flex-col gap-3">
+        {careView === "overview" ? <>{historyError && <p role="alert" className="rounded-md border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-xs text-amber-100">No se pudo cargar el historial de este período. Los indicadores no están actualizados.</p>}<PersonalCareCommandCenter logs={historyLogs} completions={historyCompletions} routines={routines} period={carePeriod} today={today} loading={loading} onPeriodChange={setCarePeriod} onToggleRoutine={toggleRoutineCompletion} onManage={() => setCareView("manage")} /></> : <>
+        <section className="care-hero relative isolate flex min-h-[220px] flex-col justify-between gap-6 overflow-hidden rounded-lg border border-violet-300/25 bg-[#0a1430] p-4 sm:p-5">
+          <Image src="/images/lifetrack/night-mountains.webp" alt="" fill sizes="100vw" className="object-cover opacity-45 [filter:hue-rotate(38deg)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,15,34,.98),rgba(11,16,43,.72)_57%,rgba(8,14,39,.64))]" />
+          <div className="absolute inset-y-0 right-[16%] w-[min(36vw,450px)] max-sm:right-[-18%] max-sm:w-64"><Image src="/images/lifetrack/care-meditation.webp" alt="" fill sizes="(max-width: 640px) 256px, 36vw" className="object-contain object-bottom opacity-85 [mask-image:linear-gradient(to_bottom,black_76%,transparent)] max-sm:opacity-35" /></div>
+          <div className="relative z-10 max-w-[720px]">
+            <div className="mb-3 flex flex-wrap items-center gap-2"><Link href="/pilares" className="inline-flex items-center gap-1.5 rounded-md border border-violet-300/30 bg-[#101d3a]/85 px-3 py-1.5 text-[11px] font-semibold text-violet-100 transition-colors hover:border-violet-300/70 hover:bg-violet-400/15"><ArrowLeft size={13} />Volver a Pilares</Link><span className="rounded-md border border-violet-300/30 bg-violet-400/12 px-2.5 py-1.5 text-[10px] font-bold uppercase text-violet-200">Cuidado personal</span></div>
+            <h1 className="text-3xl font-extrabold leading-tight text-white sm:text-5xl">Gestionar <span className="text-violet-300">Cuidado Personal</span></h1>
+            <p className="mt-1 text-base text-sky-100 sm:text-lg">Registra tu día y organiza tus rutinas.</p>
+            <p className="mt-2 max-w-[550px] text-xs leading-relaxed text-slate-300">Tus registros alimentan el resumen de ánimo, descanso y hábitos.</p>
           </div>
-        </motion.div>
+          <div className="relative z-10 inline-flex w-fit rounded-md border border-violet-300/25 bg-[#0d1933]/85 p-1" role="group" aria-label="Vista de Cuidado Personal"><button type="button" onClick={() => setCareView("overview")} className="rounded px-3 py-1.5 text-[11px] text-slate-300 transition-colors hover:bg-violet-400/15 hover:text-white">Resumen</button><button type="button" aria-pressed className="rounded border border-violet-300/35 bg-violet-400/20 px-3 py-1.5 text-[11px] font-semibold text-violet-100">Gestionar</button></div>
+        </section>
 
-        <div className="grid items-stretch gap-5 xl:grid-cols-[minmax(0,1.08fr)_minmax(420px,0.92fr)]">
+        <div className="grid items-stretch gap-3 xl:grid-cols-[minmax(0,1.45fr)_minmax(340px,.75fr)]">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.06 }}
           >
-            <Card className="relative h-full overflow-hidden rounded-[2rem] border border-purple-300/[0.12] bg-[linear-gradient(135deg,rgba(18,12,27,0.82),rgba(8,11,20,0.62))] shadow-[0_24px_76px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(168,85,247,0.12),transparent_32%)]" />
+            <Card className="care-manage-panel h-full">
 
-              <CardHeader className="relative pb-4">
-                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-xl font-extrabold tracking-[-0.045em] text-white">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-purple-400/20 bg-purple-500/10 text-purple-300">
+              <CardHeader className="care-manage-header">
+                <CardTitle className="care-manage-title">
+                  <span className="care-manage-icon">
                     <NotebookPen size={18} />
                   </span>
                   Check-in diario
                 </CardTitle>
-                <p className="break-words text-xs font-medium text-slate-500">
+                <p className="text-xs leading-relaxed text-slate-400">
                   No es un diagnóstico. Es una bitácora personal para reconocer patrones de ánimo, estrés, descanso y motivación.
                 </p>
               </CardHeader>
 
-              <CardContent className="relative space-y-4">
+              <CardContent className="space-y-4">
                 <div className="grid gap-3 md:grid-cols-2">
                   {[
                     {
@@ -411,7 +396,7 @@ export default function CuidadoPersonalPage() {
                       setter: setMoodLevel,
                       icon: SmilePlus,
                       helper: "Cómo te sentiste hoy",
-                      accent: "text-emerald-300",
+                      accent: "text-violet-200",
                     },
                     {
                       label: "Estrés",
@@ -419,7 +404,7 @@ export default function CuidadoPersonalPage() {
                       setter: setStressLevel,
                       icon: Flame,
                       helper: "Qué tan cargado estuvo el día",
-                      accent: "text-orange-300",
+                      accent: "text-violet-300",
                     },
                     {
                       label: "Motivación",
@@ -427,7 +412,7 @@ export default function CuidadoPersonalPage() {
                       setter: setMotivationLevel,
                       icon: BatteryCharging,
                       helper: "Ganas de avanzar y hacer cosas",
-                      accent: "text-cyan-300",
+                      accent: "text-fuchsia-300",
                     },
                     {
                       label: "Sueño",
@@ -453,38 +438,41 @@ export default function CuidadoPersonalPage() {
 
                 <div className="grid gap-3 lg:grid-cols-3">
                   <div className="space-y-2 lg:col-span-1">
-                    <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">
+                    <label htmlFor="care-reflection" className="text-[11px] font-semibold text-slate-300">
                       Reflexión del día
                     </label>
                     <textarea
+                      id="care-reflection"
                       value={reflection}
                       onChange={(event) => setReflection(event.target.value)}
                       placeholder="¿Cómo te sentiste hoy? ¿Qué pasó?"
-                      className="min-h-[118px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/42 p-4 text-sm font-medium text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-purple-300/35 focus:bg-slate-950/55"
+                      className="min-h-[108px] w-full resize-y p-3 text-sm text-slate-200 transition-colors"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">
+                    <label htmlFor="care-gratitude" className="text-[11px] font-semibold text-slate-300">
                       Algo que agradeces
                     </label>
                     <textarea
+                      id="care-gratitude"
                       value={gratitudeNote}
                       onChange={(event) => setGratitudeNote(event.target.value)}
                       placeholder="Hoy agradezco..."
-                      className="min-h-[118px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/42 p-4 text-sm font-medium text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-cyan-300/35 focus:bg-slate-950/55"
+                      className="min-h-[108px] w-full resize-y p-3 text-sm text-slate-200 transition-colors"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">
+                    <label htmlFor="care-improvement" className="text-[11px] font-semibold text-slate-300">
                       Mejora para mañana
                     </label>
                     <textarea
+                      id="care-improvement"
                       value={improvementNote}
                       onChange={(event) => setImprovementNote(event.target.value)}
                       placeholder="Mañana puedo mejorar en..."
-                      className="min-h-[118px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/42 p-4 text-sm font-medium text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-orange-300/35 focus:bg-slate-950/55"
+                      className="min-h-[108px] w-full resize-y p-3 text-sm text-slate-200 transition-colors"
                     />
                   </div>
                 </div>
@@ -493,7 +481,7 @@ export default function CuidadoPersonalPage() {
                   <Button
                     onClick={saveDailyCheckin}
                     disabled={savingCheckin}
-                    className="h-12 rounded-2xl border border-cyan-300/10 bg-cyan-500/[0.13] px-6 text-xs font-bold uppercase tracking-[0.08em] text-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500/[0.20] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="care-manage-primary h-10 px-5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Save size={16} />
                     {savingCheckin ? "Guardando..." : "Guardar check-in"}
@@ -508,22 +496,21 @@ export default function CuidadoPersonalPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.10 }}
           >
-            <Card className="relative h-full overflow-hidden rounded-[2rem] border border-cyan-300/[0.12] bg-[linear-gradient(135deg,rgba(10,24,30,0.78),rgba(8,11,20,0.62))] shadow-[0_24px_76px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(45,212,191,0.12),transparent_32%)]" />
+            <Card className="care-manage-panel h-full">
 
-              <CardHeader className="relative pb-4">
-                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-xl font-extrabold tracking-[-0.045em] text-white">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-500/10 text-cyan-300">
+              <CardHeader className="care-manage-header">
+                <CardTitle className="care-manage-title">
+                  <span className="care-manage-icon">
                     <Activity size={18} />
                   </span>
                   Resumen semanal
                 </CardTitle>
-                <p className="break-words text-xs font-medium text-slate-500">
+                <p className="text-xs text-slate-400">
                   Semana {currentWeekStart} al {currentWeekEnd}.
                 </p>
               </CardHeader>
 
-              <CardContent className="relative space-y-3">
+              <CardContent className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     {
@@ -561,12 +548,12 @@ export default function CuidadoPersonalPage() {
                   ))}
                 </div>
 
-                <div className="min-w-0 rounded-[1.5rem] border border-white/[0.065] bg-slate-950/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                <div className="min-w-0 border-t border-violet-300/15 pt-3">
                   <div className="mb-3 flex items-center justify-between">
-                    <p className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">Lectura rápida</p>
+                    <p className="text-[11px] font-semibold text-violet-200">Lectura rápida</p>
                     <ShieldCheck size={16} className="text-purple-300" />
                   </div>
-                  <p className="break-words text-sm font-semibold leading-relaxed text-slate-400">
+                  <p className="text-xs leading-relaxed text-slate-300">
                     {weeklySummary
                       ? weeklySummary.checkin_days > 0 || weeklySummary.completed_routine_events > 0
                         ? `Esta semana tienes ${weeklySummary.checkin_days} check-ins y ${weeklySummary.completed_routine_events} rutinas completadas. Intensidad: ${intensityLabel(weeklySummary.care_intensity).toLowerCase()}.`
@@ -575,8 +562,8 @@ export default function CuidadoPersonalPage() {
                   </p>
                 </div>
 
-                <div className="min-w-0 rounded-[1.5rem] border border-white/[0.065] bg-slate-950/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.10em] text-slate-500">
+                <div className="min-w-0 border-t border-violet-300/15 pt-3">
+                  <p className="mb-2 text-[11px] font-semibold text-violet-200">
                     Cumplimiento de hoy
                   </p>
                   <div className="h-3 overflow-hidden rounded-full border border-white/[0.04] bg-slate-950 p-[2px]">
@@ -584,10 +571,10 @@ export default function CuidadoPersonalPage() {
                       initial={false}
                       animate={{ width: `${todayRoutineCompletionPct}%` }}
                       transition={{ duration: 0.55, ease: "easeOut" }}
-                      className="h-full rounded-full bg-gradient-to-r from-purple-500 via-cyan-400 to-emerald-300 shadow-[0_0_18px_rgba(45,212,191,0.32)]"
+                      className="h-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-400 shadow-[0_0_14px_rgba(168,85,247,0.3)]"
                     />
                   </div>
-                  <p className="mt-3 break-words text-xs font-medium text-slate-500">
+                  <p className="mt-2 text-xs text-slate-400">
                     {completedRoutineIds.size}/{activeRoutines.length} rutinas activas completadas hoy.
                   </p>
                 </div>
@@ -596,44 +583,46 @@ export default function CuidadoPersonalPage() {
           </motion.div>
         </div>
 
-        <div className="grid items-start gap-5 xl:grid-cols-[420px_minmax(0,1fr)]">
+        <div className="grid items-stretch gap-3 xl:grid-cols-[minmax(300px,.75fr)_minmax(0,1.45fr)]">
           <motion.div
+            className="h-full"
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.14 }}
           >
-            <Card className="relative overflow-hidden rounded-[2rem] border border-orange-300/[0.12] bg-[linear-gradient(135deg,rgba(35,18,10,0.78),rgba(8,11,20,0.62))] shadow-[0_24px_76px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(249,115,22,0.12),transparent_32%)]" />
+            <Card className="care-manage-panel h-full">
 
-              <CardHeader className="relative pb-4">
-                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-xl font-extrabold tracking-[-0.045em] text-white">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-orange-400/20 bg-orange-500/10 text-orange-300">
+              <CardHeader className="care-manage-header">
+                <CardTitle className="care-manage-title">
+                  <span className="care-manage-icon">
                     <Plus size={18} />
                   </span>
                   Crear rutina
                 </CardTitle>
-                <p className="break-words text-xs font-medium text-slate-500">
+                <p className="text-xs text-slate-400">
                   Define acciones simples que quieras sostener diariamente.
                 </p>
               </CardHeader>
 
-              <CardContent className="relative space-y-3">
+              <CardContent className="flex flex-1 flex-col gap-3">
                 <div className="space-y-2">
-                  <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">Nombre</label>
+                  <label htmlFor="care-routine-name" className="text-[11px] font-semibold text-slate-300">Nombre</label>
                   <input
+                    id="care-routine-name"
                     value={newRoutineName}
                     onChange={(event) => setNewRoutineName(event.target.value)}
                     placeholder="Ejemplo: protector solar"
-                    className="h-12 w-full rounded-2xl border border-white/[0.07] bg-slate-950/42 px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-orange-300/35 focus:bg-slate-950/55"
+                    className="h-10 w-full px-3 text-sm text-white transition-colors"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">Categoría</label>
+                  <label htmlFor="care-routine-category" className="text-[11px] font-semibold text-slate-300">Categoría</label>
                   <select
+                    id="care-routine-category"
                     value={newRoutineCategory}
                     onChange={(event) => setNewRoutineCategory(event.target.value)}
-                    className="h-12 w-full rounded-2xl border border-white/[0.07] bg-slate-950/42 px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-orange-300/35 focus:bg-slate-950/55"
+                    className="h-10 w-full px-3 text-sm text-white transition-colors"
                   >
                     <option value="bienestar">Bienestar</option>
                     <option value="skincare">Skincare</option>
@@ -644,20 +633,21 @@ export default function CuidadoPersonalPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="break-words text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">Descripción</label>
+                  <label htmlFor="care-routine-description" className="text-[11px] font-semibold text-slate-300">Descripción</label>
                   <textarea
+                    id="care-routine-description"
                     value={newRoutineDescription}
                     onChange={(event) => setNewRoutineDescription(event.target.value)}
                     placeholder="Describe cuándo o cómo quieres realizarla."
-                    className="min-h-[96px] w-full resize-none rounded-2xl border border-white/[0.07] bg-slate-950/42 p-4 text-sm font-medium text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] outline-none transition focus:border-orange-300/35 focus:bg-slate-950/55"
+                    className="min-h-[96px] w-full resize-y p-3 text-sm text-slate-200 transition-colors"
                   />
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="mt-auto grid gap-3 pt-3 sm:grid-cols-2">
                   <Button
                     onClick={createRoutine}
                     disabled={savingRoutine}
-                    className="h-12 rounded-2xl border border-orange-300/10 bg-orange-500/[0.13] px-5 text-xs font-bold uppercase tracking-[0.08em] text-orange-100 transition hover:-translate-y-0.5 hover:bg-orange-500/[0.20] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="care-manage-primary h-10 px-4 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Plus size={16} />
                     {savingRoutine ? "Guardando..." : "Crear rutina"}
@@ -666,7 +656,7 @@ export default function CuidadoPersonalPage() {
                   <Button
                     onClick={seedDefaultRoutines}
                     disabled={savingRoutine || routines.length > 0}
-                    className="h-12 rounded-2xl border border-cyan-300/10 bg-cyan-500/[0.11] px-5 text-xs font-bold uppercase tracking-[0.08em] text-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-500/[0.18] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+                    className="care-manage-secondary h-10 px-4 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     <Sparkles size={16} />
                     Sugeridas
@@ -677,35 +667,35 @@ export default function CuidadoPersonalPage() {
           </motion.div>
 
           <motion.div
+            className="h-full"
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.18 }}
           >
-            <Card className="relative overflow-hidden rounded-[2rem] border border-white/[0.085] bg-[linear-gradient(135deg,rgba(15,23,42,0.72),rgba(8,11,20,0.62))] shadow-[0_24px_76px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_0%,rgba(45,212,191,0.10),transparent_32%)]" />
+            <Card className="care-manage-panel h-full">
 
-              <CardHeader className="relative pb-4">
-                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-xl font-extrabold tracking-[-0.045em] text-white">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-500/10 text-cyan-300">
+              <CardHeader className="care-manage-header">
+                <CardTitle className="care-manage-title">
+                  <span className="care-manage-icon">
                     <Target size={18} />
                   </span>
                   Rutinas de hoy
                 </CardTitle>
-                <p className="break-words text-xs font-medium text-slate-500">
+                <p className="text-xs text-slate-400">
                   Marca solo lo que realmente cumpliste hoy. Mañana empieza una nueva fecha.
                 </p>
               </CardHeader>
 
-              <CardContent className="relative">
+              <CardContent>
                 {loading ? (
                   <div className="flex min-h-[250px] items-center justify-center">
-                    <RefreshCw className="animate-spin text-cyan-300" size={28} />
+                    <RefreshCw className="animate-spin text-violet-300" size={28} />
                   </div>
                 ) : routines.length === 0 ? (
-                  <div className="rounded-[1.5rem] border border-dashed border-white/[0.07] bg-slate-950/35 p-8 text-center">
+                  <div className="rounded-md border border-dashed border-violet-300/20 bg-violet-400/5 p-8 text-center">
                     <Sparkles className="mx-auto mb-3 text-purple-300" size={30} />
-                    <p className="text-sm font-extrabold uppercase tracking-[0.10em] text-white">Aún no tienes rutinas</p>
-                    <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">
+                    <p className="text-sm font-semibold text-white">Aún no tienes rutinas</p>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-400">
                       Crea una rutina manualmente o carga las rutinas sugeridas para iniciar.
                     </p>
                   </div>
@@ -719,12 +709,12 @@ export default function CuidadoPersonalPage() {
                       return (
                         <div
                           key={routine.id}
-                          className={`relative overflow-hidden rounded-[1.25rem] border px-4 py-3.5 shadow-[0_12px_34px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-0.5 ${
+                          className={`relative overflow-hidden rounded-md border px-3 py-2.5 transition-[border-color,background-color] duration-200 hover:border-violet-300/40 ${
                             routine.active
                               ? completed
-                                ? "border-emerald-300/20 bg-emerald-500/[0.08]"
-                                : "border-white/[0.065] bg-slate-950/34"
-                              : "border-white/[0.04] bg-slate-950/20 opacity-55"
+                                ? "border-violet-300/45 bg-violet-400/12"
+                                : "border-violet-300/15 bg-[#0c1a32]/70"
+                              : "border-violet-300/10 bg-[#0c1a32]/35 opacity-55"
                           }`}
                         >
                           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -733,10 +723,10 @@ export default function CuidadoPersonalPage() {
                                 type="button"
                                 onClick={() => routine.active && toggleRoutineCompletion(routine)}
                                 disabled={!routine.active}
-                                className={`mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border transition ${
+                                className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border transition ${
                                   completed
                                     ? "border-emerald-300/20 bg-emerald-500/[0.12] text-emerald-200"
-                                    : "border-white/[0.08] bg-white/[0.04] text-slate-400 hover:text-cyan-200"
+                                    : "border-violet-300/25 bg-violet-400/7 text-slate-400 hover:text-violet-200"
                                 } disabled:cursor-not-allowed`}
                               >
                                 {completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}
@@ -745,12 +735,12 @@ export default function CuidadoPersonalPage() {
                               <div className="min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
                                   <p className="break-words text-sm font-extrabold text-white">{routine.name}</p>
-                                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.08em] ${style.className}`}>
+                                  <span className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 text-[9px] font-medium ${style.className}`}>
                                     <Icon size={11} />
                                     {style.label}
                                   </span>
                                   {!routine.active && (
-                                    <span className="rounded-full border border-slate-300/10 bg-slate-500/[0.06] px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-slate-400">
+                                    <span className="rounded border border-slate-300/10 bg-slate-500/[0.06] px-2 py-0.5 text-[9px] text-slate-400">
                                       inactiva
                                     </span>
                                   )}
@@ -767,14 +757,15 @@ export default function CuidadoPersonalPage() {
                             <div className="flex shrink-0 items-center gap-2">
                               <Button
                                 onClick={() => toggleRoutineActive(routine)}
-                                className="h-9 rounded-xl border border-white/[0.06] bg-white/[0.04] px-3 text-[9px] font-bold uppercase tracking-[0.08em] text-slate-300 hover:bg-white/[0.08]"
+                                className="care-manage-secondary h-8 px-3 text-[10px] font-semibold"
                               >
                                 {routine.active ? "Pausar" : "Activar"}
                               </Button>
 
                               <Button
                                 onClick={() => deleteRoutine(routine)}
-                                className="h-9 rounded-xl border border-red-300/10 bg-red-500/[0.08] px-3 text-red-200 hover:bg-red-500/[0.14]"
+                                className="h-8 border border-red-300/20 bg-red-500/[0.08] px-3 text-red-200 hover:bg-red-500/[0.14]"
+                                aria-label={`Eliminar ${routine.name}`}
                               >
                                 <Trash2 size={14} />
                               </Button>
@@ -789,6 +780,7 @@ export default function CuidadoPersonalPage() {
             </Card>
           </motion.div>
         </div>
+        </>}
       </div>
     </div>
   )

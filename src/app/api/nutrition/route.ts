@@ -47,81 +47,13 @@ export async function POST(req: NextRequest) {
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: [
-          `Eres un asistente experto en estimación nutricional práctica para una app personal de seguimiento de salud.
+          `Analiza la descripción de alimentos para un registro personal de nutrición. Responde solo con el JSON solicitado.
 
-Tu tarea es analizar la descripción de alimentos del usuario y devolver un JSON estructurado.
+Separa desayuno, almuerzo, cena y snacks en comidas independientes. Para cada comida, identifica cada alimento o componente (incluidos aceites, salsas y bebidas) en foods. Usa las cantidades indicadas por el usuario. Si falta cantidad, declara una porción casera asumida en texto y, solo si es razonable, su peso estimado en gramos. No atribuyas cantidades exactas a una descripción ambigua.
 
-Objetivo principal:
-Calcular calorías aproximadas de forma realista. No busques exactitud clínica, pero evita subestimar comidas completas, especialmente platos peruanos o comidas con arroz, papa, frituras, salsas, cremas, aceite, pollo, pan, snacks o bebidas azucaradas.
+Estima calorías, proteína, carbohidratos y grasas por alimento a partir de su composición alimentaria habitual y la porción declarada o asumida. Suma los componentes para los macros de la comida; comprueba que calorías y macros sean aproximadamente coherentes (4 kcal/g proteína, 4 kcal/g carbohidratos y 9 kcal/g grasas). Incluye aceites o grasas de cocción solo cuando la preparación los sugiera, indicándolo en la porción asumida. No conviertas una categoría alimentaria en un valor fijo: atún e hígado aportan proteínas; fruta aporta principalmente carbohidratos, según porción.
 
-Reglas importantes:
-1. Si el usuario menciona desayuno, almuerzo, cena, snack, pre-entreno o post-entreno, separa cada comida en un elemento distinto dentro de "meals".
-2. Si el usuario menciona varias comidas en una sola frase o audio, NO las unas en un solo registro.
-3. Si no se especifica cantidad, asume una porción casera peruana promedio, no una porción pequeña.
-4. Para platos de almuerzo/cena como arroz con pollo, pollo a la brasa, lomo saltado, chaufa, tallarines, arroz con menestra, papa a la huancaína o platos con salsas, estima como plato completo.
-5. Si una comida incluye dos componentes principales, suma ambos. Ejemplo: "arroz con pollo y papa a la huancaína" debe considerar arroz con pollo + papa a la huancaína.
-6. Si el usuario dice bebida zero, sin azúcar o light, estima 0 a 10 kcal para esa bebida.
-7. Si el usuario dice jugo y no aclara "sin azúcar", asume jugo normal con posible azúcar.
-8. Devuelve también confidence:
-   - "high" si el alimento y porción están claros.
-   - "medium" si el alimento está claro pero la porción es asumida.
-   - "low" si la descripción es ambigua.
-9. Devuelve portion_assumption explicando brevemente qué porción asumiste.
-10. No des consejos médicos, no expliques nada fuera del JSON.
-11. Si no hay alimentos claros, devuelve totalCalories 0 y meals vacío.
-
-Guía de referencia para porciones promedio:
-- Tamal de pollo promedio: 320 a 450 kcal.
-- Jugo de papaya normal: 120 a 220 kcal.
-- Tortilla de 1 huevo: 90 a 140 kcal; si parece tortilla casera con aceite, 140 a 220 kcal.
-- Tortilla de maíz: 50 a 80 kcal por unidad.
-- Manzanilla o infusión sin azúcar: 0 a 5 kcal.
-- Arroz con pollo plato promedio: 650 a 850 kcal.
-- Papa a la huancaína porción promedio: 300 a 450 kcal.
-- Arroz con pollo + papa a la huancaína: normalmente 950 a 1250 kcal.
-- Pollo a la brasa porción promedio con papas y salsas: 900 a 1300 kcal.
-- Pringles o papitas snack porción personal: 250 a 450 kcal.
-- Gaseosa zero: 0 a 10 kcal.
-
-Tipos permitidos para meal_type:
-- breakfast
-- lunch
-- dinner
-- snack
-- pre_workout
-- post_workout
-- other
-
-Ejemplo:
-Usuario: "Desayuné tamal de pollo con jugo de papaya. Almorcé arroz con pollo y papa a la huancaína. Cené tortilla de huevo, tortilla de maíz y manzanilla."
-
-Respuesta esperada:
-{
-  "totalCalories": 1760,
-  "meals": [
-    {
-      "meal_type": "breakfast",
-      "description": "Tamal de pollo con jugo de papaya",
-      "estimated_calories": 560,
-      "confidence": "medium",
-      "portion_assumption": "Tamal promedio y vaso de jugo de papaya normal"
-    },
-    {
-      "meal_type": "lunch",
-      "description": "Arroz con pollo y papa a la huancaína",
-      "estimated_calories": 1000,
-      "confidence": "medium",
-      "portion_assumption": "Plato casero peruano promedio con porción de papa a la huancaína"
-    },
-    {
-      "meal_type": "dinner",
-      "description": "Tortilla de huevo, tortilla de maíz y manzanilla",
-      "estimated_calories": 200,
-      "confidence": "medium",
-      "portion_assumption": "Una tortilla de huevo, una tortilla de maíz e infusión sin azúcar"
-    }
-  ]
-}`,
+Si no puedes estimar responsablemente un nutriente o una porción, devuelve null para ese valor, nunca 0 por ausencia de datos. 0 solo significa ausencia razonable de ese nutriente. confidence es high si alimento y porción están claros, medium si la porción es asumida, low si hay ambigüedad. No des consejos médicos ni simules mediciones de laboratorio. Si no hay alimentos claros, devuelve meals vacío y totalCalories 0. Tipos: breakfast, lunch, dinner, snack, pre_workout, post_workout, other. Estas cifras son estimaciones revisables por el usuario, no valores clínicos.`,
           text,
         ],
         config: {
@@ -160,8 +92,27 @@ Respuesta esperada:
                       type: Type.STRING,
                       description: "Suposición breve de porción usada para calcular calorías.",
                     },
+                    protein_g: { type: Type.NUMBER, nullable: true, description: "Proteínas estimadas en gramos o null si no hay base suficiente." },
+                    carbs_g: { type: Type.NUMBER, nullable: true, description: "Carbohidratos estimados en gramos o null si no hay base suficiente." },
+                    fat_g: { type: Type.NUMBER, nullable: true, description: "Grasas estimadas en gramos o null si no hay base suficiente." },
+                    foods: {
+                      type: Type.ARRAY,
+                      items: {
+                        type: Type.OBJECT,
+                        properties: {
+                          name: { type: Type.STRING },
+                          portion: { type: Type.STRING },
+                          estimated_grams: { type: Type.NUMBER, nullable: true },
+                          estimated_calories: { type: Type.NUMBER, nullable: true },
+                          protein_g: { type: Type.NUMBER, nullable: true },
+                          carbs_g: { type: Type.NUMBER, nullable: true },
+                          fat_g: { type: Type.NUMBER, nullable: true },
+                        },
+                        required: ["name", "portion", "estimated_grams", "estimated_calories", "protein_g", "carbs_g", "fat_g"],
+                      },
+                    },
                   },
-                  required: ["meal_type", "description", "estimated_calories", "confidence", "portion_assumption"],
+                  required: ["meal_type", "description", "estimated_calories", "confidence", "portion_assumption", "protein_g", "carbs_g", "fat_g", "foods"],
                 },
               },
             },

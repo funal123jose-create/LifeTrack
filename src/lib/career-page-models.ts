@@ -12,6 +12,9 @@ export interface Task {
   id: string
   title: string
   status: TaskStatus
+  created_at?: string | null
+  updated_at?: string | null
+  completed_at?: string | null
   task_skills: ProjectTaskSkillLink[]
 }
 
@@ -81,6 +84,7 @@ export interface Project {
   priority: PriorityLevel
   start_date: string | null
   end_date: string | null
+  created_at?: string | null
   project_tasks: Task[]
   project_skills: ProjectSkillLink[]
 }

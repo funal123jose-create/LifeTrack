@@ -361,6 +361,7 @@ export type Database = {
       }
       daily_health_tracker: {
         Row: {
+          calorie_manual_adjustment: number
           calorie_target: number | null
           calories_ingested: number | null
           created_at: string
@@ -373,6 +374,7 @@ export type Database = {
           water_target_liters: number | null
         }
         Insert: {
+          calorie_manual_adjustment?: number
           calorie_target?: number | null
           calories_ingested?: number | null
           created_at?: string
@@ -385,6 +387,7 @@ export type Database = {
           water_target_liters?: number | null
         }
         Update: {
+          calorie_manual_adjustment?: number
           calorie_target?: number | null
           calories_ingested?: number | null
           created_at?: string
@@ -853,40 +856,190 @@ export type Database = {
       }
       meal_logs: {
         Row: {
+          carbs_g: number | null
           confidence: string
           created_at: string
           date: string
           estimated_calories: number
+          fat_g: number | null
+          food_breakdown: Json | null
           id: string
           meal_description: string
           meal_type: string
           portion_assumption: string | null
+          protein_g: number | null
           source: string
           user_id: string
         }
         Insert: {
+          carbs_g?: number | null
           confidence?: string
           created_at?: string
           date?: string
           estimated_calories?: number
+          fat_g?: number | null
+          food_breakdown?: Json | null
           id?: string
           meal_description: string
           meal_type?: string
           portion_assumption?: string | null
+          protein_g?: number | null
           source?: string
           user_id: string
         }
         Update: {
+          carbs_g?: number | null
           confidence?: string
           created_at?: string
           date?: string
           estimated_calories?: number
+          fat_g?: number | null
+          food_breakdown?: Json | null
           id?: string
           meal_description?: string
           meal_type?: string
           portion_assumption?: string | null
+          protein_g?: number | null
           source?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      health_weight_goals: {
+        Row: {
+          created_at: string
+          id: string
+          start_date: string
+          start_weight_kg: number
+          target_date: string
+          target_weight_kg: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          start_date?: string
+          start_weight_kg: number
+          target_date: string
+          target_weight_kg: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          start_date?: string
+          start_weight_kg?: number
+          target_date?: string
+          target_weight_kg?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_weight_goal_history: {
+        Row: {
+          id: string
+          original_goal_id: string
+          user_id: string
+          start_date: string
+          start_weight_kg: number
+          target_weight_kg: number
+          target_date: string
+          final_weight_kg: number | null
+          status: string
+          closed_at: string
+        }
+        Insert: {
+          id?: string
+          original_goal_id: string
+          user_id: string
+          start_date: string
+          start_weight_kg: number
+          target_weight_kg: number
+          target_date: string
+          final_weight_kg?: number | null
+          status: string
+          closed_at?: string
+        }
+        Update: {
+          id?: string
+          original_goal_id?: string
+          user_id?: string
+          start_date?: string
+          start_weight_kg?: number
+          target_weight_kg?: number
+          target_date?: string
+          final_weight_kg?: number | null
+          status?: string
+          closed_at?: string
+        }
+        Relationships: []
+      }
+      health_weekly_plans: {
+        Row: {
+          planned_days: number[]
+          planned_routines: Json
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          planned_days?: number[]
+          planned_routines?: Json
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          planned_days?: number[]
+          planned_routines?: Json
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
+      health_plan_items: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          category: string
+          title: string
+          scheduled_time: string | null
+          target_value: number | null
+          target_unit: string | null
+          completed: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          category: string
+          title: string
+          scheduled_time?: string | null
+          target_value?: number | null
+          target_unit?: string | null
+          completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          category?: string
+          title?: string
+          scheduled_time?: string | null
+          target_value?: number | null
+          target_unit?: string | null
+          completed?: boolean
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1833,6 +1986,7 @@ export type Database = {
           updated_at: string
           user_id: string | null
           weight_kg: number
+          water_goal_ml: number
         }
         Insert: {
           birth_date: string
@@ -1843,6 +1997,7 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
           weight_kg: number
+          water_goal_ml?: number
         }
         Update: {
           birth_date?: string
@@ -1853,6 +2008,7 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
           weight_kg?: number
+          water_goal_ml?: number
         }
         Relationships: []
       }
@@ -2756,6 +2912,15 @@ export type Database = {
       }
     }
     Functions: {
+      cancel_health_weight_goal: { Args: Record<PropertyKey, never>; Returns: boolean }
+      health_streak_summary: {
+        Args: { p_today: string }
+        Returns: { current_streak: number; best_streak: number; recent_days: Json }[]
+      }
+      replace_health_weight_goal: {
+        Args: { p_start_weight: number; p_target_weight: number; p_target_date: string }
+        Returns: string
+      }
       safe_parse_jsonb: { Args: { input_text: string }; Returns: Json }
     }
     Enums: {

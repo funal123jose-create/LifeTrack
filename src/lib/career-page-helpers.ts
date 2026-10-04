@@ -230,6 +230,9 @@ export const mapRawProjects = (projects: RawProject[]): Project[] => {
         id: toRequiredString(task.id),
         title: toRequiredString(task.title),
         status: normalizeTaskStatus(task.status),
+        created_at: toOptionalString(task.created_at),
+        updated_at: toOptionalString(task.updated_at),
+        completed_at: toOptionalString(task.completed_at),
         task_skills: taskSkillLinks,
       }
     })
@@ -248,6 +251,7 @@ export const mapRawProjects = (projects: RawProject[]): Project[] => {
       priority: normalizeProjectPriority(proj.priority),
       start_date: toOptionalString(proj.start_date),
       end_date: toOptionalString(proj.end_date),
+      created_at: toOptionalString(proj.created_at),
       project_tasks: tasks,
       project_skills: skillLinks,
     }
