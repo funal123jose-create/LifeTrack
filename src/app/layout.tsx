@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Manrope, Geist_Mono } from "next/font/google"
 import "./globals.css"
+import "./lifetrack-final.css"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const manrope = Manrope({

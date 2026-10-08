@@ -14,6 +14,8 @@ import {
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { CareerCommandOverview } from "@/components/career/career-command-overview"
+import { CareerBoardParticles } from "@/components/career/career-board-particles"
+import { LifeTrackFooter } from "@/components/lifetrack-footer"
 import { CareerSelect } from "@/components/career/career-filters"
 import { MetricGrid } from "@/components/career/metric-grid"
 import { ProjectCard } from "@/components/career/project-card"
@@ -829,7 +831,9 @@ export default function DataCarreraPage() {
       <div className="relative z-10 mx-auto flex w-full max-w-[1728px] flex-col gap-3">
       {careerView === "overview" && (loading ? <div className="flex min-h-[320px] items-center justify-center text-sm text-slate-400" role="status">Cargando proyectos...</div> : <CareerCommandOverview projects={projects} scores={projectScores} summaries={technicalSummaries} skills={careerSkills} evidence={careerEvidence} activity={careerActivity} documents={careerDocuments} view={careerView} onViewChange={setCareerView} onOpenProject={setSelectedProject} onOpenCaseStudy={fetchProjectCaseStudy} onShowBoard={() => setCareerView("board")} />)}
       {careerView === "board" && <div className="career-board relative isolate space-y-3 overflow-hidden rounded-xl border border-orange-300/20 bg-[#071a29] p-2 sm:p-3">
+      <CareerBoardParticles />
       <div className="career-board-atmosphere pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
+      <div className="career-board-circuits pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="career-board-beam pointer-events-none absolute inset-y-0 -z-10 w-px" aria-hidden="true" />
       <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-orange-300/20 bg-[#0a2230]/90 p-3 shadow-[inset_0_1px_rgba(255,255,255,.04)]"><div><h1 className="text-lg font-bold text-white">Tablero de proyectos</h1><p className="text-xs text-slate-400">Gestiona proyectos, subtareas, skills y documentación.</p></div><div className="inline-flex rounded-md border border-orange-300/25 bg-[#081824] p-1" role="group" aria-label="Vista de Data y Carrera"><button type="button" onClick={() => setCareerView("overview")} aria-pressed={false} className="rounded px-3 py-1.5 text-[11px] text-slate-300 transition-all hover:-translate-y-0.5 hover:bg-orange-400/10 hover:text-white motion-reduce:transform-none">Resumen</button><button type="button" aria-pressed className="rounded border border-orange-300/35 bg-orange-500/25 px-3 py-1.5 text-[11px] font-semibold text-orange-100 shadow-[0_0_15px_rgba(249,115,22,.16)]">Tablero</button></div></div>
 
@@ -948,13 +952,13 @@ export default function DataCarreraPage() {
       {/* POPUP MODAL CONTROL PANEL */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#02040a]/88 p-4 backdrop-blur-xl">
+          <div className="career-modal-overlay fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#02040a]/88 p-4 backdrop-blur-xl">
             <motion.div
               initial={{ scale: 0.94, opacity: 0, y: 30, filter: "blur(8px)" }}
               animate={{ scale: 1, opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ scale: 0.94, opacity: 0, y: 30, filter: "blur(8px)" }}
               transition={{ type: "spring", duration: 0.5 }}
-              className="relative my-8 flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/90 text-white shadow-[0_0_60px_rgba(0,0,0,0.52)] backdrop-blur-2xl"
+              className="career-modal-panel relative my-8 flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/90 text-white shadow-[0_0_60px_rgba(0,0,0,0.52)] backdrop-blur-2xl"
             >
               <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_18%_0%,rgba(249,115,22,0.060),transparent_28%),radial-gradient(circle_at_85%_15%,rgba(59,130,246,0.08),transparent_28%)]" />
               <div className="pointer-events-none absolute left-5 top-5 h-5 w-5 border-l-2 border-t-2 border-orange-300/35" />
@@ -1414,14 +1418,14 @@ export default function DataCarreraPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[60] flex items-center justify-center bg-[#02040a]/82 p-4 backdrop-blur-2xl"
+                  className="career-modal-overlay fixed inset-0 z-[60] flex items-center justify-center bg-[#02040a]/82 p-4 backdrop-blur-2xl"
                 >
                   <motion.div
                     initial={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
                     animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
                     transition={{ type: "spring", stiffness: 260, damping: 24 }}
-                    className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/96 text-white shadow-[0_0_80px_rgba(0,0,0,0.62)] backdrop-blur-2xl"
+                    className="career-modal-panel relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/96 text-white shadow-[0_0_80px_rgba(0,0,0,0.62)] backdrop-blur-2xl"
                   >
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(249,115,22,0.075),transparent_30%),radial-gradient(circle_at_88%_10%,rgba(59,130,246,0.075),transparent_30%)]" />
                     <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-orange-300/35 to-transparent" />
@@ -1597,14 +1601,14 @@ export default function DataCarreraPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[70] flex items-center justify-center bg-[#02040a]/88 p-4 backdrop-blur-2xl"
+                  className="career-modal-overlay fixed inset-0 z-[70] flex items-center justify-center bg-[#02040a]/88 p-4 backdrop-blur-2xl"
                 >
                   <motion.div
                     initial={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
                     animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
                     transition={{ type: "spring", stiffness: 260, damping: 24 }}
-                    className="relative flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/96 text-white shadow-[0_0_90px_rgba(0,0,0,0.70)] backdrop-blur-2xl"
+                    className="career-modal-panel relative flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/96 text-white shadow-[0_0_90px_rgba(0,0,0,0.70)] backdrop-blur-2xl"
                   >
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(34,211,238,0.070),transparent_30%),radial-gradient(circle_at_88%_10%,rgba(249,115,22,0.075),transparent_30%)]" />
                     <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/35 to-transparent" />
@@ -1843,6 +1847,7 @@ export default function DataCarreraPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+      <LifeTrackFooter />
       </div>
     </div>
   )

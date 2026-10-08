@@ -182,7 +182,7 @@ export default function PilaresMenuPage() {
   return (
     <div className="pillars-command-center lifetrack-redesign relative min-h-screen px-2 pb-8 pt-2 font-sans text-slate-100 sm:px-4 sm:pt-3">
       <div className="mx-auto w-full max-w-[1728px] space-y-4">
-        <section className="relative isolate overflow-hidden rounded-2xl border border-sky-200/15 bg-[#081b30]">
+        <section className="pillars-hero relative isolate overflow-hidden rounded-2xl border border-sky-200/15 bg-[#081b30]">
           <Image src="/images/lifetrack/night-mountains.webp" alt="" fill priority sizes="(min-width: 1600px) 1600px, 100vw" className="object-cover object-center opacity-80" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#051421]/90 via-[#061729]/60 to-[#071624]/65" />
           <div className="relative grid min-h-[245px] gap-4 p-4 sm:p-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,.76fr)_minmax(225px,.58fr)] lg:items-end">
@@ -191,7 +191,7 @@ export default function PilaresMenuPage() {
               <h1 className="mt-3 text-4xl font-extrabold leading-[.98] text-white sm:text-5xl xl:text-[58px]">Gestión de<br /><span className="bg-gradient-to-r from-teal-300 via-sky-300 to-orange-200 bg-clip-text text-transparent">Pilares de Vida</span></h1>
               <p className="mt-3 max-w-[650px] text-sm leading-6 text-slate-300">Selecciona un pilar fundamental para registrar actividades, auditar proyectos, planificar rutinas y controlar tu evolución personal desde un solo centro visual.</p>
             </div>
-            <blockquote className="min-w-0 rounded-2xl border border-sky-300/20 bg-[#081c34]/70 p-4 shadow-[0_12px_28px_rgba(0,0,0,.20)] backdrop-blur-sm">
+            <blockquote className="pillars-hero__quote min-w-0 rounded-2xl border border-sky-300/20 bg-[#081c34]/70 p-4 shadow-[0_12px_28px_rgba(0,0,0,.20)] backdrop-blur-sm">
               <span className="text-3xl font-extrabold leading-none text-sky-300">“</span>
               <p aria-label="Disciplina hoy, una vida extraordinaria mañana." className="-mt-2 pl-8 text-lg italic leading-6 text-slate-100">
                 <WaveLine text="Disciplina hoy," offset={0} reducedMotion={reducedMotion} /><br aria-hidden="true" />
@@ -199,7 +199,7 @@ export default function PilaresMenuPage() {
               </p>
               <cite className="mt-2 block pl-8 text-xs italic text-sky-200/75">— LifeTrack</cite>
             </blockquote>
-            <div className="min-w-0 rounded-2xl border border-sky-200/20 bg-[#081b31]/75 p-4 text-center backdrop-blur-sm">
+            <div className="pillars-hero__purpose min-w-0 rounded-2xl border border-sky-200/20 bg-[#081b31]/75 p-4 text-center backdrop-blur-sm">
               <p className="text-[10px] font-bold uppercase leading-5 tracking-[.24em] text-sky-200">Tres pilares<br />un mismo propósito</p>
               <div className="mt-3 flex justify-center gap-3">
                 {(["health", "career", "care"] as const).map((key) => {
@@ -213,13 +213,13 @@ export default function PilaresMenuPage() {
           </div>
         </section>
 
-        <div className="grid items-stretch gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="pillars-grid grid items-stretch gap-4 lg:grid-cols-2 xl:grid-cols-3">
           {pillars.map((pillar, index) => {
             const Icon = pillar.icon
             const accent = theme[pillar.key]
             const state = status[pillar.key]
             const metrics = metricsFor(pillar.key, snapshot, state)
-            return <motion.article key={pillar.key} initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .45, delay: index * .08 }} className={`group relative flex min-h-[480px] min-w-0 flex-col overflow-hidden rounded-[21px] border p-4 shadow-[0_16px_45px_rgba(0,0,0,.24)] transition-[box-shadow,transform] duration-300 motion-safe:hover:-translate-y-1 sm:p-6 lg:last:col-span-2 xl:last:col-span-1 ${accent.card}`}>
+            return <motion.article key={pillar.key} data-pillar={pillar.key} initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .45, delay: index * .08 }} className={`pillar-entry group relative flex min-h-[480px] min-w-0 flex-col overflow-hidden rounded-[21px] border p-4 shadow-[0_16px_45px_rgba(0,0,0,.24)] transition-[box-shadow,transform] duration-300 motion-safe:hover:-translate-y-1 sm:p-6 lg:last:col-span-2 xl:last:col-span-1 ${accent.card}`}>
               {pillar.key === "health" && <div className="pointer-events-none absolute right-[-10%] top-[14%] h-[65%] w-[70%] opacity-75 [mask-image:linear-gradient(to_bottom,black_45%,transparent)]"><Image src="/images/lifetrack/health-anatomy.png" alt="" fill sizes="(min-width: 1280px) 26vw, 60vw" className="object-contain object-right" /></div>}
               {pillar.key === "career" && <div className="pointer-events-none absolute right-[-7%] top-[18%] h-[63%] w-[77%] opacity-75 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"><Image src="/images/lifetrack/career-bars.png" alt="" fill sizes="(min-width: 1280px) 28vw, 65vw" className="object-contain object-right" /></div>}
               {pillar.key === "care" && <div className="pointer-events-none absolute right-[-12%] top-[14%] h-[65%] w-[72%] opacity-70 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"><Image src="/images/lifetrack/care-meditation.webp" alt="" fill sizes="(min-width: 1280px) 26vw, 60vw" className="object-contain object-right" /></div>}
@@ -236,7 +236,7 @@ export default function PilaresMenuPage() {
                 <p className="mt-2 text-[13px] leading-[1.65] text-slate-200">{pillar.description}</p>
               </div>
               <div className="relative z-10 mt-auto pt-5">
-                <div className="grid grid-cols-3 gap-2">
+                <div className="pillar-entry__metrics grid grid-cols-3 gap-2">
                   {metrics.map((metric) => {
                     const MetricIcon = metric.icon
                     return <div key={metric.label} className="flex min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-[#07121d]/70 p-2.5 backdrop-blur-sm transition-[background,transform,border-color] duration-200 hover:-translate-y-1 hover:border-white/30 hover:bg-[#10243a]/90" title={`${metric.label}: ${metric.value}`}>
@@ -245,7 +245,7 @@ export default function PilaresMenuPage() {
                     </div>
                   })}
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="pillar-entry__topics mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {pillar.topics.map((topic) => <span key={topic} className={`rounded-full border bg-[#07131c]/40 px-2 py-2 text-center text-[11px] text-slate-200 transition-[background,transform] duration-200 motion-safe:hover:-translate-y-0.5 ${accent.chip}`}>{topic}</span>)}
                 </div>
                 <Link href={pillar.href} className={`mt-4 flex min-h-12 w-full items-center justify-center gap-3 rounded-xl border px-3 text-sm font-bold text-white shadow-[0_8px_24px_rgba(0,0,0,.25)] transition-[filter,transform] duration-200 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${accent.button}`}><ArrowRight size={20} />{pillar.action}<ChevronRight size={15} className="transition-transform group-hover:translate-x-1" /></Link>

@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
+import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutGrid },
@@ -98,6 +99,20 @@ export function AppSidebar() {
 
     return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
   }, [displayName])
+
+  if (["/dashboard", "/pilares", "/portafolio", "/historial", "/calendario"].includes(pathname) || pathname.startsWith("/pilares/")) {
+    return (
+      <DashboardHeader
+        items={navItems}
+        displayName={displayName}
+        initials={initials}
+        theme={theme}
+        setTheme={setTheme}
+        mounted={mounted}
+        onLogout={handleLogout}
+      />
+    )
+  }
 
   return (
     <header className={`relative z-50 w-full backdrop-blur-md ${hasCommandHeader ? "border-0 bg-transparent px-2 pt-2 sm:px-4" : redesignedRoute ? "border-b border-white/[0.04] bg-[#071425]/95" : "border-b border-white/[0.04] bg-[#080c14]/80"}`}>

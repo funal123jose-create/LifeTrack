@@ -1,19 +1,23 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
+import { Select } from "radix-ui"
 import {
   Activity,
   BarChart3,
   CalendarDays,
+  Check,
   CheckCircle2,
+  ChevronDown,
   Clock3,
-  Filter,
   HeartPulse,
   History,
   Layers3,
   Loader2,
+  Search,
   Sparkles,
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
@@ -39,6 +43,7 @@ import {
   mapWaterLogs,
   sortActivities,
 } from "@/lib/activity-history"
+import "./history-overhaul.css"
 
 type LoadState = "idle" | "loading" | "ready" | "error"
 
@@ -52,27 +57,6 @@ const sourceLabels: Record<ActivityEvent["source"], string> = {
   care_routine: "Rutina personal",
 }
 
-const sourceAccents: Record<ActivityEvent["source"] | "all", string> = {
-  all: "from-blue-400 to-cyan-300",
-  project: "from-orange-400 to-amber-300",
-  meal: "from-emerald-400 to-lime-300",
-  water: "from-cyan-400 to-blue-300",
-  body: "from-emerald-400 to-teal-300",
-  health_routine: "from-green-400 to-emerald-300",
-  care_checkin: "from-violet-400 to-fuchsia-300",
-  care_routine: "from-purple-400 to-violet-300",
-}
-
-const sourceButtonStyles: Record<ActivityEvent["source"] | "all", string> = {
-  all: "border-blue-300/20 bg-blue-400/[0.1] text-blue-100",
-  project: "border-orange-300/20 bg-orange-400/[0.1] text-orange-100",
-  meal: "border-emerald-300/20 bg-emerald-400/[0.1] text-emerald-100",
-  water: "border-cyan-300/20 bg-cyan-400/[0.1] text-cyan-100",
-  body: "border-teal-300/20 bg-teal-400/[0.1] text-teal-100",
-  health_routine: "border-green-300/20 bg-green-400/[0.1] text-green-100",
-  care_checkin: "border-violet-300/20 bg-violet-400/[0.1] text-violet-100",
-  care_routine: "border-purple-300/20 bg-purple-400/[0.1] text-purple-100",
-}
 
 const sourceIcons: Record<ActivityEvent["source"], React.ComponentType<{ className?: string; size?: number }>> = {
   project: BarChart3,
@@ -84,75 +68,6 @@ const sourceIcons: Record<ActivityEvent["source"], React.ComponentType<{ classNa
   care_routine: CheckCircle2,
 }
 
-function StatCard({
-  label,
-  value,
-  detail,
-  accent,
-}: {
-  label: string
-  value: string
-  detail: string
-  accent: string
-}) {
-  return (
-    <div className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.055] to-white/[0.018] p-4 shadow-[0_20px_70px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-0.5 hover:border-white/[0.12]">
-      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${accent}`} />
-      <div className={`absolute -right-12 -top-12 h-28 w-28 rounded-full bg-gradient-to-br ${accent} opacity-10 blur-2xl transition group-hover:opacity-20`} />
-      <p className="relative text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">{label}</p>
-      <p className="relative mt-3 text-3xl font-black tracking-tight text-white">{value}</p>
-      <p className="relative mt-1 text-sm text-slate-400">{detail}</p>
-    </div>
-  )
-}
-
-function TimelineItem({ event, index }: { event: ActivityEvent; index: number }) {
-  const Icon = sourceIcons[event.source]
-
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, delay: Math.min(index * 0.025, 0.18) }}
-      className="group relative overflow-hidden rounded-2xl border border-white/[0.055] bg-gradient-to-br from-[#141821]/95 to-[#101621]/82 p-4 shadow-[0_18px_55px_rgba(0,0,0,0.2)] transition duration-300 hover:-translate-y-0.5 hover:border-white/[0.12] hover:bg-[#141b28]"
-    >
-      <div className={`absolute inset-y-0 left-0 w-1 bg-gradient-to-b ${event.accent}`} />
-      <div className={`absolute -right-16 -top-16 h-32 w-32 rounded-full bg-gradient-to-br ${event.accent} opacity-[0.06] blur-2xl transition group-hover:opacity-[0.12]`} />
-      <div className="flex gap-4">
-        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${event.accent} p-px shadow-[0_0_28px_rgba(34,211,238,0.14)]`}>
-          <div className="flex h-full w-full items-center justify-center rounded-2xl bg-[#111827]">
-            <Icon size={17} className="text-slate-100" />
-          </div>
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="min-w-0">
-              <p className="truncate text-base font-bold text-white">{event.title}</p>
-              <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-400">{event.description}</p>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-2 text-xs text-slate-500">
-              <Clock3 size={13} />
-              {formatActivityTime(event.occurredAt)}
-            </div>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="rounded-full border border-white/[0.06] bg-white/[0.035] px-2.5 py-1 text-[11px] font-semibold text-slate-300">
-              {sourceLabels[event.source]}
-            </span>
-            {event.metric ? (
-              <span className={`rounded-full bg-gradient-to-r ${event.accent} px-2.5 py-1 text-[11px] font-black text-slate-950`}>
-                {event.metric}
-              </span>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </motion.article>
-  )
-}
 
 export default function HistorialPage() {
   const router = useRouter()
@@ -161,6 +76,9 @@ export default function HistorialPage() {
   const [activeFilter, setActiveFilter] = React.useState<ActivityPillar>("all")
   const [activeSource, setActiveSource] = React.useState<ActivitySource | "all">("all")
   const [activeDateRange, setActiveDateRange] = React.useState<ActivityDateRange>("30d")
+  const [search, setSearch] = React.useState("")
+  const [expandedEventId, setExpandedEventId] = React.useState<string | null>(null)
+  const reducedMotion = useReducedMotion()
   const [loadState, setLoadState] = React.useState<LoadState>("idle")
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
 
@@ -281,10 +199,12 @@ export default function HistorialPage() {
         const matchesPillar = activeFilter === "all" || event.pillar === activeFilter
         const matchesSource = activeSource === "all" || event.source === activeSource
         const matchesDateRange = isInDateRange(event, activeDateRange)
+        const query = search.trim().toLocaleLowerCase("es")
+        const matchesSearch = !query || [event.title, event.description, sourceLabels[event.source], event.metric || ""].some((text) => text.toLocaleLowerCase("es").includes(query))
 
-        return matchesPillar && matchesSource && matchesDateRange
+        return matchesPillar && matchesSource && matchesDateRange && matchesSearch
       }),
-    [activeDateRange, activeFilter, activeSource, activities]
+    [activeDateRange, activeFilter, activeSource, activities, search]
   )
 
   const stats = React.useMemo(() => getActivityStats(filteredActivities), [filteredActivities])
@@ -298,285 +218,79 @@ export default function HistorialPage() {
   )
 
   return (
-    <div
-      className="relative min-h-screen overflow-x-hidden py-4 text-slate-100 [font-family:var(--font-geist-sans),system-ui,sans-serif] sm:py-6"
-    >
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[#070b12]" />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,rgba(37,99,235,0.18),transparent_32%),radial-gradient(circle_at_82%_16%,rgba(168,85,247,0.18),transparent_30%),radial-gradient(circle_at_78%_85%,rgba(249,115,22,0.12),transparent_30%),radial-gradient(circle_at_28%_90%,rgba(20,184,166,0.14),transparent_34%)]" />
-      <div className="pointer-events-none fixed inset-0 -z-10 opacity-[0.055] [background-image:linear-gradient(rgba(255,255,255,0.75)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.75)_1px,transparent_1px)] [background-size:44px_44px]" />
-
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/[0.06] bg-[#101621]/78 p-5 shadow-[0_30px_120px_rgba(0,0,0,0.32)] backdrop-blur-xl sm:p-7">
-        <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-violet-500/[0.1] via-orange-500/[0.05] to-transparent" />
-        <div className="absolute -bottom-24 left-1/4 h-48 w-48 rounded-full bg-emerald-400/[0.08] blur-3xl" />
-        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.08] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-cyan-200">
-              <History size={14} />
-              Historial global
-            </div>
-            <h1 className="mt-5 max-w-4xl text-balance text-[clamp(2.35rem,5vw,4.9rem)] font-black leading-[0.97] tracking-[-0.045em] text-white">
-              Toda tu actividad en una sola linea de tiempo.
-            </h1>
-            <p className="mt-5 max-w-3xl text-base leading-8 text-slate-400">
-              Unifica movimientos reales de Salud, Data/Carrera y Cuidado Personal para entender continuidad,
-              progreso y senales recientes sin cambiar la logica de cada modulo.
-            </p>
+    <main className="lifetrack-general history-overhaul text-slate-100">
+      <div className="history-stage">
+        <section className="history-masthead" aria-labelledby="history-title">
+          <Image src="/images/lifetrack/career-sunrise.webp" alt="" fill priority sizes="100vw" className="history-masthead__image" />
+          <div className="history-masthead__shade" aria-hidden="true" />
+          <div className="history-masthead__copy">
+            <span className="history-kicker"><History size={15} /> Registro global</span>
+            <h1 id="history-title">Historial de actividad</h1>
+            <p>Un registro cronologico de Salud, Data &amp; Carrera y Cuidado Personal.</p>
           </div>
-
-          <div className="grid w-full min-w-0 gap-3 sm:grid-cols-2 lg:w-[min(460px,100%)]">
-            <StatCard
-              label="Registros"
-              value={stats.total.toString()}
-              detail={`Vista filtrada de ${activities.length} eventos`}
-              accent="from-blue-400 to-cyan-300"
-            />
-            <StatCard
-              label="Hoy"
-              value={stats.today.toString()}
-              detail="Movimientos del dia"
-              accent="from-emerald-400 to-teal-300"
-            />
-            <StatCard
-              label="Pilar dominante"
-              value={stats.dominantPillar.label}
-              detail="Mayor volumen reciente"
-              accent={stats.dominantPillar.accent}
-            />
-            <StatCard
-              label="Ultimo evento"
-              value={stats.latestLabel}
-              detail="Hora registrada"
-              accent="from-violet-400 to-fuchsia-300"
-            />
-          </div>
-        </div>
-      </section>
-
-      <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(300px,360px)]">
-        <section className="rounded-[2rem] border border-white/[0.06] bg-[#0d131d]/80 p-4 shadow-[0_26px_90px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-5">
-          <div className="flex flex-col gap-4 border-b border-white/[0.06] pb-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="text-2xl font-black tracking-tight text-white">Linea de tiempo</h2>
-              <p className="mt-1 text-sm text-slate-400">
-                Filtra por pilar, tipo y rango para revisar la actividad en orden cronologico.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-center justify-start gap-2 md:justify-end">
-                <span className="hidden items-center gap-1.5 text-xs font-semibold text-slate-500 sm:flex">
-                  <CalendarDays size={13} />
-                  Rango
-                </span>
-                {ACTIVITY_DATE_RANGES.map((range) => (
-                  <button
-                    key={range.id}
-                    type="button"
-                    onClick={() => setActiveDateRange(range.id)}
-                    className={`rounded-full border px-3 py-2 text-xs font-black transition duration-300 ${
-                      activeDateRange === range.id
-                        ? "border-cyan-300/20 bg-cyan-300/[0.12] text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,0.12)]"
-                        : "border-white/[0.06] text-slate-400 hover:border-white/[0.12] hover:text-slate-200"
-                    }`}
-                  >
-                    {range.label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex flex-wrap items-center justify-start gap-2 md:justify-end">
-                <span className="hidden items-center gap-1.5 text-xs font-semibold text-slate-500 sm:flex">
-                  <Filter size={13} />
-                  Pilar
-                </span>
-                {ACTIVITY_PILLARS.map((pillar) => (
-                  <button
-                    key={pillar.id}
-                    type="button"
-                    onClick={() => setActiveFilter(pillar.id)}
-                    className={`relative overflow-hidden rounded-full border px-3 py-2 text-xs font-black transition duration-300 ${
-                      activeFilter === pillar.id
-                        ? "border-white/15 text-white shadow-[0_0_28px_rgba(59,130,246,0.18)]"
-                        : "border-white/[0.06] text-slate-400 hover:border-white/[0.12] hover:text-slate-200"
-                    }`}
-                  >
-                    {activeFilter === pillar.id ? (
-                      <span className={`absolute inset-0 bg-gradient-to-r ${pillar.accent} opacity-25`} />
-                    ) : null}
-                    <span className="relative">{pillar.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-2 rounded-3xl border border-white/[0.045] bg-white/[0.02] p-2">
-            {ACTIVITY_SOURCES.map((source) => (
-              <button
-                key={source.id}
-                type="button"
-                onClick={() => setActiveSource(source.id)}
-                className={`rounded-2xl border px-3 py-2 text-xs font-bold transition duration-300 ${
-                  activeSource === source.id
-                    ? `${sourceButtonStyles[source.id]} shadow-[0_0_24px_rgba(255,255,255,0.08)]`
-                    : "border-transparent text-slate-500 hover:bg-white/[0.045] hover:text-slate-300"
-                }`}
-              >
-                {source.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-5">
-            {loadState === "loading" ? (
-              <div className="flex min-h-[380px] flex-col items-center justify-center rounded-3xl border border-white/[0.05] bg-white/[0.02] text-slate-400">
-                <Loader2 size={26} className="animate-spin text-cyan-300" />
-                <p className="mt-3 text-sm">Cargando actividad real desde Supabase...</p>
-              </div>
-            ) : null}
-
-            {loadState === "error" ? (
-              <div className="rounded-3xl border border-rose-400/20 bg-rose-500/10 p-5 text-sm text-rose-100">
-                No se pudo cargar el historial desde Supabase.
-                {errorMessage ? <span className="mt-2 block text-rose-200/80">{errorMessage}</span> : null}
-              </div>
-            ) : null}
-
-            {loadState === "ready" && groupedActivities.length === 0 ? (
-              <div className="flex min-h-[380px] flex-col items-center justify-center rounded-3xl border border-white/[0.05] bg-white/[0.02] p-8 text-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.08] text-cyan-200">
-                  <Layers3 size={22} />
-                </div>
-                <h3 className="mt-4 text-xl font-black text-white">Aun no hay actividad para este filtro</h3>
-                <p className="mt-2 max-w-md text-sm leading-6 text-slate-400">
-                  Cuando registres comidas, hidratacion, rutinas, check-ins o avances de proyectos, apareceran aqui.
-                </p>
-              </div>
-            ) : null}
-
-            {loadState === "ready" && groupedActivities.length > 0 ? (
-              <div className="space-y-6">
-                {groupedActivities.map((group) => (
-                  <div key={group.dateKey}>
-                    <div className="z-10 mb-3 flex items-center gap-3 bg-[#0d131d]/90 py-2 backdrop-blur">
-                      <div className="h-px flex-1 bg-white/[0.08]" />
-                      <p className="rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-slate-300">
-                        {group.label}
-                      </p>
-                      <div className="h-px flex-1 bg-white/[0.08]" />
-                    </div>
-
-                    <div className="space-y-3">
-                      {group.events.map((event, index) => (
-                        <TimelineItem key={event.id} event={event} index={index} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : null}
+          <div className="history-masthead__metrics" aria-label="Resumen del historial filtrado">
+            {[
+              { label: "Registros", value: String(stats.total), detail: "de " + activities.length + " cargados", icon: Layers3 },
+              { label: "Hoy", value: String(stats.today), detail: "movimientos", icon: CalendarDays },
+              { label: "Pilar principal", value: stats.total ? stats.dominantPillar.label : "Sin datos", detail: "en esta vista", icon: HeartPulse },
+              { label: "Ultimo evento", value: stats.latestLabel, detail: "hora registrada", icon: Clock3 },
+            ].map(({ label, value, detail, icon: Icon }) => <div className="history-metric" key={label}><Icon size={18} /><span>{label}</span><strong>{value}</strong><small>{detail}</small></div>)}
           </div>
         </section>
 
-        <aside className="space-y-6">
-          <section className="rounded-[2rem] border border-white/[0.06] bg-gradient-to-br from-[#101621]/90 to-[#15131f]/82 p-5 shadow-[0_26px_90px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-black text-white">Actividad semanal</h2>
-                <p className="mt-1 text-sm text-slate-500">Ritmo de los ultimos 7 dias.</p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.035] text-cyan-200">
-                <Activity size={18} />
-              </div>
-            </div>
+        <section className="history-command" aria-labelledby="history-filter-title">
+          <div className="history-section-head"><div><span className="history-section-icon"><Search size={18} /></span><div><h2 id="history-filter-title">Encontrar registros</h2><p>Filtra los eventos cargados por fecha, pilar o tipo.</p></div></div><span>{filteredActivities.length} resultados</span></div>
+          <div className="history-command__primary">
+            <label className="history-search"><Search size={17} aria-hidden="true" /><span className="sr-only">Buscar en el historial</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar actividad, descripcion o metrica" /></label>
+            <Select.Root value={activeSource} onValueChange={(value) => setActiveSource(value as ActivitySource | "all")}>
+              <Select.Trigger className="history-source-trigger" aria-label="Filtrar historial por tipo de actividad"><Select.Value /><Select.Icon><ChevronDown size={15} /></Select.Icon></Select.Trigger>
+              <Select.Portal><Select.Content position="popper" sideOffset={6} collisionPadding={10} className="history-source-menu"><Select.Viewport>{ACTIVITY_SOURCES.map((source) => <Select.Item value={source.id} key={source.id} className="history-source-option"><Select.ItemIndicator><Check size={14} /></Select.ItemIndicator><Select.ItemText>{source.label}</Select.ItemText></Select.Item>)}</Select.Viewport></Select.Content></Select.Portal>
+            </Select.Root>
+          </div>
+          <div className="history-command__secondary">
+            <div className="history-segment" role="group" aria-label="Rango de fechas">{ACTIVITY_DATE_RANGES.map((range) => <button type="button" key={range.id} onClick={() => setActiveDateRange(range.id)} aria-pressed={activeDateRange === range.id}>{range.label}</button>)}</div>
+            <div className="history-segment history-segment--pillars" role="group" aria-label="Filtrar por pilar">{ACTIVITY_PILLARS.map((pillar) => <button type="button" key={pillar.id} onClick={() => setActiveFilter(pillar.id)} aria-pressed={activeFilter === pillar.id} data-pillar={pillar.id}>{pillar.label}</button>)}</div>
+          </div>
+        </section>
 
-            <div className="mt-6 flex h-36 items-end gap-2">
-              {weeklyActivity.map((day) => (
-                <div key={day.key} className="flex min-w-0 flex-1 flex-col items-center gap-2">
-                  <div className="relative flex h-24 w-full items-end overflow-hidden rounded-full bg-slate-950/70">
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: `${Math.max(day.percent, day.count > 0 ? 10 : 0)}%` }}
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                      className="w-full rounded-full bg-gradient-to-t from-orange-400 via-violet-400 to-emerald-300 shadow-[0_0_22px_rgba(168,85,247,0.28)]"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[11px] font-black text-slate-300">{day.count}</p>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-600">{day.label}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+        <div className="history-insights">
+          <section className="history-week" aria-labelledby="history-week-title">
+            <div className="history-mini-head"><h2 id="history-week-title"><Activity size={18} /> Ritmo de los ultimos 7 dias</h2><span>Registros por dia</span></div>
+            <div className="history-week__chart">{weeklyActivity.map((day) => <button type="button" key={day.key} disabled={!day.count} onClick={() => document.getElementById("history-day-" + day.key)?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" })} aria-label={day.label + ": " + day.count + " registros. Ir a los eventos del dia."} title={day.label + ": " + day.count + " registros"}><span className="history-week__bar-track"><span className="history-week__bar" style={{ height: String(Math.max(day.percent, day.count ? 9 : 0)) + "%" }} /></span><strong>{day.count}</strong><small>{day.label}</small></button>)}</div>
           </section>
-
-          <section className="rounded-[2rem] border border-white/[0.06] bg-gradient-to-br from-[#101621]/90 to-[#101b18]/82 p-5 shadow-[0_26px_90px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-black text-white">Distribucion</h2>
-                <p className="mt-1 text-sm text-slate-500">Peso relativo por pilar.</p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.035] text-cyan-200">
-                <BarChart3 size={18} />
-              </div>
-            </div>
-
-            <div className="mt-5 space-y-4">
-              {stats.distribution.map((pillar) => (
-                <div key={pillar.id}>
-                  <div className="mb-2 flex items-center justify-between text-sm">
-                    <span className="font-semibold text-slate-300">{pillar.label}</span>
-                    <span className="text-slate-500">{pillar.count} eventos</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-950/80">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pillar.percent}%` }}
-                      transition={{ duration: 0.55, ease: "easeOut" }}
-                      className={`h-full rounded-full bg-gradient-to-r ${pillar.accent}`}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+          <section className="history-distribution" aria-labelledby="history-distribution-title">
+            <div className="history-mini-head"><h2 id="history-distribution-title"><BarChart3 size={18} /> Por pilar</h2><span>Vista filtrada</span></div>
+            <div className="history-distribution__list">{stats.distribution.map((pillar) => <button type="button" key={pillar.id} onClick={() => setActiveFilter(pillar.id)} aria-pressed={activeFilter === pillar.id}><span><strong>{pillar.label}</strong><small>{pillar.count} eventos</small></span><span className="history-distribution__track"><span data-pillar={pillar.id} style={{ width: String(pillar.percent) + "%" }} /></span><b>{pillar.percent}%</b></button>)}</div>
           </section>
-
-          <section className="rounded-[2rem] border border-white/[0.06] bg-gradient-to-br from-[#101621]/90 to-[#1b1216]/82 p-5 shadow-[0_26px_90px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-black text-white">Ultimos hitos</h2>
-                <p className="mt-1 text-sm text-slate-500">Lectura rapida reciente.</p>
-              </div>
-              <Sparkles size={18} className="text-violet-300" />
-            </div>
-
-            <div className="mt-5 space-y-3">
-              {activities.slice(0, 5).map((event) => (
-                <div
-                  key={`highlight-${event.id}`}
-                  className="rounded-2xl border border-white/[0.055] bg-gradient-to-br from-white/[0.045] to-white/[0.015] p-3 transition hover:border-white/[0.11]"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-white">{event.title}</p>
-                      <p className={`mt-1 bg-gradient-to-r ${sourceAccents[event.source]} bg-clip-text text-xs font-bold text-transparent`}>
-                        {sourceLabels[event.source]}
-                      </p>
-                    </div>
-                    <span className="shrink-0 text-xs text-slate-500">{formatActivityTime(event.occurredAt)}</span>
-                  </div>
-                </div>
-              ))}
-
-              {loadState === "ready" && activities.length === 0 ? (
-                <p className="rounded-2xl border border-white/[0.055] bg-white/[0.025] p-4 text-sm text-slate-400">
-                  Sin hitos recientes por ahora.
-                </p>
-              ) : null}
-            </div>
+          <section className="history-milestones" aria-labelledby="history-milestones-title">
+            <div className="history-mini-head"><h2 id="history-milestones-title"><Sparkles size={18} /> Ultimos hitos</h2><span>Actividad reciente</span></div>
+            <div className="history-milestones__list">{activities.slice(0, 3).map((event) => <div key={event.id}><span>{formatActivityTime(event.occurredAt)}</span><div><strong>{event.title}</strong><small>{sourceLabels[event.source]}</small></div></div>)}{loadState === "ready" && !activities.length ? <p className="history-empty">Sin hitos recientes.</p> : null}</div>
           </section>
-        </aside>
+        </div>
+
+        <section className="history-ledger" aria-labelledby="history-ledger-title">
+          <div className="history-section-head"><div><span className="history-section-icon"><History size={18} /></span><div><h2 id="history-ledger-title">Cronologia de registros</h2><p>De lo mas reciente a lo mas antiguo.</p></div></div><span>{groupedActivities.length} fechas</span></div>
+          {loadState === "idle" || loadState === "loading" ? <div className="history-state"><Loader2 size={24} className="animate-spin" /> Cargando actividad desde Supabase...</div> : null}
+          {loadState === "error" ? <div className="history-state history-state--error" role="alert">No se pudo cargar el historial desde Supabase.{errorMessage ? <span>{errorMessage}</span> : null}</div> : null}
+          {loadState === "ready" && !groupedActivities.length ? <div className="history-state"><Layers3 size={25} /><strong>Sin actividad para estos filtros</strong><span>Prueba otro rango, pilar, tipo o termino de busqueda.</span></div> : null}
+          {loadState === "ready" && groupedActivities.map((group) => <div className="history-day" id={"history-day-" + group.dateKey} key={group.dateKey}>
+            <div className="history-day__date"><CalendarDays size={16} /><h3>{group.label}</h3><span>{group.events.length} registros</span></div>
+            <div className="history-day__events">{group.events.map((event, index) => {
+              const Icon = sourceIcons[event.source]
+              const expanded = expandedEventId === event.id
+              return <motion.article key={event.id} initial={reducedMotion ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .2, delay: Math.min(index * .025, .12) }} className="history-event" data-pillar={event.pillar}>
+                <button type="button" aria-expanded={expanded} aria-controls={"history-detail-" + event.id} onClick={() => setExpandedEventId(expanded ? null : event.id)} className="history-event__trigger">
+                  <span className="history-event__icon"><Icon size={17} /></span>
+                  <span className="history-event__main"><strong>{event.title}</strong><small>{sourceLabels[event.source]}{event.metric ? " · " + event.metric : ""}</small></span>
+                  <span className="history-event__time">{formatActivityTime(event.occurredAt)}</span>
+                  <ChevronDown className="history-event__chevron" size={17} />
+                </button>
+                <div id={"history-detail-" + event.id} hidden={!expanded} className="history-event__detail"><p>{event.description}</p><span>{sourceLabels[event.source]} · {formatActivityTime(event.occurredAt)}</span></div>
+              </motion.article>
+            })}</div>
+          </div>)}
+        </section>
       </div>
-    </div>
+    </main>
   )
 }

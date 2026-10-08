@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { PersonalCareCommandCenter } from "@/components/personal-care/personal-care-command-center"
+import { LifeTrackFooter } from "@/components/lifetrack-footer"
 import {
   Sparkles,
   ArrowLeft,
@@ -19,7 +20,6 @@ import {
   Circle,
   Moon,
   SmilePlus,
-  HeartHandshake,
   Flame,
   Target,
   RefreshCw,
@@ -781,6 +781,7 @@ export default function CuidadoPersonalPage() {
           </motion.div>
         </div>
         </>}
+        <LifeTrackFooter />
       </div>
     </div>
   )

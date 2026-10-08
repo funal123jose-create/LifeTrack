@@ -87,7 +87,7 @@ function HistoryOffset({ unit, value, onChange }: { unit: "today" | "week" | "mo
 
 function HeroMetric({ icon: Icon, label, value, detail, progress, color, className, index }: { icon: LucideIcon; label: string; value: string; detail: string; progress: number; color: string; className: string; index: number }) {
   const reduced = useReducedMotion()
-  return <motion.div initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, delay: index * 0.06 }} whileHover={reduced ? undefined : { y: -2, boxShadow: `0 12px 28px ${color}20` }} className={`min-w-0 rounded-xl border p-2.5 shadow-[inset_0_1px_rgba(255,255,255,.08)] backdrop-blur-sm ${className}`}>
+  return <motion.div initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, delay: index * 0.06 }} whileHover={reduced ? undefined : { y: -2, boxShadow: `0 12px 28px ${color}20` }} className={`health-hero-metric min-w-0 rounded-xl border p-2.5 shadow-[inset_0_1px_rgba(255,255,255,.08)] backdrop-blur-sm ${className}`}>
     <div className="flex items-center gap-2"><Icon size={19} style={{ color }} /><span className="text-[11px] font-semibold leading-4 text-slate-200">{label}</span></div>
     <div className="mt-2 flex items-center gap-2"><Ring value={progress} color={color} size={58}>{pct(progress)}%</Ring><div className="min-w-0"><strong className="block text-sm text-white">{value}</strong><span className="block text-[10px] leading-4 text-slate-300">{detail}</span></div></div>
   </motion.div>
@@ -166,8 +166,8 @@ export function HealthMockupOverview(props: Props) {
     ...planItems.map((item) => ({ key: item.id, date: item.date, title: `${item.scheduled_time ? `${item.scheduled_time.slice(0, 5)} · ` : ""}${item.title}`, completed: item.completed, workout: null as WorkoutPlanEntry | null, item })),
   ].filter((entry) => inHealthRange(entry.date, planRange) && (planPeriod === "week" || planWeekOffset !== 0 || entry.date === todayString)).sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title))
 
-  return <div className="space-y-3">
-    <section className="health-hero relative isolate overflow-hidden rounded-xl border border-emerald-300/20 bg-[#071a2a] p-3 sm:p-4">
+  return <div className="health-overview space-y-3">
+    <section className="health-hero lifetrack-interactive-hero relative isolate overflow-hidden rounded-xl border border-emerald-300/20 bg-[#071a2a] p-3 sm:p-4">
       <Image src="/images/lifetrack/night-mountains.webp" alt="" fill priority sizes="100vw" className="object-cover object-center opacity-80" />
       <div className="absolute inset-0 bg-gradient-to-r from-[#041422]/95 via-[#061827]/72 to-[#041722]/63" />
       <div className="relative grid gap-3 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,.55fr)_minmax(0,1.9fr)] xl:items-end">
@@ -179,9 +179,9 @@ export function HealthMockupOverview(props: Props) {
           <h1 className="mt-3 text-4xl font-extrabold leading-[1.02] text-white sm:text-5xl">Centro de Salud <span className="text-emerald-300">Física</span></h1>
           <p className="mt-1 text-lg text-sky-100">Un cuerpo fuerte hoy, más libertad mañana.</p>
           <p className="mt-2 max-w-[510px] text-xs leading-5 text-slate-300">Monitorea tu actividad, nutrición, descanso y hábitos para mantener tu mejor versión. Tu salud es el motor de todo lo demás.</p>
-          <p className="mt-3 w-fit max-w-full rounded-lg border border-emerald-300/20 bg-[#091e2d]/70 px-3 py-2 text-xs italic text-slate-200">“Cuida tu cuerpo. Es el único lugar que tienes para vivir.”</p>
+          <p className="mt-3 w-fit max-w-full rounded-lg border border-emerald-300/20 bg-[#091e2d]/70 px-3 py-2 text-xs italic"><span className="lifetrack-energy-quote lifetrack-energy-quote--health">“Cuida tu cuerpo. Es el único lugar que tienes para vivir.”</span></p>
         </div>
-        <div className="relative hidden h-[205px] xl:block"><Image src="/images/lifetrack/health-athlete.webp" alt="" fill sizes="25vw" className="object-contain object-bottom [mask-image:linear-gradient(to_bottom,black_72%,transparent)]" /></div>
+        <div className="lifetrack-interactive-hero__visual relative hidden h-[205px] xl:block"><Image src="/images/lifetrack/health-athlete.webp" alt="" fill sizes="25vw" className="object-contain object-bottom [mask-image:linear-gradient(to_bottom,black_72%,transparent)]" /></div>
         <div className="min-w-0">
           <p className="mb-3 text-right text-[10px] font-bold uppercase leading-4 text-cyan-200/80">Cuerpo sano<br />Mente clara<br />Vida extraordinaria</p>
           <div className="grid min-w-0 grid-cols-2 gap-2 2xl:grid-cols-4">
@@ -247,7 +247,7 @@ export function HealthMockupOverview(props: Props) {
       </section>
     </div>
 
-    <div className="grid gap-3 xl:grid-cols-[1fr_1.15fr_1fr]">
+    <div className="health-overview__three-up grid gap-3">
       <section className={`${panel} flex flex-col`}>
         <SectionTitle icon={Utensils} action={<div className="flex items-center gap-2"><TimeSelect label="Periodo de nutrición" value={nutritionPeriod} onChange={(value) => { onNutritionPeriodChange(value as NutritionPeriod); onNutritionOffsetChange(0) }}><option value="today">Hoy</option><option value="week">Semana</option><option value="month">Mes</option></TimeSelect><button type="button" onClick={() => setAnalysisView("nutrition")} className="health-action inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 hover:text-white">Análisis <ArrowRight size={12} /></button></div>}>Nutrición y alimentación</SectionTitle>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2"><HistoryOffset unit={nutritionPeriod} value={nutritionOffset} onChange={onNutritionOffsetChange} /><button type="button" onClick={() => onOpenPanel("nutrition")} className="health-action text-[11px] font-semibold text-emerald-300 hover:text-white">Comidas y macros <ArrowRight size={12} className="inline" /></button></div>
@@ -265,7 +265,7 @@ export function HealthMockupOverview(props: Props) {
       </section>
     </div>
 
-    <div className="grid gap-3 xl:grid-cols-[.9fr_1.15fr_1fr]">
+    <div className="health-overview__three-up health-overview__daily grid items-stretch gap-3">
       <section className={`${panel} health-surface--cyan flex flex-col`}>
         <SectionTitle icon={Droplet} tone="cyan" action={<div className="flex items-center gap-2"><TimeSelect label="Periodo de hidratación" value={hydrationPeriod} onChange={(value) => { setHydrationPeriod(value as WaterPeriod); setHydrationOffset(0) }}><option value="today">Hoy</option><option value="week">Semana</option><option value="month">Mes</option></TimeSelect><button type="button" onClick={() => setAnalysisView("hydration")} className="health-action health-action--cyan text-[11px] font-semibold text-cyan-300 hover:text-white">Análisis <ArrowRight size={12} className="inline" /></button></div>}>Hidratación</SectionTitle>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2"><HistoryOffset unit={hydrationPeriod} value={hydrationOffset} onChange={setHydrationOffset} /><button type="button" onClick={() => onOpenPanel("hydration")} className="health-action health-action--cyan text-[11px] font-semibold text-cyan-300 hover:text-white">Registrar y meta <ArrowRight size={12} className="inline" /></button></div>
@@ -274,7 +274,7 @@ export function HealthMockupOverview(props: Props) {
         <button type="button" onClick={onAddWater} disabled={hydrationPeriod !== "today" || hydrationOffset !== 0 || water >= 10} className="health-pressable mt-2 self-start rounded-lg border border-cyan-400/40 bg-cyan-400/12 px-3 py-1.5 text-[11px] font-semibold text-cyan-100 hover:border-cyan-300/70 hover:bg-cyan-400/20 disabled:opacity-50">+ 250 ml</button>
       </section>
       <section className={`${panel} health-surface--insight flex flex-col`}><HealthAiReading fallback={insight} revision={analyticsRevision} /></section>
-      <section className={`${panel} flex h-[300px] min-h-0 flex-col overflow-hidden`}>
+      <section className={`${panel} health-overview__plan flex min-h-0 flex-col overflow-hidden`}>
         <SectionTitle icon={CalendarDays} action={<button type="button" onClick={() => onOpenPanel("plan")} className="health-action text-[11px] font-semibold text-emerald-300 hover:text-white">Ver todo <ArrowRight size={12} className="inline" /></button>}>Plan semanal de salud</SectionTitle>
         <div className="mb-2 flex flex-wrap gap-2"><TimeSelect label="Vista del plan" value={planPeriod} onChange={(value) => setPlanPeriod(value as "today" | "week")}><option value="today" disabled={planWeekOffset !== 0}>Hoy</option><option value="week">Semana</option></TimeSelect><TimeSelect label="Semana del plan" value={planWeekOffset} onChange={(value) => { const offset = Number(value); onPlanWeekOffsetChange(offset); if (offset > 0) setPlanPeriod("week") }}>{Array.from({ length: 8 }, (_, offset) => <option key={offset} value={offset}>{healthDateRange("week", offset).label}</option>)}</TimeSelect></div>
         <div className="health-plan-scroll min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1" aria-label="Actividades del plan seleccionado">{agenda.map((entry) => <button key={entry.key} type="button" disabled={planWeekOffset !== 0} onClick={() => entry.workout ? onToggleWorkout(entry.workout) : entry.item && onTogglePlanItem(entry.item)} className="health-pressable flex w-full min-w-0 items-start gap-2 rounded-md border border-transparent px-1.5 py-1.5 text-left text-[11px] text-slate-300 enabled:hover:border-emerald-300/15 enabled:hover:bg-emerald-400/8 enabled:hover:text-white disabled:cursor-default"><span className="mt-0.5 shrink-0 text-emerald-300">{entry.completed ? <CircleCheck size={14} /> : <span className="block h-3.5 w-3.5 rounded-sm border border-emerald-300/50" />}</span><span className="min-w-0 flex-1 truncate" title={entry.title}>{planPeriod === "week" || planWeekOffset > 0 ? `${entry.date.slice(5)} · ` : ""}{entry.title}</span></button>)}{!agenda.length && <p className="py-5 text-center text-xs text-slate-400">Sin actividades planificadas en esta vista.</p>}</div>
@@ -285,11 +285,14 @@ export function HealthMockupOverview(props: Props) {
     <Dialog.Root open={analysisView !== null} onOpenChange={(open) => { if (!open) setAnalysisView(null) }}>
       <Dialog.Portal>
         <Dialog.Overlay className="health-dialog-overlay fixed inset-0 z-[70] bg-[#020c15]/85 backdrop-blur-sm" />
-        <Dialog.Content className="health-dialog-content health-analysis-modal fixed inset-x-2 top-1/2 z-[71] mx-auto max-h-[90dvh] w-[calc(100%-1rem)] max-w-3xl -translate-y-1/2 overflow-y-auto rounded-xl border border-emerald-300/25 bg-[#071a29] p-4 text-slate-100 shadow-[0_30px_90px_rgba(0,0,0,.7)] outline-none sm:p-5">
-          <Dialog.Title className="sr-only">Análisis histórico de salud</Dialog.Title>
-          <Dialog.Description className="sr-only">Comparación con el periodo anterior y registros del periodo seleccionado.</Dialog.Description>
-          <Dialog.Close className="health-dialog-close absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-sky-100/15 text-slate-300 hover:border-emerald-300/40 hover:text-white" aria-label="Cerrar análisis"><X size={16} /></Dialog.Close>
-          {analysisView && <HealthAnalysisPanel view={analysisView} range={analysisView === "nutrition" ? nutritionRange : analysisView === "hydration" ? hydrationRange : trainingRange} history={history} nutrition={nutrition} />}
+        <Dialog.Content className="health-dialog-content health-analysis-modal fixed inset-x-2 top-1/2 z-[71] mx-auto flex max-h-[90dvh] w-[calc(100%-1rem)] max-w-3xl -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-emerald-300/25 bg-[#071a29] text-slate-100 shadow-[0_30px_90px_rgba(0,0,0,.7)] outline-none">
+          <div className="health-dialog-header flex shrink-0 items-center justify-between gap-3 border-b border-emerald-300/20 px-4 py-3 sm:px-5">
+            <div><Dialog.Title className="text-sm font-bold text-white">Análisis histórico de salud</Dialog.Title><Dialog.Description className="text-xs text-slate-400">Comparación con el periodo anterior y registros seleccionados.</Dialog.Description></div>
+            <Dialog.Close className="health-dialog-close inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-sky-100/15 text-slate-300 hover:border-emerald-300/40 hover:text-white" aria-label="Cerrar análisis"><X size={16} /></Dialog.Close>
+          </div>
+          <div className="health-dialog-body min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5">
+            {analysisView && <HealthAnalysisPanel view={analysisView} range={analysisView === "nutrition" ? nutritionRange : analysisView === "hydration" ? hydrationRange : trainingRange} history={history} nutrition={nutrition} />}
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

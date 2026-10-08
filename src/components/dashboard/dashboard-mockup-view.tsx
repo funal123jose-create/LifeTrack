@@ -12,7 +12,7 @@ import {
   Activity, ArrowRight, BarChart3, BookOpenCheck, BriefcaseBusiness,
   CalendarCheck2, Check, CircleAlert, CircleCheck, Code2,
   Database, Droplets, Flame, Heart, HeartPulse, Layers3, Lightbulb,
-  Moon, Plus, Scale, Sparkles, Target,
+  Moon, Plus, Scale, Sparkles,
   TrendingUp, UserRound, type LucideIcon,
 } from "lucide-react"
 import { LifeTrackFooter } from "@/components/lifetrack-footer"
@@ -103,7 +103,7 @@ function ProgressCard({ label, value, detail, Icon, kind }: { label: string; val
   const reduced = useReducedMotion()
   const style = tone[kind]
   return (
-    <motion.div whileHover={reduced ? undefined : { y: -3, boxShadow: `0 0 26px ${style.color}40, inset 0 0 24px ${style.color}18` }} transition={{ duration: .22 }} className={`group min-w-0 rounded-[17px] border bg-[#08162a]/85 p-3.5 backdrop-blur-sm ${style.border} ${style.glow}`}>
+    <motion.div whileHover={reduced ? undefined : { y: -3 }} transition={{ duration: .22 }} className={`dashboard-progress-card dashboard-progress-card--${kind} group min-w-0 rounded-[17px] border bg-[#08162a]/85 p-3.5 backdrop-blur-sm ${style.border}`}>
       <div className="flex items-center gap-2.5">
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-current/30 motion-safe:transition-transform motion-safe:group-hover:scale-105 ${style.tint} ${style.text}`}><Icon size={17} /></span>
         <span className="min-w-0 text-[11px] font-bold leading-4 text-slate-200">Avance<br />{label}</span>
@@ -121,7 +121,7 @@ function QuickMetric({ Icon, label, value, detail, kind, pct, visual }: { Icon: 
   const style = tone[kind]
   const reduced = useReducedMotion()
   return (
-    <motion.div whileHover={reduced ? undefined : { y: -3, boxShadow: `0 0 24px ${style.color}22` }} className="group flex min-w-0 items-center gap-2 rounded-xl border border-sky-200/10 bg-[#071524]/75 p-2.5 transition-colors hover:border-sky-200/25">
+    <motion.div whileHover={reduced ? undefined : { y: -2 }} className="dashboard-quick-metric group flex min-w-0 items-center gap-2 rounded-xl border border-sky-200/10 bg-[#071524]/75 p-2.5 transition-colors hover:border-sky-200/25">
       <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 ${style.tint} ${style.text}`}><Icon size={18} /></span>
       <div className="min-w-0 flex-1"><span className="block truncate text-[10px] text-slate-300">{label}</span><strong className="block truncate text-lg leading-6 text-white" title={value}>{value}</strong><span className={`block truncate text-[10px] ${style.text}`}>{detail}</span></div>
       {visual === "routine" && <div className="w-12 shrink-0" aria-hidden="true"><div className="flex items-end gap-1">{Array.from({ length: 5 }, (_, index) => <motion.span key={index} className="w-1.5 rounded-t-sm" style={{ backgroundColor: index < Math.round((pct ?? 0) / 20) ? style.color : "#233447" }} initial={reduced ? false : { height: 2 }} animate={{ height: 11 + index * 4 }} transition={{ delay: index * .07, duration: .4 }} />)}</div><span className="mt-1 block text-right text-[9px]" style={{ color: style.color }}>{pct ?? 0}%</span></div>}
@@ -136,7 +136,7 @@ function MiniMetric({ label, value, detail, pct, Icon, kind, iconOnly = false, r
   const style = tone[kind]
   const reduced = useReducedMotion()
   return (
-    <motion.div whileHover={reduced ? undefined : { y: -2 }} className="flex min-w-0 items-center gap-1.5 rounded-xl border border-sky-100/[.09] bg-[#071422]/80 p-2 transition-colors hover:border-sky-200/25">
+    <motion.div whileHover={reduced ? undefined : { y: -2 }} className="dashboard-mini-metric flex min-w-0 items-center gap-1.5 rounded-xl border border-sky-100/[.09] bg-[#071422]/80 p-2 transition-colors hover:border-sky-200/25">
       {pct === undefined || iconOnly ? <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${style.tint} ${style.text}`}><Icon size={17} /></span> : <Ring value={pct} color={style.color} size={34} center={ringCenter} />}
       <div className="min-w-0"><p className="break-words text-[10px] leading-3 text-slate-300">{label}</p><p className="whitespace-nowrap text-sm font-extrabold leading-5 text-white" title={value}>{value}</p><p className={`break-words text-[10px] leading-3 ${style.text}`}>{detail}</p></div>
     </motion.div>
@@ -145,7 +145,7 @@ function MiniMetric({ label, value, detail, pct, Icon, kind, iconOnly = false, r
 
 function IndicatorBars({ title, rows, color }: { title: string; rows: { label: string; value: number; display: string }[]; color: string }) {
   return (
-    <div className="min-w-0 rounded-xl border border-white/10 bg-[#061320]/75 p-2.5">
+    <div className="dashboard-indicator min-w-0 rounded-xl border border-white/10 bg-[#061320]/75 p-2.5">
       <h4 className="mb-2 text-[11px] font-semibold text-slate-200">{title}</h4>
       <div className="space-y-1.5">
         {rows.map((row) => <div key={row.label} title={`${row.label}: ${row.display}`} className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 gap-y-1 rounded-md px-1 py-0.5 text-[10px] transition-colors hover:bg-white/5"><span className="truncate text-slate-400 transition-colors group-hover:text-slate-200">{row.label}</span><span className="font-semibold text-white">{row.display}</span><div className="col-span-2 h-1.5 overflow-hidden rounded-full bg-white/10 transition-[filter,box-shadow] duration-200 group-hover:brightness-125 group-hover:shadow-[0_0_12px_rgba(255,255,255,.12)]"><AnimatedFill value={row.value} color={color} /></div></div>)}
@@ -173,14 +173,14 @@ function PillarPanel({ kind, title, subtitle, Icon, href, metrics, children }: {
   const reduced = useReducedMotion()
   const style = tone[kind]
   return (
-    <motion.section whileHover={reduced ? undefined : { y: -2 }} className={`relative min-w-0 overflow-hidden rounded-2xl border bg-[#071523]/90 p-2.5 ${style.border} ${style.glow}`}>
+    <motion.section whileHover={reduced ? undefined : { y: -2 }} className={`dashboard-pillar dashboard-pillar--${kind} relative min-w-0 overflow-hidden rounded-2xl border bg-[#071523]/90 p-2.5 ${style.border}`}>
       <div className="mb-2 flex min-w-0 items-center gap-2.5">
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 ${style.tint} ${style.text}`}><Icon size={18} /></span>
         <div className="min-w-0 flex-1"><h3 className="truncate text-[13px] font-extrabold text-white" title={title}>{title}</h3><p className="truncate text-[10px] text-slate-400">{subtitle}</p></div>
         <Link href={href} className={`flex shrink-0 items-center gap-1 rounded-md px-1 py-1 text-[10px] font-semibold ${style.text} hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}>Ver más <ArrowRight size={12} /></Link>
       </div>
-      <div className="grid min-w-0 grid-cols-2 gap-1.5 2xl:grid-cols-4">{metrics}</div>
-      <div className="mt-1.5 grid min-w-0 gap-1.5 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">{children}</div>
+      <div className="dashboard-pillar__metrics grid min-w-0 grid-cols-2 gap-1.5 2xl:grid-cols-4">{metrics}</div>
+      <div className="dashboard-pillar__details mt-1.5 grid min-w-0 gap-1.5 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">{children}</div>
     </motion.section>
   )
 }
@@ -188,7 +188,7 @@ function PillarPanel({ kind, title, subtitle, Icon, href, metrics, children }: {
 function InsightCard({ kind, title, Icon, insight }: { kind: Exclude<Tone, "blue">; title: string; Icon: LucideIcon; insight: Insight }) {
   const style = tone[kind]
   return (
-    <div className={`min-w-0 rounded-xl border p-2.5 ${style.border} ${style.tint}`}>
+    <div className={`dashboard-insight-card dashboard-insight-card--${kind} min-w-0 rounded-xl border p-2.5 ${style.border} ${style.tint}`}>
       <div className="mb-2 flex items-center gap-2"><Icon size={15} className={style.text} /><h3 className="text-xs font-bold text-white">{title}</h3></div>
       <div className="grid gap-1.5 sm:grid-cols-3">
         <div className="group min-w-0 rounded-lg bg-black/25 p-2 transition-colors hover:bg-emerald-400/10"><span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-300"><CircleCheck size={13} className="motion-safe:transition-transform motion-safe:group-hover:scale-110" />Lo que va bien</span><p className="mt-1 text-[10px] leading-4 text-slate-300">{insight.good}</p></div>
@@ -206,23 +206,23 @@ export function DashboardMockupView({ data, onRegister }: { data: DashboardMocku
   const h = data.health, c = data.career, p = data.care
   const enter = reduced ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: .45 } }
   return (
-    <div className="dashboard-mockup relative mx-auto flex w-full max-w-[1760px] flex-col gap-2.5 text-slate-100">
-      <motion.section {...enter} className="relative isolate overflow-hidden rounded-2xl border border-sky-200/15 bg-[#071a31] p-3 sm:p-4">
+    <div className="dashboard-mockup dashboard-experience relative mx-auto flex w-full max-w-[1760px] flex-col gap-2.5 text-slate-100">
+      <motion.section {...enter} className="dashboard-hero relative isolate overflow-hidden rounded-2xl border border-sky-200/15 bg-[#071a31] p-3 sm:p-4">
         <Image src="/images/lifetrack/night-mountains.webp" alt="" fill priority sizes="100vw" className="object-cover object-center opacity-90" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#06182e]/90 via-[#071b31]/60 to-[#051323]/50" />
         <div className="absolute right-5 top-3 z-10 hidden border-l border-sky-200/40 pl-3 text-[9px] font-bold uppercase leading-[14px] tracking-[.18em] text-sky-200/85 2xl:block">DISCIPLINA<br />PROGRESO<br />LIBERTAD</div>
-        <div className="relative grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,.7fr)_minmax(0,2.15fr)] lg:items-end">
+        <div className="dashboard-hero__grid relative grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,.7fr)_minmax(0,2.15fr)] lg:items-end">
           <div className="relative z-10 flex min-w-0 flex-col items-start py-1">
-            <span className="text-[10px] font-bold uppercase tracking-[.14em] text-sky-200">Centro de comando personal</span>
-            <h1 className="mt-2 text-balance text-3xl font-extrabold leading-[1.02] text-white sm:text-4xl 2xl:text-[2.65rem]">Hola, <span className="text-sky-200">{data.name}</span> <span aria-hidden="true" className="text-2xl">👋</span></h1>
-            <p className="mt-2 max-w-[500px] text-xs leading-5 text-slate-300">Tu panel de control para mantener el foco y ver tu progreso integral en Salud, Data/Carrera y Cuidado Personal.</p>
+            <span className="dashboard-hero__eyebrow text-[10px] font-bold uppercase tracking-[.14em] text-sky-200">CENTRO DE CONTROL / ESTA SEMANA</span>
+            <h1 className="dashboard-hero__title mt-2 text-balance text-3xl font-extrabold leading-[1.02] text-white sm:text-4xl 2xl:text-[2.65rem]">Tu vida, en<br /><span>movimiento.</span></h1>
+            <p className="dashboard-hero__intro mt-2 max-w-[500px] text-xs leading-5 text-slate-300">Hola, {data.name}. Aquí se encuentran las decisiones, hábitos y avances que construyen tu siguiente versión.</p>
             <div className="mt-auto flex w-full flex-wrap items-center gap-2 pt-3">
               <button type="button" onClick={onRegister} className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-sky-300/35 bg-sky-400/15 px-3 text-[11px] font-bold text-sky-100 transition hover:bg-sky-400/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"><Plus size={13} />Registrar entrada</button>
               <span className="text-[10px] text-slate-400">{data.week}</span>
             </div>
           </div>
           <div className="relative hidden h-[210px] self-end lg:block"><Image src={data.photo} alt="" fill sizes="280px" className="object-contain object-bottom [mask-image:linear-gradient(to_bottom,black_85%,transparent)]" /></div>
-          <div className="relative z-10 grid min-w-0 grid-cols-1 gap-2 min-[430px]:grid-cols-2 2xl:grid-cols-4">
+          <div className="dashboard-hero__progress relative z-10 grid min-w-0 grid-cols-1 gap-2 min-[430px]:grid-cols-2 2xl:grid-cols-4">
             <ProgressCard label="General" value={data.progress.general} detail="Los tres pilares" Icon={BarChart3} kind="blue" />
             <ProgressCard label="Salud" value={data.progress.health} detail="Bienestar físico" Icon={Heart} kind="green" />
             <ProgressCard label="Data / Carrera" value={data.progress.career} detail="Progreso profesional" Icon={BriefcaseBusiness} kind="orange" />
@@ -231,22 +231,17 @@ export function DashboardMockupView({ data, onRegister }: { data: DashboardMocku
         </div>
       </motion.section>
 
-      <motion.section {...enter} className="rounded-2xl border border-sky-200/10 bg-[#081a2b]/90 p-3">
+      <motion.section {...enter} className="dashboard-overview rounded-2xl border border-sky-200/10 bg-[#081a2b]/90 p-3">
         <Headline icon={Sparkles} title="Principales indicadores" detail="Un vistazo rápido a lo más importante de esta semana." action={data.week} />
-        <div className="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="dashboard-overview__metrics mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           <QuickMetric Icon={HeartPulse} label="Rutina semanal" value={`${h.completed}/${h.planned}`} detail={`${h.trainingPct}% completado`} kind="green" pct={h.trainingPct} visual="routine" />
           <QuickMetric Icon={Activity} label="Actividad profesional" value={`${c.events}`} detail="Eventos esta semana" kind="orange" pct={c.activityPct} visual="activity" />
           <QuickMetric Icon={BarChart3} label="Productividad semanal" value={`${c.weeklyPct}%`} detail={c.weeklyCompleted === null ? "Sin desglose semanal" : `${c.weeklyCompleted} tareas completadas`} kind="violet" pct={c.weeklyPct} visual="bars" />
           <QuickMetric Icon={Layers3} label="Skills utilizadas" value={c.usedSkills === null ? "—" : `${c.usedSkills}/${c.totalSkills ?? 0}`} detail={`${c.skillsPct}% del catálogo`} kind="blue" pct={c.skillsPct} visual="skills" />
-          <motion.div whileHover={reduced ? undefined : { y: -3, boxShadow: "0 0 22px rgba(86,184,255,.26), inset 0 0 22px rgba(86,184,255,.10)" }} transition={{ duration: .22 }} className="group relative flex min-w-0 items-center gap-3 overflow-hidden rounded-xl border border-sky-300/20 bg-[#07182a] p-3">
-            <Image src="/images/lifetrack/night-mountains.webp" alt="" fill sizes="240px" loading="eager" className="object-cover object-center opacity-35 transition-opacity duration-200 group-hover:opacity-50" />
-            <Target size={22} className="relative shrink-0 text-emerald-300 motion-safe:transition-transform motion-safe:group-hover:scale-110" />
-            <p className="relative text-xs italic leading-5 text-slate-200">Tu progreso se construye un día a la vez.</p>
-          </motion.div>
         </div>
       </motion.section>
 
-      <div className="grid min-w-0 gap-2.5 xl:grid-cols-3">
+      <div className="dashboard-pillars grid min-w-0 gap-2.5 xl:grid-cols-3">
         <PillarPanel kind="green" title="Indicadores clave de Salud" subtitle="Tu energía de hoy construye el mañana." Icon={HeartPulse} href="/pilares/salud" metrics={<>
           <MiniMetric label="Rutina" value={`${h.completed}/${h.planned}`} detail={`${h.trainingPct}% semanal`} pct={h.trainingPct} Icon={CalendarCheck2} kind="green" />
           <MiniMetric label="Agua" value={h.waterLiters === null ? "—" : `${h.waterLiters.toFixed(2)} L`} detail={`${h.waterPct}% semanal`} Icon={Droplets} kind="blue" iconOnly />
@@ -278,7 +273,7 @@ export function DashboardMockupView({ data, onRegister }: { data: DashboardMocku
         </PillarPanel>
       </div>
 
-      <motion.section {...enter} className="rounded-2xl border border-sky-200/10 bg-[#081a2b]/90 p-3">
+      <motion.section {...enter} className="dashboard-insights rounded-2xl border border-sky-200/10 bg-[#081a2b]/90 p-3">
         <Headline icon={Sparkles} title="Análisis inteligente por pilar" detail="Lecturas basadas en tus datos reales." />
         <div className="mt-2 grid gap-2 xl:grid-cols-3">
           <InsightCard kind="green" title="Salud" Icon={HeartPulse} insight={data.insights.health} />

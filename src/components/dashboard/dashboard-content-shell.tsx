@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 
 export function DashboardContentShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const isFullWidthPillar = pathname === "/pilares" || pathname === "/pilares/salud" || pathname === "/pilares/carrera" || pathname === "/pilares/cuidado-personal"
+  const isFullWidthPillar = pathname === "/pilares" || pathname === "/pilares/salud" || pathname === "/pilares/carrera" || pathname === "/pilares/cuidado-personal" || pathname === "/portafolio" || pathname === "/historial" || pathname === "/calendario"
 
   return (
     <div className={isFullWidthPillar

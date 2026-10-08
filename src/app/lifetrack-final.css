@@ -1,0 +1,300 @@
+/* Final visual pass: the general routes use one continuous LifeTrack canvas. */
+body:has(.lifetrack-general),
+body:has(.lifetrack-general) .dashboard-app-layout,
+body:has(.lifetrack-general) .dashboard-app-main {
+  background: #07161b;
+}
+.lifetrack-general {
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px clamp(12px, 2.3vw, 38px) 48px;
+  background: #07161b;
+}
+.lifetrack-general__backdrop { display: none; }
+.portfolio-content,
+.history-screen > :is(section, .history-body),
+.calendar-screen > :is(section, .calendar-body) {
+  width: 100%;
+  max-width: 1728px;
+  margin-inline: auto;
+}
+.lifetrack-general h1,
+.lifetrack-general h2,
+.lifetrack-general h3 { letter-spacing: 0; }
+.lifetrack-general :is(button, a):active { transform: scale(.985); }
+
+/* Portfolio is a case-study index first, analytics second. */
+.portfolio-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.portfolio-content > * { margin-block: 0 !important; }
+.portfolio-intro { order: 0; }
+.portfolio-work { order: 1; }
+.portfolio-skills { order: 2; }
+.portfolio-analysis { order: 3; }
+.portfolio-content > section:not(.portfolio-intro) { min-width: 0; }
+.portfolio-intro {
+  padding: 26px 30px;
+  background: linear-gradient(120deg, #102c35, #0a1e29 75%) !important;
+}
+.portfolio-intro > div.relative.grid {
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 245px);
+  align-items: center;
+}
+.portfolio-intro h1 { max-width: 680px; font-size: 2.5rem !important; line-height: 1.12; }
+.portfolio-intro p.leading-8 { max-width: 640px; line-height: 1.55; }
+.portfolio-intro .mt-7.grid { margin-top: 20px; }
+.portfolio-intro .mt-7.grid > div {
+  border-color: rgba(104, 171, 190, .19);
+  border-radius: 6px;
+  background: rgba(6, 24, 32, .68);
+  box-shadow: none;
+}
+.portfolio-work {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  align-items: start;
+}
+.portfolio-work > div:first-child { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.portfolio-work > div:first-child > .grid { order: 2; }
+.portfolio-project-list { order: 1; }
+.portfolio-work > div:first-child > *,
+.portfolio-work > aside > div,
+.portfolio-analysis > div,
+.portfolio-skills > div {
+  border-color: rgba(98, 160, 183, .22);
+  border-radius: 8px;
+  background: #0b222b;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .035);
+  backdrop-filter: none;
+}
+.portfolio-project-list > div.space-y-4 { display: grid; gap: 10px; }
+.portfolio-project-list article {
+  border-color: rgba(98, 160, 183, .21);
+  border-radius: 7px;
+  background: #0b1d27;
+  box-shadow: none;
+  transition: border-color .22s ease, background-color .22s ease, box-shadow .22s ease;
+}
+.portfolio-project-list article:hover {
+  border-color: rgba(89, 202, 227, .52);
+  background: #102a34;
+  box-shadow: 0 10px 32px rgba(0, 8, 14, .23);
+}
+.portfolio-project-list article > div.absolute { display: none; }
+.portfolio-project-list article > div.relative.grid { grid-template-columns: minmax(0, 1fr) 150px; }
+.portfolio-project-list article h2 { font-size: 1.25rem; line-height: 1.25; }
+.portfolio-project-list article .mt-5.grid { margin-top: 14px; }
+.portfolio-project-list article .mt-5.grid > div,
+.portfolio-project-list article > div.relative.grid > div:last-child {
+  border-radius: 5px;
+  background: rgba(5, 19, 27, .48);
+}
+.portfolio-work > aside { min-width: 0; }
+.portfolio-work > aside > div + div { margin-top: 14px; }
+.portfolio-work > aside a:hover { color: #c6f2fa; }
+.portfolio-analysis > div,
+.portfolio-skills > div { padding: 20px; }
+
+/* History uses quiet date rails and rows rather than nested floating cards. */
+.history-intro,
+.calendar-intro {
+  padding: 25px 30px;
+  background: linear-gradient(120deg, #102c35, #0a1e29 75%) !important;
+}
+.history-intro > div.relative,
+.calendar-intro > div.relative { align-items: center; gap: 22px; }
+.history-intro h1,
+.calendar-intro h1 { max-width: 680px; font-size: 2.35rem; line-height: 1.14; }
+.history-intro p.leading-8,
+.calendar-intro p.leading-8 { margin-top: 12px; line-height: 1.55; }
+.history-intro .grid.w-full,
+.calendar-intro .grid.w-full { gap: 8px; }
+.history-intro .grid.w-full > div,
+.calendar-intro .grid.w-full > div {
+  border-color: rgba(98, 160, 183, .19);
+  border-radius: 6px;
+  background: rgba(5, 22, 30, .63);
+  box-shadow: none;
+}
+.history-intro .grid.w-full > div > div.absolute,
+.calendar-intro .grid.w-full > div > div.absolute { display: none; }
+.history-body,
+.calendar-body {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  gap: 16px;
+  align-items: start;
+}
+.history-timeline,
+.calendar-month,
+.history-body > aside > section,
+.calendar-body > aside > section:not(:first-child) {
+  border-color: rgba(98, 160, 183, .22);
+  border-radius: 8px;
+  background: #0b222b;
+  box-shadow: inset 0 1px rgba(255,255,255,.035);
+  backdrop-filter: none;
+}
+.history-timeline > div:first-child { gap: 18px; }
+.history-timeline button,
+.calendar-month button { border-radius: 6px; }
+.history-timeline button[aria-pressed="true"],
+.calendar-month button[aria-pressed="true"] {
+  border-color: rgba(112, 212, 235, .66);
+  box-shadow: inset 0 0 0 1px rgba(112, 212, 235, .22);
+}
+.history-timeline > div:nth-child(2) {
+  border-radius: 7px;
+  background: rgba(4, 19, 27, .42);
+}
+.history-date {
+  display: grid;
+  grid-template-columns: 135px minmax(0, 1fr);
+  gap: 14px;
+}
+.history-date > div:first-child {
+  align-self: start;
+  margin: 0;
+  padding: 0;
+  background: none;
+  backdrop-filter: none;
+}
+.history-date > div:first-child > div.h-px { display: none; }
+.history-date > div:first-child p {
+  width: 100%;
+  border-radius: 5px;
+  background: rgba(5, 22, 30, .66);
+  text-align: left;
+  white-space: normal;
+}
+.history-date article {
+  border-color: rgba(98, 160, 183, .14);
+  border-radius: 6px;
+  background: #0b1d27;
+  box-shadow: none;
+  transition: border-color .2s ease, background-color .2s ease;
+}
+.history-date article:hover { border-color: rgba(112, 212, 235, .45); background: #102b34; transform: none; }
+.history-date article > div.absolute.inset-y-0 { width: 2px; }
+.history-body > aside { min-width: 0; }
+.history-body > aside > section + section { margin-top: 14px; }
+
+/* Calendar keeps the month as the dominant work surface. */
+.calendar-month { padding: 20px; }
+.calendar-month > div:first-child { align-items: end; }
+.calendar-month > div:first-child h2 { font-size: 1.5rem; }
+.calendar-month .calendar-weekdays { color: #a8bdca; }
+.calendar-grid { gap: 7px; }
+.calendar-grid > button {
+  min-height: 96px;
+  border-radius: 6px;
+  padding: 9px;
+  box-shadow: none;
+  transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.calendar-grid > button:hover {
+  transform: none;
+  border-color: rgba(112, 212, 235, .65);
+  box-shadow: inset 0 0 0 1px rgba(112, 212, 235, .16);
+}
+.calendar-grid > button[aria-pressed="true"] {
+  border-color: #72d7ed;
+  box-shadow: 0 0 0 1px rgba(114, 215, 237, .35);
+}
+.calendar-grid > button > div.absolute { display: none; }
+.calendar-body > aside > section:first-child { gap: 8px; }
+.calendar-body > aside > section:first-child > div {
+  border-radius: 7px;
+  background: #0d2830;
+  box-shadow: none;
+}
+.calendar-body > aside > section:not(:first-child) { margin-top: 14px; }
+.calendar-body > aside > section:nth-child(2) > .mt-5.grid > div {
+  border-radius: 5px;
+}
+
+/* Pillar alignment and restrained feedback. */
+.career-command,
+.care-command,
+.care-page > div.relative.z-10 { max-width: 1728px; }
+.pillars-hero {
+  transition: border-color .26s ease, box-shadow .26s ease, transform .26s ease;
+}
+.pillars-hero:hover,
+.pillars-hero:focus-within {
+  border-color: rgba(105, 210, 238, .58);
+  box-shadow: 0 16px 38px rgba(0, 9, 16, .24), 0 0 22px rgba(73, 192, 228, .13);
+  transform: translateY(-2px);
+}
+.pillars-hero > img { transition: transform .55s cubic-bezier(.2,.8,.2,1), filter .55s ease; }
+.pillars-hero:hover > img,
+.pillars-hero:focus-within > img { transform: scale(1.025); filter: brightness(1.08); }
+.career-board-particles { opacity: .95; }
+.career-board > .career-board-scroll { position: relative; z-index: 1; }
+.career-board-scroll > div[class*="group/column"] { background: rgba(10, 32, 42, .64); }
+.career-board-atmosphere { opacity: .32; }
+.career-board-circuits { opacity: .18; }
+.health-dialog-content [data-slot="card"] {
+  border-radius: 7px;
+  background: #0b252d;
+  box-shadow: none;
+  transition: background-color .2s ease, box-shadow .2s ease;
+}
+.health-dialog-content [data-slot="card"]:hover { background: #103038; box-shadow: inset 0 0 0 1px rgba(93, 208, 172, .17); }
+.health-dialog-content :is(button, [role="checkbox"], [role="switch"], [role="tab"]):hover:not(:disabled) {
+  border-color: rgba(103, 220, 181, .62);
+}
+.health-dialog-content :is(button, [role="checkbox"], [role="switch"], [role="tab"]):focus-visible {
+  outline: 2px solid #7be8c4;
+  outline-offset: 2px;
+}
+
+@media (max-width: 1100px) {
+  .portfolio-work,
+  .history-body,
+  .calendar-body { grid-template-columns: minmax(0, 1fr); }
+  .portfolio-work > aside { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .portfolio-work > aside > div + div,
+  .history-body > aside > section + section,
+  .calendar-body > aside > section:not(:first-child) { margin-top: 0; }
+  .history-body > aside,
+  .calendar-body > aside { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .calendar-body > aside > section:first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 700px) {
+  .lifetrack-general { padding: 14px 12px 32px; }
+  .portfolio-intro,
+  .history-intro,
+  .calendar-intro { padding: 18px; }
+  .portfolio-intro > div.relative.grid { grid-template-columns: minmax(0, 1fr); }
+  .portfolio-intro h1,
+  .history-intro h1,
+  .calendar-intro h1 { font-size: 1.9rem !important; }
+  .portfolio-project-list article > div.relative.grid { grid-template-columns: minmax(0, 1fr); }
+  .portfolio-work > aside,
+  .history-body > aside,
+  .calendar-body > aside { grid-template-columns: minmax(0, 1fr); }
+  .history-date { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .history-date > div:first-child p { width: fit-content; }
+  .calendar-weekdays { display: grid; gap: 2px; font-size: 9px; }
+  .calendar-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+  .calendar-grid > button {
+    min-height: 49px;
+    padding: 5px 3px;
+    text-align: center;
+  }
+  .calendar-grid > button > div.flex.items-center.justify-between { justify-content: center; }
+  .calendar-grid > button > div.flex.items-center.justify-between span:last-child:not(:first-child) { display: none; }
+  .calendar-grid > button > div.mt-3.h-1\.5,
+  .calendar-grid > button > p { display: none; }
+  .calendar-grid > button > div.mt-3.flex { justify-content: center; gap: 2px; margin-top: 5px; }
+  .calendar-grid > button > div.mt-3.flex span { width: 4px; height: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pillars-hero, .pillars-hero > img,
+  .portfolio-project-list article, .history-date article,
+  .calendar-grid > button { transition: none; }
+  .pillars-hero:hover, .pillars-hero:focus-within,
+  .pillars-hero:hover > img, .pillars-hero:focus-within > img { transform: none; }
+}

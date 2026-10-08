@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "./dashboard-identity.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -206,8 +207,8 @@ body:has(.dashboard-redesign) main > div:first-child {
 
 @keyframes health-overlay-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes health-overlay-out { from { opacity: 1; } to { opacity: 0; } }
-@keyframes health-dialog-in { from { opacity: 0; transform: translateY(14px) scale(.97); filter: blur(3px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
-@keyframes health-dialog-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(8px) scale(.985); } }
+@keyframes health-dialog-in { from { opacity: 0; transform: translateY(12px) scale(.985); filter: blur(2px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+@keyframes health-dialog-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(8px) scale(.99); } }
 @keyframes health-select-in { from { opacity: 0; transform: translateY(-5px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes health-select-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-3px) scale(.98); } }
 
@@ -486,13 +487,19 @@ svg {
   background-image: linear-gradient(rgba(249, 115, 22, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(249, 115, 22, .035) 1px, transparent 1px), linear-gradient(150deg, rgba(5, 22, 36, .16), rgba(15, 38, 52, .46) 55%, rgba(5, 22, 36, .55));
   background-size: 54px 54px, 54px 54px, 100% 100%;
   mask-image: linear-gradient(to bottom, #000, rgba(0,0,0,.45));
+  opacity: .68;
+  animation: none;
 }
 
 .career-board-beam {
   left: -2px;
-  background: linear-gradient(to bottom, transparent, rgba(255, 153, 66, .28), transparent);
-  box-shadow: 0 0 22px rgba(249, 115, 22, .2);
-  animation: career-beam-sweep 22s linear infinite;
+  background: linear-gradient(to bottom, transparent, rgba(255, 153, 66, .2), transparent);
+  box-shadow: 0 0 18px rgba(249, 115, 22, .12);
+  animation: career-beam-sweep 28s linear infinite;
+}
+
+@keyframes career-grid-breathe {
+  50% { opacity: .88; }
 }
 
 @keyframes career-beam-sweep {
@@ -520,6 +527,7 @@ svg {
 .career-period-action:hover, .career-period-action:focus-visible { border-color: rgba(251,146,60,.75); background: rgba(249,115,22,.25); outline: none; }
 
 @media (prefers-reduced-motion: reduce) {
+  .career-board-atmosphere { animation: none; }
   .career-board-beam { animation: none; opacity: 0; }
   .career-board-scroll { scroll-behavior: auto; }
 }
@@ -589,4 +597,381 @@ svg {
   .care-command .care-panel:hover { transform: none; }
   .care-command .care-panel, .care-filter, .care-filter-action { transition-duration: .01ms; }
   .care-manage .care-manage-panel, .care-manage .care-manage-primary, .care-manage .care-manage-secondary { transition-duration: .01ms; }
+}
+
+/* Main LifeTrack entry points share the Dashboard's restrained surface language. */
+body:has(:is(.pillars-command-center, .health-command-center)) .dashboard-app-layout {
+  background: var(--lt-ink);
+}
+body:has(:is(.pillars-command-center, .health-command-center)) .dashboard-app-main {
+  min-width: 0;
+  background: radial-gradient(ellipse at 80% -15%, rgba(22, 82, 92, .16), transparent 43%), #07161b;
+}
+
+.pillars-command-center {
+  padding: 28px clamp(16px, 2.3vw, 38px) 40px;
+  color: var(--lt-text);
+}
+.pillars-command-center > div { max-width: 1480px; gap: 22px; }
+.pillars-hero {
+  border-color: var(--lt-rule);
+  border-radius: 8px;
+  background: var(--lt-surface);
+  box-shadow: inset 0 1px rgba(255,255,255,.05);
+}
+.pillars-hero > img { opacity: .58; }
+.pillars-hero > div:last-child { min-height: 270px; gap: clamp(18px, 2vw, 32px); }
+.pillars-hero h1 { font-size: clamp(36px, 3.3vw, 54px); line-height: 1.05; letter-spacing: 0; }
+.pillars-hero__quote, .pillars-hero__purpose {
+  align-self: end;
+  border: 0;
+  border-left: 1px solid rgba(166, 205, 215, .26);
+  border-radius: 0;
+  background: rgba(7, 22, 29, .35);
+  box-shadow: none;
+}
+.pillars-hero__quote { padding-left: 20px; }
+.pillars-hero__purpose { padding-left: 20px; }
+.pillars-grid { gap: 14px; }
+.pillar-entry {
+  --pillar-accent: 57, 214, 161;
+  min-height: 500px;
+  border-color: rgba(var(--pillar-accent), .3);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(var(--pillar-accent), .09), transparent 54%), var(--lt-surface);
+  box-shadow: inset 0 1px rgba(255,255,255,.04);
+  transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.pillar-entry[data-pillar="career"] { --pillar-accent: 255, 173, 102; }
+.pillar-entry[data-pillar="care"] { --pillar-accent: 201, 150, 244; }
+.pillar-entry::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 2;
+  width: 3px;
+  background: rgb(var(--pillar-accent));
+  content: "";
+  opacity: .68;
+  transition: opacity .22s ease, width .22s ease;
+}
+.pillar-entry:hover, .pillar-entry:focus-within {
+  border-color: rgba(var(--pillar-accent), .65);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .19), 0 0 30px rgba(var(--pillar-accent), .11);
+}
+.pillar-entry:hover::before, .pillar-entry:focus-within::before { width: 4px; opacity: 1; }
+.pillar-entry > div.pointer-events-none:has(img) { opacity: .78; transition: opacity .28s ease, transform .35s ease; }
+.pillar-entry:hover > div.pointer-events-none:has(img), .pillar-entry:focus-within > div.pointer-events-none:has(img) { opacity: 1; transform: scale(1.035); }
+.pillar-entry > div.relative.z-10 > span:first-child { border-radius: 7px; }
+.pillar-entry__metrics { gap: 0; border-top: 1px solid rgba(var(--pillar-accent), .23); border-bottom: 1px solid rgba(var(--pillar-accent), .23); }
+.pillar-entry__metrics > div {
+  min-height: 72px;
+  border: 0;
+  border-right: 1px solid var(--lt-rule);
+  border-radius: 0;
+  background: rgba(7, 22, 29, .64);
+  backdrop-filter: none;
+}
+.pillar-entry__metrics > div:last-child { border-right: 0; }
+.pillar-entry__metrics > div:hover { transform: none; background: rgba(var(--pillar-accent), .1); }
+.pillar-entry__topics > span { border-color: rgba(var(--pillar-accent), .22); border-radius: 5px; background: rgba(7, 22, 29, .45); }
+.pillar-entry__topics > span:hover { background: rgba(var(--pillar-accent), .11); }
+.pillar-entry a:last-child { border-radius: 6px; }
+.pillar-entry a:focus-visible { outline-color: rgb(var(--pillar-accent)); }
+
+.health-command-center { padding: 28px clamp(16px, 2.3vw, 38px) 40px; }
+.health-overview { color: var(--lt-text); }
+.health-overview > * + * { margin-top: 16px; }
+.health-overview__daily > section { min-height: 320px; }
+.health-overview__plan { height: 100%; }
+.health-overview__plan .health-plan-scroll { min-height: 0; }
+.health-overview .health-hero {
+  border-color: var(--lt-rule);
+  border-radius: 8px;
+  box-shadow: inset 0 1px rgba(255,255,255,.04);
+}
+.health-overview .health-hero > img { opacity: .67; }
+.health-overview .health-hero h1 { letter-spacing: 0; line-height: 1.06; }
+.health-overview .health-hero-metric {
+  border-color: rgba(126, 189, 192, .25);
+  border-radius: 6px;
+  background: rgba(7, 26, 34, .79);
+  box-shadow: inset 0 1px rgba(255,255,255,.05);
+  transition: border-color .2s ease, background-color .2s ease;
+}
+.health-overview .health-hero-metric:hover { border-color: rgba(78, 219, 176, .54); background: rgba(13, 45, 49, .9); }
+.health-overview .health-surface {
+  border-color: var(--lt-rule);
+  border-radius: 8px;
+  background: linear-gradient(155deg, #0b222a, #091c25 70%);
+  box-shadow: inset 0 1px rgba(255,255,255,.035);
+}
+.health-overview .health-surface h2 { font-size: 15px; line-height: 1.35; }
+.health-overview .health-surface:hover { transform: none; border-color: rgba(var(--health-accent), .38); box-shadow: inset 0 1px rgba(255,255,255,.05); }
+.health-overview .health-surface--insight { background: linear-gradient(130deg, #0c302e, #0b222a 56%, #091b25); }
+.health-overview button:focus-visible, .health-overview a:focus-visible, .pillars-command-center button:focus-visible, .pillars-command-center a:focus-visible { outline: 2px solid #6bcafa; outline-offset: 2px; }
+
+@media (max-width: 1023px) {
+  .pillars-hero__quote, .pillars-hero__purpose { border-left: 0; border-top: 1px solid var(--lt-rule); padding: 14px 0 0; background: transparent; }
+}
+@media (min-width: 1280px) {
+  .health-overview__three-up { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr); }
+  .health-overview__daily { grid-auto-rows: minmax(320px, auto); }
+}
+@media (max-width: 767px) {
+  .pillars-command-center, .health-command-center { padding: 14px 12px 32px; }
+  .pillars-command-center > div { gap: 12px; }
+  .pillars-hero > div:last-child { min-height: 0; }
+  .pillar-entry { min-height: 455px; }
+  .pillar-entry__metrics > div { padding: 8px 5px; gap: 5px; }
+  .pillar-entry__metrics svg { width: 15px; }
+  .pillar-entry__metrics strong { font-size: 13px; }
+  .health-overview .health-hero h1 { font-size: 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pillar-entry, .pillar-entry::before, .pillar-entry > div.pointer-events-none:has(img), .health-overview .health-hero-metric { transition-duration: .01ms; }
+  .pillar-entry:hover, .pillar-entry:focus-within, .pillar-entry:hover > div.pointer-events-none:has(img), .pillar-entry:focus-within > div.pointer-events-none:has(img) { transform: none; }
+}
+
+/* Dialogs remain the same functional views, with one LifeTrack surface system. */
+.health-dialog-overlay { background: rgba(3, 13, 19, .78); backdrop-filter: blur(8px); }
+.health-dialog-content {
+  border: 1px solid rgba(86, 194, 166, .36);
+  border-radius: 8px;
+  background: linear-gradient(155deg, #0c252d, #081b25 72%);
+  box-shadow: 0 30px 85px rgba(0, 8, 14, .6), inset 0 1px rgba(255,255,255,.05);
+  scrollbar-color: rgba(73, 173, 148, .5) transparent;
+}
+.health-dialog-content .health-dialog-header {
+  border-color: rgba(86, 194, 166, .23);
+  background: rgba(11, 34, 42, .96);
+  box-shadow: 0 8px 18px rgba(0, 8, 14, .16);
+}
+.health-dialog-content :is(input:not([type="range"]), textarea, select) {
+  border-radius: 6px;
+  background-color: #0a2029;
+  color: #f1f8f8;
+}
+.health-dialog-content :is(input:not([type="range"]), textarea, select):focus-visible {
+  border-color: rgba(83, 221, 177, .7);
+  box-shadow: 0 0 0 3px rgba(57, 214, 161, .13);
+}
+.health-dialog-content :is(button, a):focus-visible { outline: 2px solid #6de3bb; outline-offset: 2px; }
+.health-dialog-content :is([aria-label="Cerrar"], [aria-label="Cerrar análisis"]) { min-width: 40px; min-height: 40px; border-radius: 6px; }
+
+.career-page, .care-page { padding: 28px clamp(16px, 2.3vw, 38px) 40px; }
+.career-command, .care-command { width: 100%; max-width: 1480px; margin-inline: auto; }
+.career-command > *, .care-command > * { min-width: 0; }
+.career-command .career-hero {
+  border-color: rgba(255, 173, 102, .3);
+  border-radius: 8px;
+  box-shadow: inset 0 1px rgba(255,255,255,.05);
+}
+.career-command .career-glow {
+  border-color: rgba(255, 173, 102, .25);
+  border-radius: 8px;
+  background: linear-gradient(155deg, #0d252d, #091c25 72%);
+  box-shadow: inset 0 1px rgba(255,255,255,.035);
+}
+.career-command .career-glow:hover { border-color: rgba(255, 173, 102, .5); box-shadow: 0 10px 28px rgba(0, 7, 15, .18); }
+.career-command :is(button, a, select):focus-visible, .career-board :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid #ffbd82;
+  outline-offset: 2px;
+}
+.career-board {
+  border-color: rgba(255, 173, 102, .27);
+  border-radius: 8px;
+  background: #091d26;
+}
+.career-board > div:nth-child(3),
+.career-board [data-slot="card"] {
+  border-radius: 7px;
+  background-color: rgba(11, 35, 45, .94);
+}
+.career-board-scroll > div[class*="group/column"] { border-radius: 7px; background: rgba(10, 32, 42, .94); }
+.career-modal-overlay { background: rgba(3, 12, 18, .8); backdrop-filter: blur(9px); }
+.career-modal-panel {
+  border-color: rgba(255, 173, 102, .32);
+  border-radius: 8px;
+  background: linear-gradient(155deg, #0b252d, #081a24 72%);
+  box-shadow: 0 30px 85px rgba(0, 6, 12, .65), inset 0 1px rgba(255,255,255,.05);
+}
+.career-modal-panel > div.relative.flex.shrink-0 { background: rgba(10, 30, 39, .96); }
+.career-modal-panel :is(button, a, input, select, textarea):focus-visible { outline: 2px solid #ffbd82; outline-offset: 2px; }
+.career-modal-panel :is(input, select, textarea) { color-scheme: dark; }
+body:has(.career-page) [role="dialog"] {
+  border-color: rgba(255, 173, 102, .35);
+  border-radius: 8px;
+  background: linear-gradient(155deg, #0b252d, #081a24 72%);
+  box-shadow: 0 30px 85px rgba(0, 6, 12, .65);
+}
+body:has(.career-page) [role="dialog"] :is(button, a, input, select):focus-visible { outline: 2px solid #ffbd82; outline-offset: 2px; }
+
+.care-page::before { background: radial-gradient(ellipse at 90% 0, rgba(123, 63, 174, .1), transparent 42%), #07161b; }
+.care-page::after { opacity: .13; }
+.care-command .care-panel,
+.care-manage .care-manage-panel {
+  border-color: rgba(201, 150, 244, .27);
+  border-radius: 8px;
+  background: linear-gradient(155deg, #10232e, #0a1b28 74%);
+  box-shadow: inset 0 1px rgba(255,255,255,.04);
+}
+.care-command .care-panel:hover,
+.care-manage .care-manage-panel:hover { transform: none; border-color: rgba(201, 150, 244, .53); box-shadow: 0 10px 28px rgba(0, 7, 15, .18); }
+.care-command .care-hero, .care-page .care-hero { border-radius: 8px; }
+.care-manage .care-manage-header { border-color: rgba(201, 150, 244, .19); }
+.care-manage :is(input, select, textarea):focus-visible,
+.care-page :is(button, a):focus-visible { outline: 2px solid #d4a9f7; outline-offset: 2px; }
+.care-manage :is(input, select, textarea):focus-visible { border-color: rgba(201, 150, 244, .7); box-shadow: 0 0 0 3px rgba(201, 150, 244, .12); }
+.care-manage .care-manage-secondary:hover { transform: translateY(-1px); }
+
+@media (max-width: 767px) {
+  .career-page, .care-page { padding: 14px 12px 32px; }
+  .career-modal-overlay { padding: 8px; }
+  .career-modal-panel { max-height: 94dvh; }
+  .career-modal-panel > div.relative.flex.shrink-0 { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .career-board-atmosphere, .career-board-beam { animation: none; }
+  .career-modal-panel, .care-manage .care-manage-secondary { transition-duration: .01ms; }
+  .care-manage .care-manage-secondary:hover { transform: none; }
+}
+
+/* A shared, restrained response for the three pillar hero panels. */
+.lifetrack-interactive-hero {
+  --hero-accent: 57, 214, 161;
+  transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease;
+}
+.career-hero.lifetrack-interactive-hero { --hero-accent: 255, 173, 102; }
+.care-hero { --hero-accent: 201, 150, 244; transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease; }
+.lifetrack-interactive-hero:hover, .lifetrack-interactive-hero:focus-within,
+.care-hero:hover, .care-hero:focus-within {
+  border-color: rgba(var(--hero-accent), .65);
+  box-shadow: inset 0 0 0 1px rgba(var(--hero-accent), .16), 0 18px 42px rgba(0, 9, 18, .25), 0 0 26px rgba(var(--hero-accent), .11);
+  transform: translateY(-2px);
+}
+.lifetrack-interactive-hero__visual,
+.care-hero > div.absolute:has(img) {
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), filter .55s ease;
+}
+.lifetrack-interactive-hero:hover .lifetrack-interactive-hero__visual,
+.lifetrack-interactive-hero:focus-within .lifetrack-interactive-hero__visual,
+.care-hero:hover > div.absolute:has(img),
+.care-hero:focus-within > div.absolute:has(img) {
+  transform: translateY(-3px) scale(1.025);
+  filter: brightness(1.1);
+}
+.lifetrack-energy-quote {
+  --quote-accent: #55eab2;
+  display: inline;
+  color: #d7e4e6;
+  background: linear-gradient(105deg, #d7e4e6 0%, #d7e4e6 43%, var(--quote-accent) 50%, #d7e4e6 58%, #d7e4e6 100%);
+  background-size: 240% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: lifetrack-energy-sweep 11s ease-in-out infinite;
+}
+.lifetrack-energy-quote--career { --quote-accent: #ffc17c; animation-duration: 9s; animation-delay: -3s; }
+.care-command .care-hero p.italic {
+  color: #dccaf2;
+  animation: lifetrack-care-aura 9s ease-in-out infinite;
+}
+@keyframes lifetrack-energy-sweep {
+  0%, 15%, 75%, 100% { background-position: 100% 50%; }
+  48% { background-position: 0 50%; }
+}
+@keyframes lifetrack-care-aura {
+  0%, 100% { color: #dccaf2; text-shadow: none; }
+  48% { color: #f1dcff; text-shadow: 0 0 13px rgba(201, 150, 244, .48); }
+}
+.career-command .career-glow { position: relative; }
+.career-command .career-glow::before { z-index: 1; }
+.career-board-circuits { overflow: hidden; opacity: .32; }
+.career-board-circuits::before {
+  position: absolute;
+  inset: -22px;
+  background-image:
+    radial-gradient(circle, rgba(255, 167, 79, .55) 0 2px, transparent 3px),
+    linear-gradient(90deg, transparent 0 14%, rgba(255, 143, 65, .24) 14% 14.35%, transparent 14.35% 64%, rgba(255, 143, 65, .19) 64% 64.3%, transparent 64.3%),
+    linear-gradient(transparent 0 28%, rgba(255, 143, 65, .2) 28% 28.4%, transparent 28.4% 78%, rgba(255, 143, 65, .16) 78% 78.35%, transparent 78.35%);
+  background-size: 360px 280px, 360px 280px, 360px 280px;
+  background-position: 52px 77px, 0 0, 0 0;
+  content: "";
+  animation: career-circuit-drift 24s ease-in-out infinite alternate;
+}
+@keyframes career-circuit-drift {
+  to { transform: translate3d(22px, 9px, 0); opacity: .65; }
+}
+.health-dialog-body { scrollbar-width: thin; scrollbar-color: rgba(80, 199, 161, .5) transparent; }
+.health-dialog-body :is(button, input, select, textarea):focus-visible { outline: 2px solid #6de3bb; outline-offset: 2px; }
+html:has(.care-page) { scrollbar-gutter: stable; }
+.care-page > div.relative.z-10 { max-width: 1480px; }
+.care-manage-panel label[for] { display: block; margin-bottom: 8px; }
+.care-manage-panel :is(input, select, textarea) { min-height: 40px; }
+.care-manage-panel div:has(> #care-routine-description) { padding-bottom: 20px; }
+
+/* General routes share the same canvas and compact information hierarchy. */
+.lifetrack-general {
+  isolation: isolate;
+  font-family: var(--font-manrope), "Manrope", system-ui, sans-serif;
+}
+.lifetrack-general__backdrop {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(150deg, #0a2029 0%, #071720 58%, #0a1926 100%);
+}
+.lifetrack-general > section,
+.lifetrack-general > div.mt-6 > section,
+.lifetrack-general > div.mt-6 > aside > section,
+.portfolio-screen > div.relative.z-10 > section {
+  border-color: rgba(98, 160, 183, .24);
+  border-radius: 8px;
+  background: linear-gradient(155deg, #0d2630, #0a1c28 74%);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .04);
+  backdrop-filter: none;
+}
+.lifetrack-general > section > div.absolute[class*="rounded-full"],
+.lifetrack-general > section > div.absolute[class*="gradient"],
+.portfolio-screen > div.relative.z-10 > section > div.absolute {
+  display: none;
+}
+.lifetrack-general :is(button, a, input, select):focus-visible {
+  outline: 2px solid #76d0ed;
+  outline-offset: 2px;
+}
+.lifetrack-general :is(button, a) {
+  transition-property: background-color, border-color, color, box-shadow, transform;
+  transition-duration: .2s;
+}
+.lifetrack-general :is(button, a):hover { border-color: rgba(118, 208, 237, .48); }
+.lifetrack-general :is(input, select) { color-scheme: dark; }
+.history-screen > section h1,
+.calendar-screen > section h1,
+.portfolio-screen > div.relative.z-10 > section:first-child h1 {
+  font-size: 2.5rem;
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+.lifetrack-general > section :is(p, span),
+.portfolio-screen > div.relative.z-10 > section:first-child :is(p, span) {
+  letter-spacing: 0;
+}
+.lifetrack-general > section .rounded-2xl,
+.portfolio-screen > div.relative.z-10 > section:first-child .rounded-2xl {
+  border-radius: 7px;
+}
+@media (max-width: 639px) {
+  .history-screen > section h1,
+  .calendar-screen > section h1,
+  .portfolio-screen > div.relative.z-10 > section:first-child h1 { font-size: 2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lifetrack-interactive-hero, .care-hero, .lifetrack-interactive-hero__visual, .care-hero > div.absolute:has(img) { transition: none; }
+  .lifetrack-interactive-hero:hover, .lifetrack-interactive-hero:focus-within, .care-hero:hover, .care-hero:focus-within,
+  .lifetrack-interactive-hero:hover .lifetrack-interactive-hero__visual, .lifetrack-interactive-hero:focus-within .lifetrack-interactive-hero__visual,
+  .care-hero:hover > div.absolute:has(img), .care-hero:focus-within > div.absolute:has(img) { transform: none; }
+  .lifetrack-energy-quote, .care-command .care-hero p.italic, .career-board-circuits::before { animation: none; }
+  .lifetrack-general :is(button, a) { transition-duration: .01ms; }
 }

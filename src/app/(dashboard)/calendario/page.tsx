@@ -1,15 +1,15 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import {
   Activity,
   ArrowLeft,
   ArrowRight,
   CalendarDays,
   CheckCircle2,
-  Clock3,
   Flame,
   Layers3,
   Loader2,
@@ -38,133 +38,56 @@ import {
   mapWaterRows,
   toDateKey,
 } from "@/lib/progress-calendar"
+import "./calendar-overhaul.css"
 
 type LoadState = "idle" | "loading" | "ready" | "error"
 
-const statusStyles = {
-  empty: "border-white/[0.045] bg-[#161821]/70 text-slate-500",
-  pending: "border-orange-300/25 bg-gradient-to-br from-orange-500/[0.16] via-[#211811]/85 to-[#141821] text-orange-100",
-  partial: "border-blue-300/22 bg-gradient-to-br from-blue-500/[0.16] via-[#101c2d]/85 to-[#141821] text-blue-100",
-  completed: "border-emerald-300/25 bg-gradient-to-br from-emerald-500/[0.18] via-[#10261c]/85 to-[#141821] text-emerald-100",
-  highlight: "border-violet-300/25 bg-gradient-to-br from-violet-500/[0.18] via-[#21152d]/85 to-[#141821] text-violet-100",
-}
-
-const pillarDots: Record<CalendarEvent["pillar"], string> = {
-  health: "bg-emerald-300 shadow-[0_0_14px_rgba(110,231,183,0.55)]",
-  career: "bg-orange-300 shadow-[0_0_14px_rgba(253,186,116,0.55)]",
-  care: "bg-violet-300 shadow-[0_0_14px_rgba(196,181,253,0.55)]",
-  general: "bg-blue-300 shadow-[0_0_14px_rgba(147,197,253,0.55)]",
-}
-
 const statusLegend = [
-  { id: "completed", label: "Completado", className: "bg-emerald-400" },
-  { id: "partial", label: "Parcial", className: "bg-blue-400" },
-  { id: "pending", label: "Pendiente", className: "bg-orange-400" },
-  { id: "highlight", label: "Destacado", className: "bg-violet-400" },
+  { id: "completed", label: "Completado" },
+  { id: "partial", label: "Parcial" },
+  { id: "pending", label: "Pendiente" },
+  { id: "highlight", label: "Destacado" },
 ]
-
-function StatTile({
-  label,
-  value,
-  detail,
-  accent,
-}: {
-  label: string
-  value: string
-  detail: string
-  accent: string
-}) {
-  return (
-    <div className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.035] p-4 shadow-[0_20px_70px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-0.5 hover:border-white/[0.12]">
-      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${accent}`} />
-      <div className={`absolute -right-10 -top-10 h-24 w-24 rounded-full bg-gradient-to-br ${accent} opacity-10 blur-2xl transition group-hover:opacity-20`} />
-      <p className="relative text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">{label}</p>
-      <p className="relative mt-3 text-3xl font-black tracking-tight text-white">{value}</p>
-      <p className="relative mt-1 text-sm text-slate-400">{detail}</p>
-    </div>
-  )
-}
 
 function CalendarCell({
   day,
   isSelected,
   onSelect,
+  reducedMotion,
 }: {
   day: CalendarDay
   isSelected: boolean
   onSelect: () => void
+  reducedMotion: boolean | null
 }) {
-  const visibleEvents = day.events.slice(0, 3)
-
   return (
     <button
       type="button"
       onClick={onSelect}
-      className={`group relative min-h-[104px] overflow-hidden rounded-2xl border p-3 text-left transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_60px_rgba(0,0,0,0.32)] ${
-        statusStyles[day.status]
-      } ${isSelected ? "ring-2 ring-white/35" : ""} ${day.isCurrentMonth ? "" : "opacity-40"}`}
+      aria-pressed={isSelected}
+      aria-label={day.date + ", " + day.events.length + " registros, estado " + day.status}
+      className="calendar-day-cell"
+      data-status={day.status}
+      data-outside={!day.isCurrentMonth}
+      data-today={day.isToday}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100">
-        <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-white/[0.08] blur-2xl" />
-      </div>
-      <div className="flex items-center justify-between gap-2">
-        <span className={`text-sm font-black ${day.isToday ? "text-cyan-200" : "text-slate-200"}`}>
-          {day.dayNumber}
-        </span>
-        {day.events.length > 0 ? (
-          <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[10px] font-black text-slate-200">
-            {day.events.length}
-          </span>
-        ) : null}
-      </div>
-
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-950/60">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${day.completionRate}%` }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-          className="h-full rounded-full bg-gradient-to-r from-emerald-300 via-blue-300 to-violet-300"
-        />
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {visibleEvents.map((event) => (
-          <span
-            key={event.id}
-            className={`h-2 w-2 rounded-full ${pillarDots[event.pillar]} shadow-[0_0_14px_rgba(34,211,238,0.25)]`}
-            title={event.title}
-          />
-        ))}
-      </div>
-
-      {day.events[0] ? (
-        <p className="mt-2 line-clamp-1 text-[11px] font-semibold text-slate-400">{day.events[0].title}</p>
-      ) : null}
+      <span className="calendar-day-cell__top"><strong>{day.dayNumber}</strong>{day.events.length > 0 ? <span>{day.events.length}</span> : null}</span>
+      <span className="calendar-day-cell__progress"><motion.span initial={reducedMotion ? false : { width: 0 }} animate={{ width: String(day.completionRate) + "%" }} transition={{ duration: .35 }} /></span>
+      <span className="calendar-day-cell__dots" aria-hidden="true">{day.events.slice(0, 3).map((event) => <i key={event.id} data-pillar={event.pillar} />)}</span>
+      {day.events[0] ? <span className="calendar-day-cell__title">{day.events[0].title}</span> : null}
     </button>
   )
 }
 
 function EventCard({ event }: { event: CalendarEvent }) {
-  return (
-    <div className="rounded-2xl border border-white/[0.055] bg-gradient-to-br from-white/[0.045] to-white/[0.015] p-4 transition hover:-translate-y-0.5 hover:border-white/[0.12] hover:bg-white/[0.04]">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${pillarDots[event.pillar]}`} />
-            <p className="truncate text-sm font-black text-white">{event.title}</p>
-          </div>
-          <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-400">{event.description}</p>
-        </div>
-        <span className="shrink-0 rounded-full border border-white/[0.06] bg-white/[0.035] px-2.5 py-1 text-[11px] font-bold text-slate-300">
-          {event.source}
-        </span>
-      </div>
-      {event.metric ? <p className="mt-3 text-xs font-bold text-cyan-200">{event.metric}</p> : null}
-    </div>
-  )
+  return <article className="calendar-event" data-pillar={event.pillar}>
+    <span className="calendar-event__marker" aria-hidden="true" />
+    <div className="calendar-event__body"><div><h4>{event.title}</h4><span>{event.source}</span></div><p>{event.description}</p>{event.metric ? <strong>{event.metric}</strong> : null}</div>
+  </article>
 }
 
 export default function CalendarioPage() {
+  const reducedMotion = useReducedMotion()
   const router = useRouter()
   const supabase = React.useMemo(() => createClient(), [])
   const [monthDate, setMonthDate] = React.useState(() => new Date())
@@ -179,6 +102,7 @@ export default function CalendarioPage() {
     async function loadCalendarData() {
       setLoadState("loading")
       setErrorMessage(null)
+      setEvents([])
 
       const {
         data: { session },
@@ -302,239 +226,99 @@ export default function CalendarioPage() {
   const stats = React.useMemo(() => getCalendarStats(calendarMonth.days), [calendarMonth.days])
 
   const selectedDay = React.useMemo(
-    () => calendarMonth.days.find((day) => day.date === selectedDate) ?? calendarMonth.days.find((day) => day.isToday) ?? calendarMonth.days[0],
+    () => calendarMonth.days.find((day) => day.date === selectedDate && day.isCurrentMonth) ?? calendarMonth.days.find((day) => day.isToday) ?? calendarMonth.days.find((day) => day.isCurrentMonth),
     [calendarMonth.days, selectedDate]
   )
 
+  const changeMonth = (amount: number) => {
+    const nextMonth = addMonths(monthDate, amount)
+    setMonthDate(nextMonth)
+    setSelectedDate(toDateKey(nextMonth))
+  }
+
+  const selectDay = (day: CalendarDay) => {
+    setSelectedDate(day.date)
+    if (!day.isCurrentMonth) setMonthDate(new Date(day.date + "T12:00:00"))
+  }
+
   return (
-    <div
-      className="relative min-h-screen overflow-x-hidden py-4 text-slate-100 [font-family:var(--font-geist-sans),system-ui,sans-serif] sm:py-6"
-    >
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[#070b12]" />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_12%_15%,rgba(37,99,235,0.18),transparent_34%),radial-gradient(circle_at_84%_10%,rgba(168,85,247,0.18),transparent_30%),radial-gradient(circle_at_82%_82%,rgba(249,115,22,0.12),transparent_30%),radial-gradient(circle_at_22%_90%,rgba(16,185,129,0.14),transparent_34%)]" />
-
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/[0.06] bg-[#101621]/78 p-5 shadow-[0_30px_120px_rgba(0,0,0,0.32)] backdrop-blur-xl sm:p-7">
-        <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-violet-500/[0.1] via-orange-500/[0.05] to-transparent" />
-        <div className="absolute -bottom-24 left-1/4 h-48 w-48 rounded-full bg-emerald-400/[0.08] blur-3xl" />
-        <div className="relative flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.08] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-cyan-200">
-              <CalendarDays size={14} />
-              Calendario de progreso
-            </div>
-            <h1 className="mt-5 max-w-4xl text-balance text-[clamp(2.35rem,5vw,4.9rem)] font-black leading-[0.97] tracking-[-0.045em] text-white">
-              Visualiza tus habitos y avances en el tiempo.
-            </h1>
-            <p className="mt-5 max-w-3xl text-base leading-8 text-slate-400">
-              Una lectura mensual basada en registros reales: habitos, rutinas, salud, cuidado personal y eventos
-              planificados por fecha.
-            </p>
+    <main className="lifetrack-general calendar-overhaul text-slate-100">
+      <div className="calendar-stage">
+        <section className="calendar-masthead" aria-labelledby="calendar-title">
+          <Image src="/images/lifetrack/career-sunrise.webp" alt="" fill priority sizes="100vw" className="calendar-masthead__image" />
+          <div className="calendar-masthead__shade" aria-hidden="true" />
+          <div className="calendar-masthead__copy">
+            <span className="calendar-kicker"><CalendarDays size={15} /> Vista mensual</span>
+            <h1 id="calendar-title">Calendario de progreso</h1>
+            <p>Habitos, rutinas, salud, cuidado personal y eventos organizados por fecha.</p>
           </div>
-
-          <div className="grid w-full min-w-0 gap-3 sm:grid-cols-2 xl:w-[min(560px,100%)]">
-            <StatTile label="Actividad" value={stats.activeDays.toString()} detail="Dias con registros" accent="from-blue-400 to-cyan-300" />
-            <StatTile label="Completados" value={stats.completedDays.toString()} detail="Dias con avance fuerte" accent="from-emerald-400 to-teal-300" />
-            <StatTile label="Eventos" value={stats.totalEvents.toString()} detail="Registros del mes" accent="from-violet-400 to-fuchsia-300" />
-            <StatTile label="Racha" value={`${stats.currentStreak}d`} detail="Continuidad actual" accent="from-orange-400 to-amber-300" />
+          <div className="calendar-masthead__metrics" aria-label="Resumen del mes">
+            {[
+              { icon: Activity, label: "Dias activos", value: stats.activeDays, detail: "Con registros" },
+              { icon: CheckCircle2, label: "Completados", value: stats.completedDays, detail: "Dias con avance fuerte" },
+              { icon: Layers3, label: "Eventos", value: stats.totalEvents, detail: "Registros del mes" },
+              { icon: Flame, label: "Racha", value: String(stats.currentStreak) + "d", detail: "Continuidad actual" },
+            ].map(({ icon: Icon, label, value, detail }) => <div className="calendar-metric" key={label}><Icon size={18} /><span>{label}</span><strong>{value}</strong><small>{detail}</small></div>)}
           </div>
-        </div>
-      </section>
-
-      <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(310px,380px)]">
-        <section className="rounded-[2rem] border border-white/[0.06] bg-[#0d131d]/82 p-4 shadow-[0_26px_90px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-5">
-          <div className="flex flex-col gap-4 border-b border-white/[0.06] pb-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="text-2xl font-black tracking-tight text-white">{calendarMonth.label}</h2>
-              <p className="mt-1 text-sm text-slate-400">
-                Verde completado, cyan parcial, ambar pendiente y violeta destacado.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {statusLegend.map((item) => (
-                  <span
-                    key={item.id}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/[0.055] bg-white/[0.03] px-3 py-1 text-[11px] font-bold text-slate-300"
-                  >
-                    <span className={`h-2 w-2 rounded-full ${item.className}`} />
-                    {item.label}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setMonthDate((current) => addMonths(current, -1))}
-                className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.03] text-slate-300 transition hover:border-cyan-300/20 hover:text-cyan-100"
-                title="Mes anterior"
-              >
-                <ArrowLeft size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const today = new Date()
-                  setMonthDate(today)
-                  setSelectedDate(toDateKey(today))
-                }}
-                className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-300 transition hover:border-cyan-300/20 hover:text-cyan-100"
-              >
-                Hoy
-              </button>
-              <button
-                type="button"
-                onClick={() => setMonthDate((current) => addMonths(current, 1))}
-                className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.03] text-slate-300 transition hover:border-cyan-300/20 hover:text-cyan-100"
-                title="Mes siguiente"
-              >
-                <ArrowRight size={16} />
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-5 hidden grid-cols-7 gap-2 text-center text-[11px] font-black uppercase tracking-[0.18em] text-slate-500 sm:grid">
-            {WEEKDAY_LABELS.map((day) => (
-              <span key={day}>{day}</span>
-            ))}
-          </div>
-
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-7 sm:gap-2 xl:gap-3">
-            {calendarMonth.days.map((day) => (
-              <CalendarCell
-                key={day.date}
-                day={day}
-                isSelected={selectedDay?.date === day.date}
-                onSelect={() => setSelectedDate(day.date)}
-              />
-            ))}
-          </div>
-
-          {loadState === "loading" ? (
-            <div className="mt-5 flex items-center justify-center gap-2 rounded-3xl border border-white/[0.05] bg-white/[0.02] p-5 text-sm text-slate-400">
-              <Loader2 size={18} className="animate-spin text-cyan-300" />
-              Cargando calendario real desde Supabase...
-            </div>
-          ) : null}
-
-          {loadState === "error" ? (
-            <div className="mt-5 rounded-3xl border border-rose-400/20 bg-rose-500/10 p-5 text-sm text-rose-100">
-              No se pudo cargar el calendario desde Supabase.
-              {errorMessage ? <span className="mt-2 block text-rose-200/80">{errorMessage}</span> : null}
-            </div>
-          ) : null}
         </section>
 
-        <aside className="space-y-6">
-          <section className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-            <div className="rounded-[1.5rem] border border-emerald-300/15 bg-gradient-to-br from-emerald-500/[0.13] to-white/[0.025] p-4 shadow-[0_22px_70px_rgba(0,0,0,0.22)]">
-              <div className="flex items-center gap-2 text-emerald-200">
-                <Trophy size={16} />
-                <p className="text-[11px] font-black uppercase tracking-[0.18em]">Mejor dia</p>
-              </div>
-              <p className="mt-3 text-2xl font-black text-white">
-                {stats.bestDay ? `${stats.bestDay.dayNumber}` : "--"}
-              </p>
-              <p className="mt-1 text-sm text-slate-400">
-                {stats.bestDay ? `${stats.bestDay.events.length} registros · ${stats.bestDay.completionRate}%` : "Sin actividad"}
-              </p>
+        <section className="calendar-workspace" aria-labelledby="calendar-month-title">
+          <div className="calendar-workspace__head">
+            <div><span className="calendar-section-icon"><CalendarDays size={19} /></span><div><h2 id="calendar-month-title">{calendarMonth.label}</h2><p>Selecciona una fecha para revisar sus registros.</p></div></div>
+            <div className="calendar-navigation" role="group" aria-label="Navegar por meses">
+              <button type="button" onClick={() => changeMonth(-1)} aria-label="Mes anterior" title="Mes anterior"><ArrowLeft size={17} /></button>
+              <button type="button" onClick={() => { const today = new Date(); setMonthDate(today); setSelectedDate(toDateKey(today)) }}>Hoy</button>
+              <button type="button" onClick={() => changeMonth(1)} aria-label="Mes siguiente" title="Mes siguiente"><ArrowRight size={17} /></button>
             </div>
-            <div className="rounded-[1.5rem] border border-orange-300/15 bg-gradient-to-br from-orange-500/[0.13] to-white/[0.025] p-4 shadow-[0_22px_70px_rgba(0,0,0,0.22)]">
-              <div className="flex items-center gap-2 text-orange-200">
-                <Flame size={16} />
-                <p className="text-[11px] font-black uppercase tracking-[0.18em]">Racha actual</p>
-              </div>
-              <p className="mt-3 text-2xl font-black text-white">{stats.currentStreak} dias</p>
-              <p className="mt-1 text-sm text-slate-400">Dias seguidos con actividad</p>
+          </div>
+          <div className="calendar-legend" aria-label="Estados del calendario">{statusLegend.map((item) => <span key={item.id}><i data-status={item.id} />{item.label}</span>)}</div>
+          {loadState === "idle" || loadState === "loading" ? <div className="calendar-state" role="status"><Loader2 size={22} className="animate-spin" /> Cargando calendario desde Supabase...</div> : null}
+          {loadState === "error" ? <div className="calendar-state calendar-state--error" role="alert">No se pudo cargar el calendario desde Supabase.{errorMessage ? <span>{errorMessage}</span> : null}</div> : null}
+          {loadState === "ready" ? <>
+            <div className="calendar-desktop-grid">
+              <div className="calendar-weekdays">{WEEKDAY_LABELS.map((day) => <span key={day}>{day}</span>)}</div>
+              <motion.div key={calendarMonth.key} initial={reducedMotion ? false : { opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .22 }} className="calendar-days-grid">
+                {calendarMonth.days.map((day) => <CalendarCell key={day.date} day={day} isSelected={selectedDay?.date === day.date} onSelect={() => selectDay(day)} reducedMotion={reducedMotion} />)}
+              </motion.div>
             </div>
-            <div className="rounded-[1.5rem] border border-violet-300/15 bg-gradient-to-br from-violet-500/[0.13] to-white/[0.025] p-4 shadow-[0_22px_70px_rgba(0,0,0,0.22)]">
-              <div className="flex items-center gap-2 text-violet-200">
-                <MapPin size={16} />
-                <p className="text-[11px] font-black uppercase tracking-[0.18em]">Proximo foco</p>
-              </div>
-              <p className="mt-3 text-2xl font-black text-white">
-                {stats.nextObjective ? stats.nextObjective.dayNumber : "--"}
-              </p>
-              <p className="mt-1 text-sm text-slate-400">
-                {stats.nextObjective ? "Dia para activar progreso" : "Mes cubierto"}
-              </p>
+            <div className="calendar-mobile-agenda" aria-label="Fechas del mes">
+              {calendarMonth.days.filter((day) => day.isCurrentMonth).map((day) => <button type="button" key={day.date} onClick={() => setSelectedDate(day.date)} aria-pressed={selectedDay?.date === day.date} className="calendar-agenda-day" data-status={day.status}><strong>{day.dayNumber}</strong><span><b>{new Intl.DateTimeFormat("es-PE", { weekday: "long" }).format(new Date(day.date + "T12:00:00"))}</b><small>{day.events[0]?.title || "Sin registros"}</small></span><i>{day.events.length}</i></button>)}
+            </div>
+          </> : null}
+        </section>
+
+        <section className="calendar-selected" aria-labelledby="calendar-selected-title">
+          <div className="calendar-section-head"><div><span className="calendar-section-icon"><Target size={19} /></span><div><h2 id="calendar-selected-title">Detalle del dia</h2><p>{selectedDay?.date || "Selecciona una fecha"}</p></div></div><span>{selectedDay?.events.length || 0} registros</span></div>
+          <div className="calendar-selected__body">
+            <div className="calendar-selected__summary">
+              <div><span>Fecha</span><strong>{selectedDay ? new Intl.DateTimeFormat("es-PE", { weekday: "long", day: "numeric", month: "long" }).format(new Date(selectedDay.date + "T12:00:00")) : "--"}</strong></div>
+              <div><span>Eventos</span><strong>{selectedDay?.events.length ?? 0}</strong></div>
+              <div><span>Avance de registros</span><strong>{selectedDay?.completionRate ?? 0}%</strong></div>
+              <div><span>Estado</span><strong className="calendar-selected__status" data-status={selectedDay?.status}>{selectedDay?.status || "Sin datos"}</strong></div>
+            </div>
+            <div className="calendar-selected__events">
+              <h3><Layers3 size={16} /> Registros de la fecha</h3>
+              {loadState === "ready" && selectedDay?.events.length ? selectedDay.events.map((event) => <EventCard key={event.id} event={event} />) : <div className="calendar-selected__empty">{loadState === "loading" ? "Cargando registros..." : "Sin registros para esta fecha."}</div>}
+            </div>
+          </div>
+        </section>
+
+        <div className="calendar-bottom">
+          <section className="calendar-milestones" aria-labelledby="calendar-milestones-title">
+            <div className="calendar-section-head"><div><span className="calendar-section-icon"><Trophy size={19} /></span><div><h2 id="calendar-milestones-title">Senales del mes</h2><p>Fechas que destacan dentro de los registros.</p></div></div></div>
+            <div className="calendar-milestones__items">
+              <button type="button" disabled={!stats.bestDay} onClick={() => stats.bestDay && setSelectedDate(stats.bestDay.date)}><Trophy size={18} /><span><small>Mejor dia</small><strong>{stats.bestDay ? String(stats.bestDay.dayNumber) + " · " + stats.bestDay.events.length + " registros" : "Sin actividad"}</strong></span></button>
+              <button type="button" disabled={!stats.nextObjective} onClick={() => stats.nextObjective && setSelectedDate(stats.nextObjective.date)}><MapPin size={18} /><span><small>Proximo foco</small><strong>{stats.nextObjective ? String(stats.nextObjective.dayNumber) + " · " + stats.nextObjective.date : "Mes cubierto"}</strong></span></button>
+              <div><Sparkles size={18} /><span><small>Avance medio</small><strong>{stats.completionRate}%</strong></span></div>
             </div>
           </section>
-
-          <section className="rounded-[2rem] border border-white/[0.06] bg-[#101621]/82 p-5 shadow-[0_26px_90px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-black text-white">Detalle del dia</h2>
-                <p className="mt-1 text-sm text-slate-500">{selectedDay?.date}</p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.035] text-cyan-200">
-                <Target size={18} />
-              </div>
-            </div>
-
-            <div className="mt-5 grid grid-cols-3 gap-2">
-              <div className="rounded-2xl border border-blue-300/10 bg-blue-400/[0.06] p-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">Eventos</p>
-                <p className="mt-2 text-2xl font-black text-white">{selectedDay?.events.length ?? 0}</p>
-              </div>
-              <div className="rounded-2xl border border-emerald-300/10 bg-emerald-400/[0.06] p-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">Score</p>
-                <p className="mt-2 text-2xl font-black text-white">{selectedDay?.completionRate ?? 0}%</p>
-              </div>
-              <div className="rounded-2xl border border-violet-300/10 bg-violet-400/[0.06] p-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">Estado</p>
-                <p className="mt-2 text-sm font-black capitalize text-cyan-100">{selectedDay?.status}</p>
-              </div>
-            </div>
-
-            <div className="mt-5 space-y-3">
-              {selectedDay?.events.map((event) => <EventCard key={event.id} event={event} />)}
-
-              {loadState === "ready" && selectedDay?.events.length === 0 ? (
-                <div className="rounded-3xl border border-white/[0.055] bg-white/[0.025] p-6 text-center">
-                  <Layers3 size={24} className="mx-auto text-slate-500" />
-                  <h3 className="mt-3 text-base font-black text-white">Sin registros este dia</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-400">
-                    Cuando existan habitos, rutinas o eventos para esta fecha, apareceran aqui.
-                  </p>
-                </div>
-              ) : null}
-            </div>
+          <section className="calendar-reading" aria-labelledby="calendar-reading-title">
+            <div className="calendar-section-head"><div><span className="calendar-section-icon"><Activity size={19} /></span><div><h2 id="calendar-reading-title">Lectura mensual</h2><p>Resumen basado en lo registrado.</p></div></div></div>
+            <p>{stats.activeDays > 0 ? "En " + getMonthLabel(monthDate) + " registraste actividad en " + stats.activeDays + " dias, con " + stats.totalEvents + " eventos visibles." : "Todavia no hay registros visibles para " + getMonthLabel(monthDate) + "."}</p>
+            <div className="calendar-reading__counts"><span><i data-status="completed" />{stats.completedDays} completados</span><span><i data-status="partial" />{stats.partialDays} parciales</span><span><i data-status="pending" />{stats.pendingDays} pendientes</span></div>
           </section>
-
-          <section className="rounded-[2rem] border border-white/[0.06] bg-[#101621]/82 p-5 shadow-[0_26px_90px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-black text-white">Lectura mensual</h2>
-                <p className="mt-1 text-sm text-slate-500">Resumen para decidir foco.</p>
-              </div>
-              <Sparkles size={18} className="text-violet-300" />
-            </div>
-
-            <div className="mt-5 space-y-3">
-              <div className="flex items-start gap-3 rounded-2xl border border-white/[0.055] bg-white/[0.025] p-4">
-                <CheckCircle2 size={18} className="mt-0.5 text-emerald-300" />
-                <p className="text-sm leading-6 text-slate-300">
-                  {stats.activeDays > 0
-                    ? `Tienes ${stats.activeDays} dias activos y ${stats.totalEvents} registros visibles en ${getMonthLabel(monthDate)}.`
-                    : "Todavia no hay registros visibles para este mes."}
-                </p>
-              </div>
-              <div className="flex items-start gap-3 rounded-2xl border border-white/[0.055] bg-white/[0.025] p-4">
-                <Clock3 size={18} className="mt-0.5 text-cyan-300" />
-                <p className="text-sm leading-6 text-slate-300">
-                  Usa el calendario para detectar continuidad, dias vacios y semanas con mejor adherencia.
-                </p>
-              </div>
-              <div className="flex items-start gap-3 rounded-2xl border border-white/[0.055] bg-white/[0.025] p-4">
-                <Activity size={18} className="mt-0.5 text-violet-300" />
-                <p className="text-sm leading-6 text-slate-300">
-                  La vista combina datos reales de calendario, habitos, salud y cuidado personal sin duplicar logica.
-                </p>
-              </div>
-            </div>
-          </section>
-        </aside>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }

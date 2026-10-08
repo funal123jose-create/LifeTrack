@@ -1299,12 +1299,13 @@ export default function CentroSaludPage() {
             <Dialog.Root open={activePanel !== null} onOpenChange={(open) => { if (!open) setActivePanel(null) }}>
               <Dialog.Portal>
                 <Dialog.Overlay className="health-dialog-overlay fixed inset-0 z-[60] bg-[#020c15]/85 backdrop-blur-sm" />
-                <Dialog.Content ref={healthDialogRef} onOpenAutoFocus={() => requestAnimationFrame(() => healthDialogRef.current?.scrollTo(0, 0))} data-active-panel={activePanel || ""} className="health-dialog-content health-detail-modal fixed inset-x-2 top-1/2 z-[61] mx-auto max-h-[92dvh] w-[calc(100%-1rem)] max-w-5xl -translate-y-1/2 overflow-y-auto rounded-xl border border-emerald-300/25 bg-[#071a29] p-3 text-slate-100 shadow-[0_30px_100px_rgba(0,0,0,.7)] outline-none sm:p-5">
-                  <div className="health-dialog-header sticky top-0 z-20 mb-4 flex items-center gap-3 border-b border-emerald-300/15 bg-[#0b2431]/95 pb-3 backdrop-blur-md">
+                <Dialog.Content onOpenAutoFocus={() => requestAnimationFrame(() => healthDialogRef.current?.scrollTo(0, 0))} data-active-panel={activePanel || ""} className="health-dialog-content health-detail-modal fixed inset-x-2 top-1/2 z-[61] mx-auto flex max-h-[92dvh] w-[calc(100%-1rem)] max-w-5xl -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-emerald-300/25 bg-[#071a29] text-slate-100 shadow-[0_30px_100px_rgba(0,0,0,.7)] outline-none">
+                  <div className="health-dialog-header z-20 flex shrink-0 items-center gap-3 border-b border-emerald-300/15 bg-[#0b2431]/95 px-3 py-3 backdrop-blur-md sm:px-5">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-300/25 bg-emerald-400/10 text-emerald-300"><HeartPulse size={20} /></div>
                     <div className="min-w-0 flex-1"><Dialog.Title className="text-base font-extrabold text-white">{activePanel === "nutrition" ? "Nutrición y comidas" : activePanel === "hydration" ? "Hidratación" : activePanel === "routine" ? "Plan y entrenamiento" : activePanel === "plan" ? "Plan semanal de salud" : "Progreso físico"}</Dialog.Title><Dialog.Description className="text-xs text-slate-400">Tus registros y acciones de Salud</Dialog.Description></div>
                     <Dialog.Close className="flex h-9 w-9 items-center justify-center rounded-lg border border-sky-100/10 text-slate-300 transition hover:border-emerald-300/40 hover:text-white" aria-label="Cerrar"><X size={17} /></Dialog.Close>
                   </div>
+                  <div ref={healthDialogRef} className="health-dialog-body min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-5">
                   {activePanel === "progress" && <div className="mb-4 grid gap-3 rounded-xl border border-emerald-300/15 bg-emerald-400/[0.05] p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
                     <div><Label htmlFor="health-goal-weight" className="mb-1 block text-[11px] text-slate-300">Peso objetivo (kg)</Label><Input id="health-goal-weight" type="number" min="1" max="999" step="0.1" value={goalWeightInput} onChange={(event) => setGoalWeightInput(event.target.value)} placeholder={weightGoal ? String(weightGoal.target_weight_kg) : "Ej. 70"} className="border-emerald-300/20 bg-[#061923] text-white" /></div>
                     <div><Label htmlFor="health-goal-date" className="mb-1 block text-[11px] text-slate-300">Fecha objetivo</Label><Input id="health-goal-date" type="date" min={getLocalDateString()} value={goalDateInput} onChange={(event) => setGoalDateInput(event.target.value)} className="border-emerald-300/20 bg-[#061923] text-white" /></div>
@@ -1965,6 +1966,7 @@ export default function CentroSaludPage() {
                 </Card>
               </div>
             </motion.div>}
+                  </div>
                 </Dialog.Content>
               </Dialog.Portal>
             </Dialog.Root>
