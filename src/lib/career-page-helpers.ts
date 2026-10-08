@@ -251,6 +251,7 @@ export const mapRawProjects = (projects: RawProject[]): Project[] => {
       priority: normalizeProjectPriority(proj.priority),
       start_date: toOptionalString(proj.start_date),
       end_date: toOptionalString(proj.end_date),
+      progress: proj.progress == null ? null : Number(proj.progress),
       created_at: toOptionalString(proj.created_at),
       project_tasks: tasks,
       project_skills: skillLinks,

@@ -141,6 +141,7 @@ export type RawProject = {
   priority?: unknown
   start_date?: unknown
   end_date?: unknown
+  progress?: unknown
   created_at?: unknown
   project_tasks?: RawProjectTask[] | null
   project_skills?: RawSkillLink[] | null

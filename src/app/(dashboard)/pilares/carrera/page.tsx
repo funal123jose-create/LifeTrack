@@ -19,6 +19,9 @@ import { LifeTrackFooter } from "@/components/lifetrack-footer"
 import { CareerSelect } from "@/components/career/career-filters"
 import { MetricGrid } from "@/components/career/metric-grid"
 import { ProjectCard } from "@/components/career/project-card"
+import { CareerDateField } from "@/components/career/career-date-field"
+import { CareerDeadlineBell } from "@/components/career/career-deadline-bell"
+import { deadlineAlerts, formatProjectDate, limaToday, validDateRange } from "@/lib/career-deadlines"
 import { RichTaskDocumentEditor } from "@/components/career/rich-task-document-editor"
 import { TaskCard } from "@/components/career/task-card"
 import type { CareerActivity, CareerDocument, CareerEvidence } from "@/lib/career-overview"
@@ -93,8 +96,24 @@ export default function DataCarreraPage() {
   const [loadingSkills, setLoadingSkills] = useState(true)
   const [newTitle, setNewTitle] = useState("")
   const [newDescription, setNewDescription] = useState("")
+  const [newStartDate, setNewStartDate] = useState("")
+  const [newEndDate, setNewEndDate] = useState("")
+  const [detailStartDate, setDetailStartDate] = useState("")
+  const [detailEndDate, setDetailEndDate] = useState("")
+  const [dateError, setDateError] = useState("")
+  const [savingDates, setSavingDates] = useState(false)
+  const [confirmPauseInDetail, setConfirmPauseInDetail] = useState(false)
+  const [limaDate, setLimaDate] = useState(() => limaToday())
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const alerts = deadlineAlerts(projects, limaDate)
+  const openProject = (project: Project) => {
+    setSelectedProject(project)
+    setDetailStartDate(project.start_date || "")
+    setDetailEndDate(project.end_date || "")
+    setDateError("")
+    setConfirmPauseInDetail(false)
+  }
   const selectedProjectId = selectedProject?.id
   const [newTaskText, setNewTaskText] = useState("")
 
@@ -165,7 +184,7 @@ export default function DataCarreraPage() {
       const { data, error } = await supabase
         .from('projects')
         .select(`
-          id, title, summary, description, status, priority, start_date, end_date, created_at,
+          id, title, summary, description, status, priority, progress, start_date, end_date, created_at,
           project_tasks (
             id,
             title,
@@ -449,9 +468,55 @@ export default function DataCarreraPage() {
     }
   }, [fetchCareerSkills, fetchProjects, fetchProfessionalScores, fetchTechnicalSummaries, fetchCareerEvidence, fetchCareerHistory])
 
+  useEffect(() => {
+    const refresh = () => {
+      setLimaDate(limaToday())
+      if (document.visibilityState === "visible") void fetchProjects()
+    }
+    const timer = window.setInterval(refresh, 60_000)
+    document.addEventListener("visibilitychange", refresh)
+    return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", refresh) }
+  }, [fetchProjects])
+
+  const requestEmailCheck = () => {
+    void fetch("/api/career-deadlines/check", { method: "POST" }).catch(() => undefined)
+  }
+
+  const updateProject = async (id: string, fields: ProjectUpdate): Promise<boolean> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return false
+      const { data, error } = await supabase.from("projects").update(fields).eq("id", id).eq("user_id", user.id).select("id")
+      if (error) throw error
+      if (!data?.length) throw new Error("No se encontró el proyecto")
+      await fetchProjects(selectedProjectId === id ? id : undefined)
+      await fetchProfessionalScores()
+      await fetchTechnicalSummaries()
+      requestEmailCheck()
+      return true
+    } catch (err: unknown) {
+      console.error("Error actualizando proyecto:", getErrorMessage(err))
+      return false
+    }
+  }
+
+  const postponeProject = async (id: string, date: string): Promise<boolean> => {
+    const project = projects.find((item) => item.id === id)
+    if (!project || !date || date <= limaToday() || !validDateRange(project.start_date, date)) return false
+    return updateProject(id, { end_date: date })
+  }
+
+  const pauseProject = async (id: string): Promise<boolean> => {
+    return updateProject(id, { status: "En pausa", start_date: null, end_date: null })
+  }
+
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newTitle.trim()) return
+    if (!validDateRange(newStartDate || null, newEndDate || null)) {
+      setDateError("La fecha de finalización no puede ser anterior al inicio.")
+      return
+    }
 
     try {
       const { data: { session } } = await supabase.auth.getSession()
@@ -465,16 +530,22 @@ export default function DataCarreraPage() {
           description: newDescription.trim(),
           summary: "",
           status: 'Backlog',
-          priority: 'Media'
+          priority: 'Media',
+          start_date: newStartDate || null,
+          end_date: newEndDate || null,
         }])
 
       if (error) throw error
 
       setNewTitle("")
       setNewDescription("")
+      setNewStartDate("")
+      setNewEndDate("")
+      setDateError("")
       await fetchProjects()
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
+      requestEmailCheck()
     } catch (err: unknown) {
       alert(`No se pudo inicializar el nodo de proyecto: ${getErrorMessage(err)}`)
     }
@@ -487,6 +558,7 @@ export default function DataCarreraPage() {
 
     if ('status' in payload && payload.status) {
       payload.status = sanitizeStatusForDB(payload.status)
+      if (payload.status === "En pausa") { payload.start_date = null; payload.end_date = null }
     }
 
     try {
@@ -499,9 +571,25 @@ export default function DataCarreraPage() {
       await fetchProjects(selectedProject.id)
       await fetchProfessionalScores()
       await fetchTechnicalSummaries()
+      if (payload.status || "end_date" in payload || "start_date" in payload) requestEmailCheck()
     } catch (err: unknown) {
       console.error("Error al mutar datos del proyecto en Supabase:", getErrorMessage(err))
     }
+  }
+
+  const saveProjectDates = async (resume = false) => {
+    if (!selectedProject) return
+    if (resume && (!detailStartDate || !detailEndDate)) { setDateError("Indica ambas fechas para retomar el proyecto."); return }
+    if (!validDateRange(detailStartDate || null, detailEndDate || null)) { setDateError("La fecha de finalización no puede ser anterior al inicio."); return }
+    setSavingDates(true)
+    setDateError("")
+    const saved = await updateProject(selectedProject.id, {
+      start_date: detailStartDate || null,
+      end_date: detailEndDate || null,
+      ...(resume ? { status: "En curso" as const } : {}),
+    })
+    setSavingDates(false)
+    if (!saved) setDateError("No se pudieron guardar las fechas. Inténtalo nuevamente.")
   }
 
   const handleDeleteProject = async (id: string) => {
@@ -829,13 +917,13 @@ export default function DataCarreraPage() {
   return (
     <div className="lifetrack-redesign career-page relative min-h-screen w-full overflow-x-hidden bg-transparent px-2 pb-12 pt-2 font-sans text-slate-100 antialiased selection:bg-orange-500/20 selection:text-orange-100 sm:px-4 [overflow-wrap:anywhere]">
       <div className="relative z-10 mx-auto flex w-full max-w-[1728px] flex-col gap-3">
-      {careerView === "overview" && (loading ? <div className="flex min-h-[320px] items-center justify-center text-sm text-slate-400" role="status">Cargando proyectos...</div> : <CareerCommandOverview projects={projects} scores={projectScores} summaries={technicalSummaries} skills={careerSkills} evidence={careerEvidence} activity={careerActivity} documents={careerDocuments} view={careerView} onViewChange={setCareerView} onOpenProject={setSelectedProject} onOpenCaseStudy={fetchProjectCaseStudy} onShowBoard={() => setCareerView("board")} />)}
+      {careerView === "overview" && (loading ? <div className="flex min-h-[320px] items-center justify-center text-sm text-slate-400" role="status">Cargando proyectos...</div> : <CareerCommandOverview projects={projects} scores={projectScores} summaries={technicalSummaries} skills={careerSkills} evidence={careerEvidence} activity={careerActivity} documents={careerDocuments} view={careerView} onViewChange={setCareerView} onOpenProject={openProject} onOpenCaseStudy={fetchProjectCaseStudy} onShowBoard={() => setCareerView("board")} deadlineBell={<CareerDeadlineBell alerts={alerts} onPostpone={postponeProject} onPause={pauseProject} />} />)}
       {careerView === "board" && <div className="career-board relative isolate space-y-3 overflow-hidden rounded-xl border border-orange-300/20 bg-[#071a29] p-2 sm:p-3">
       <CareerBoardParticles />
       <div className="career-board-atmosphere pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="career-board-circuits pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="career-board-beam pointer-events-none absolute inset-y-0 -z-10 w-px" aria-hidden="true" />
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-orange-300/20 bg-[#0a2230]/90 p-3 shadow-[inset_0_1px_rgba(255,255,255,.04)]"><div><h1 className="text-lg font-bold text-white">Tablero de proyectos</h1><p className="text-xs text-slate-400">Gestiona proyectos, subtareas, skills y documentación.</p></div><div className="inline-flex rounded-md border border-orange-300/25 bg-[#081824] p-1" role="group" aria-label="Vista de Data y Carrera"><button type="button" onClick={() => setCareerView("overview")} aria-pressed={false} className="rounded px-3 py-1.5 text-[11px] text-slate-300 transition-all hover:-translate-y-0.5 hover:bg-orange-400/10 hover:text-white motion-reduce:transform-none">Resumen</button><button type="button" aria-pressed className="rounded border border-orange-300/35 bg-orange-500/25 px-3 py-1.5 text-[11px] font-semibold text-orange-100 shadow-[0_0_15px_rgba(249,115,22,.16)]">Tablero</button></div></div>
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-orange-300/20 bg-[#0a2230]/90 p-3 shadow-[inset_0_1px_rgba(255,255,255,.04)]"><div><h1 className="text-lg font-bold text-white">Tablero de proyectos</h1><p className="text-xs text-slate-400">Gestiona proyectos, subtareas, skills y documentación.</p></div><div className="flex items-center gap-2"><div className="inline-flex rounded-md border border-orange-300/25 bg-[#081824] p-1" role="group" aria-label="Vista de Data y Carrera"><button type="button" onClick={() => setCareerView("overview")} aria-pressed={false} className="rounded px-3 py-1.5 text-[11px] text-slate-300 transition-all hover:-translate-y-0.5 hover:bg-orange-400/10 hover:text-white motion-reduce:transform-none">Resumen</button><button type="button" aria-pressed className="rounded border border-orange-300/35 bg-orange-500/25 px-3 py-1.5 text-[11px] font-semibold text-orange-100 shadow-[0_0_15px_rgba(249,115,22,.16)]">Tablero</button></div><CareerDeadlineBell alerts={alerts} onPostpone={postponeProject} onPause={pauseProject} /></div></div>
 
       {/* FORMULARIO DE INICIALIZACIÓN */}
       <motion.div
@@ -857,7 +945,7 @@ export default function DataCarreraPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="relative">
-            <form onSubmit={handleCreateProject} className="grid items-end gap-4 md:grid-cols-4">
+            <form onSubmit={handleCreateProject} className="grid items-end gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1.5fr_160px_160px_140px]">
               <div className="space-y-2 md:col-span-1">
                 <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">⚡ Identificador</label>
                 <Input
@@ -867,7 +955,7 @@ export default function DataCarreraPage() {
                   className="h-10 rounded-md border-orange-300/20 bg-[#081824] text-xs font-bold text-white transition-all duration-300 placeholder:text-slate-500 focus:border-orange-300/55 focus:ring-2 focus:ring-orange-500/10"
                 />
               </div>
-              <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2">
                 <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">⚙️ Enfoque Técnico / Stacks</label>
                 <Input
                   placeholder="Ej. Power BI, Modelado Estrella, DAX Avanzado, SQL Server"
@@ -876,12 +964,15 @@ export default function DataCarreraPage() {
                   className="h-10 rounded-md border-orange-300/20 bg-[#081824] text-xs font-medium text-white transition-all duration-300 placeholder:text-slate-500 focus:border-orange-300/55 focus:ring-2 focus:ring-orange-500/10"
                 />
               </div>
+              <CareerDateField id="new-project-start" label="Fecha de inicio" value={newStartDate} onChange={setNewStartDate} />
+              <CareerDateField id="new-project-end" label="Fecha límite" value={newEndDate} min={newStartDate || undefined} onChange={setNewEndDate} />
               <Button
                 type="submit"
                 className="h-10 rounded-md border border-orange-300/35 bg-orange-500/20 text-xs font-semibold text-orange-100 transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-300/65 hover:bg-orange-500/30 active:scale-[0.98] motion-reduce:transform-none"
               >
                 Crear proyecto
               </Button>
+              {dateError && <p role="alert" className="text-xs text-rose-300 md:col-span-2 xl:col-span-5">{dateError}</p>}
             </form>
           </CardContent>
         </Card>
@@ -935,7 +1026,7 @@ export default function DataCarreraPage() {
                             key={project.id}
                             project={project}
                             score={getProjectScore(project)}
-                            onSelect={setSelectedProject}
+                            onSelect={openProject}
                           />
                         ))
                       )}
@@ -1162,6 +1253,14 @@ export default function DataCarreraPage() {
                   )
                 })()}
 
+                <section className="rounded-lg border border-orange-300/20 bg-[#0a2230]/75 p-4" aria-label="Planificación del proyecto">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h3 className="text-sm font-bold text-white">Planificación del proyecto</h3><p className="text-[10px] text-slate-400">{selectedProject.status === "En pausa" ? "Asigna nuevas fechas para retomar sin perder el avance." : "Ajusta las fechas activas sin cambiar el estado ni el progreso."}</p></div>{selectedProject.end_date && <span className="text-[10px] text-orange-200">Límite actual: {formatProjectDate(selectedProject.end_date)}</span>}</div>
+                  <div className="grid gap-3 sm:grid-cols-2"><CareerDateField id="project-start" label="Fecha de inicio" value={detailStartDate} onChange={setDetailStartDate} /><CareerDateField id="project-end" label="Fecha de finalización" value={detailEndDate} min={detailStartDate || undefined} onChange={setDetailEndDate} /></div>
+                  {dateError && <p role="alert" className="mt-2 text-xs text-rose-300">{dateError}</p>}
+                  <div className="mt-3 flex flex-wrap gap-2"><button type="button" disabled={savingDates} onClick={() => saveProjectDates(selectedProject.status === "En pausa")} className="rounded-md border border-orange-300/35 bg-orange-500/20 px-3 py-2 text-xs font-semibold text-orange-100 transition-colors hover:bg-orange-500/35 disabled:opacity-50">{savingDates ? "Guardando..." : selectedProject.status === "En pausa" ? "Retomar proyecto" : "Guardar fechas"}</button>{selectedProject.status !== "En pausa" && <button type="button" onClick={() => setConfirmPauseInDetail(true)} className="rounded-md border border-slate-400/20 px-3 py-2 text-xs text-slate-300 hover:bg-white/10">Pausar proyecto</button>}</div>
+                  {confirmPauseInDetail && <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-orange-300/20 bg-orange-400/5 p-2 text-xs text-slate-300"><span className="flex-1">Se quitarán las fechas activas y se conservará el avance.</span><button type="button" onClick={async () => { if (await pauseProject(selectedProject.id)) { setDetailStartDate(""); setDetailEndDate(""); setConfirmPauseInDetail(false) } else setDateError("No se pudo pausar el proyecto.") }} className="rounded bg-orange-500/20 px-2 py-1.5 text-orange-100 hover:bg-orange-500/35">Confirmar pausa</button><button type="button" onClick={() => setConfirmPauseInDetail(false)} className="px-2 py-1.5 text-slate-400 hover:text-white">Cancelar</button></div>}
+                </section>
+
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                   <div className="relative space-y-5 overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-[#080b12]/68 p-5 shadow-[0_14px_40px_rgba(0,0,0,0.22)] backdrop-blur-xl">
                     <div className="pointer-events-none absolute right-0 top-0 h-36 w-36 rounded-full bg-orange-500/[0.045] blur-3xl" />
@@ -1174,6 +1273,8 @@ export default function DataCarreraPage() {
                         value={selectedProject.status}
                         onChange={(value) => {
                           const nextSt = value as ProjectStatus
+                          if (selectedProject.status === "En pausa" && nextSt !== "En pausa") { setDateError("Para retomar este proyecto, indica nuevas fechas y usa Retomar proyecto."); return }
+                          if (nextSt === "En pausa") { setDetailStartDate(""); setDetailEndDate("") }
                           setSelectedProject({ ...selectedProject, status: nextSt })
                           handleUpdateProjectFields({ status: nextSt })
                         }}

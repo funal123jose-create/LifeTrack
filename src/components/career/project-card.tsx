@@ -1,7 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Maximize2 } from "lucide-react"
+import { CalendarClock, Maximize2 } from "lucide-react"
+import { deadlineFor, formatProjectDate, limaToday } from "@/lib/career-deadlines"
 
 import { cardVariants } from "@/lib/career-page-config"
 import {
@@ -24,6 +25,7 @@ export function ProjectCard({ project, score, onSelect }: ProjectCardProps) {
   const scoreTone = getScoreTone(scoreValue)
   const visibleProjectSkills = getVisibleProjectSkills(project)
   const hiddenProjectSkillCount = getHiddenProjectSkillCount(project)
+  const alert = deadlineFor(project, limaToday())
 
   return (
     <motion.button
@@ -60,6 +62,7 @@ export function ProjectCard({ project, score, onSelect }: ProjectCardProps) {
         <p className="line-clamp-2 text-[10px] font-medium leading-relaxed text-slate-500 transition-colors duration-300 group-hover/card:text-slate-300">
           {project.description || "Sin descripción técnica."}
         </p>
+        {project.end_date && <p className={`flex items-center gap-1.5 text-[10px] ${alert?.kind === "overdue" ? "text-rose-300" : alert ? "text-orange-300" : "text-slate-400"}`}><CalendarClock size={12} aria-hidden="true" />{alert?.kind === "overdue" ? "Vencido" : alert ? "Vence mañana" : "Límite"} · {formatProjectDate(project.end_date)}</p>}
 
         <div className="flex flex-wrap gap-1.5 pt-1">
           {visibleProjectSkills.map((skill) => (

@@ -84,6 +84,7 @@ export interface Project {
   priority: PriorityLevel
   start_date: string | null
   end_date: string | null
+  progress: number | null
   created_at?: string | null
   project_tasks: Task[]
   project_skills: ProjectSkillLink[]
