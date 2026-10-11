@@ -1,0 +1,15 @@
+/* Keep date entry and validation native, with only the custom calendar trigger. */
+.pillar-date-control input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.pillar-date-control input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none;
+}

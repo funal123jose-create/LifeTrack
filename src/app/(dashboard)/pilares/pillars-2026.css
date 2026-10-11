@@ -20,7 +20,6 @@
 .pillar-date-control { display:flex; align-items:center; border:1px solid var(--lt26-line); border-radius:6px; background:var(--lt26-rail); }
 .pillar-date-control input { min-width:0; width:100%; border:0 !important; background:transparent !important; padding:10px; color:var(--lt26-text); font-size:12px; color-scheme:dark; }
 html:not(.dark) .pillar-date-control input { color-scheme:light; }
-.pillar-date-control input::-webkit-calendar-picker-indicator { display:none; }
 .pillar-date-control button { display:grid; place-items:center; min-width:44px; min-height:44px; color:var(--lt26-accent); background:transparent; border:0; border-left:1px solid var(--lt26-line); }
 .pillar-date-popover { padding:16px; }
 .pillar-date-popover .rdp-root { --rdp-accent-color:var(--lt26-accent); --rdp-accent-background-color:var(--lt26-raised); --rdp-day-height:38px; --rdp-day-width:38px; --rdp-day_button-height:36px; --rdp-day_button-width:36px; --rdp-day_button-border-radius:5px; }

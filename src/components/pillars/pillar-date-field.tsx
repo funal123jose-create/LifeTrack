@@ -6,6 +6,7 @@ import { CalendarDays } from "lucide-react"
 import { DayPicker } from "react-day-picker"
 import { es } from "react-day-picker/locale"
 import "react-day-picker/style.css"
+import "./pillar-date-field.css"
 
 // Keep a native input for direct entry, form validation and mobile keyboards.
 export function PillarDateField({ id, label, value, onChange, min, max, required, tone = "career" }: {
