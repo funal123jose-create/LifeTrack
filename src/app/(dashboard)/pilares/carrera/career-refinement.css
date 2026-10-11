@@ -1,0 +1,31 @@
+/* Five local refinements; no changes to the shared pillar palette or layout. */
+.career-hero-flow { width:420px; }
+.career-flow-stage,.career-flow-canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.career-flow-stage .pillar-artwork { opacity:.95; }
+.career-hero-flow .pillar-hero-motion { border:1px solid var(--lt26-line); }
+.career-page .pillar-career-evidence-group { align-items:stretch; }
+.career-page .career-documentation-panel > div:last-child { flex:1; margin-block:0; padding-block:24px; }
+.career-page .pillar-board-heading { padding-block:16px !important; align-items:center; }
+.career-board-viewport { container:career-board / inline-size; min-width:0; }
+.career-page .career-board-columns { display:grid; grid-auto-flow:column; grid-auto-columns:100%; gap:12px !important; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:thin; padding-bottom:12px; }
+.career-board-columns > div { scroll-snap-align:start; scroll-snap-stop:always; }
+.career-board-columns:focus-visible { outline:2px solid var(--lt26-accent); outline-offset:4px; }
+.career-board-navigation { display:flex; align-items:center; justify-content:space-between; gap:12px; color:var(--lt26-muted); font-size:12px; margin-top:4px; }
+.career-board-navigation > div { display:flex; gap:8px; }
+.career-board-navigation button { display:grid; place-items:center; width:44px; height:44px; border:1px solid var(--lt26-line); border-radius:6px; background:var(--lt26-surface); color:var(--lt26-text); transition:background-color 160ms ease-out; }
+.career-board-navigation button:hover:not(:disabled) { background:var(--lt26-raised); }
+.career-board-navigation button:disabled { opacity:.4; cursor:not-allowed; }
+@container career-board (min-width:452px) { .career-page .career-board-columns { grid-auto-columns:calc((100% - 12px) / 2); } }
+@container career-board (min-width:684px) { .career-page .career-board-columns { grid-auto-columns:calc((100% - 24px) / 3); } }
+@container career-board (min-width:916px) { .career-page .career-board-columns { grid-auto-columns:calc((100% - 60px) / 6); } }
+.career-board-columns button[aria-label^="Abrir proyecto"] > div:last-child > .mb-2 { gap:8px; }
+.career-board-columns button[aria-label^="Abrir proyecto"] > div:last-child > .mb-2 > span:last-child { white-space:nowrap; flex-shrink:0; }
+@media (max-width:760px) {
+  .career-page .pillar-module-heading { flex-direction:column; gap:8px; }
+  .career-page .pillar-module-heading > div:first-child { width:100%; }
+  .career-hero-flow { display:block; position:relative; width:min(100%,420px); height:130px; bottom:auto; margin-top:12px; }
+  .career-hero-flow .pillar-artwork--compact { display:block; width:130px; height:130px; right:44px; }
+  .career-hero-flow .pillar-hero-motion { bottom:4px; }
+  .career-page .career-documentation-panel > div:last-child { padding-block:12px; }
+}
+@media (prefers-reduced-motion:reduce) { .career-board-navigation button { transition:none; } }

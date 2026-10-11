@@ -1,5 +1,8 @@
 "use client"
 
+import "../pillars-2026.css"
+import "./health-forms.css"
+
 import { useEffect, useState, useCallback, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -21,7 +24,6 @@ import {
   ChevronLeft,
   CheckCircle2,
   AlertTriangle,
-  Mic,
   Loader2,
   CheckSquare,
   Square,
@@ -32,16 +34,18 @@ import {
   Gauge,
   ScanLine,
   Salad,
-  AudioWaveform,
   Target,
   BatteryCharging,
   CircleDotDashed,
   X,
 } from "lucide-react"
 import Link from "next/link"
+import { PillarLoading } from "@/components/pillars/pillar-loading"
+import { PillarDateField } from "@/components/pillars/pillar-date-field"
 import { HealthMockupOverview } from "@/components/health/health-mockup-overview"
 import { MealMacroEditor } from "@/components/health/meal-macro-editor"
 import { HealthPlanManager } from "@/components/health/health-plan-manager"
+import { HealthEnergySummary, HealthHydrationWorkspace, HealthMealAudioAction } from "@/components/health/health-form-workspaces"
 import { HealthPeriodSelect } from "@/components/health/health-period-select"
 import { HealthWaterGlass } from "@/components/health/health-water-glass"
 import { fetchHealthHistory, fetchHealthPlanItems, fetchHealthStreak, fetchNutritionHistory, fetchWeightGoal, fetchWeightGoalHistory } from "@/lib/health-history-service"
@@ -1074,38 +1078,10 @@ export default function CentroSaludPage() {
   const selectedPlanItems = planItems.filter((item) => item.date >= planRange.start && item.date <= planRange.end)
   const selectedPlanWorkouts = planWeekOffset === 0 ? workoutEntries : historicalWorkoutEntries(history, planRange.start)
 
-  if (loading) {
-    return (
-      <div className="relative flex h-[70vh] items-center justify-center overflow-hidden text-slate-300">
-        <div className="relative z-10 flex flex-col items-center gap-5 rounded-[2rem] border border-white/[0.08] bg-white/[0.04] px-10 py-9 shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
-          <div className="relative flex h-24 w-24 items-center justify-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 rounded-full border border-dashed border-emerald-400/40"
-            />
-            <motion.div
-              animate={{ rotate: -360 }}
-              transition={{ duration: 3.6, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-3 rounded-full border border-dashed border-blue-400/30"
-            />
-            <HeartPulse className="text-emerald-300 drop-shadow-[0_0_22px_rgba(16,185,129,0.55)]" size={34} />
-          </div>
-          <div className="text-center">
-            <p className="animate-pulse text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">
-              SINCRO-BIOMÉTRICA EN CURSO
-            </p>
-            <p className="mt-2 text-xs font-medium text-slate-500">
-              Calibrando datos físicos, rutina semanal y telemetría diaria...
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <div className="pillar-2026" data-tone="health"><PillarLoading tone="health" label="Cargando tus registros de salud" /></div>
 
   return (
-    <div className="health-command-center lifetrack-redesign relative min-h-screen w-full overflow-hidden bg-transparent px-2 pb-12 pt-2 font-sans text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-100 sm:px-4 [overflow-wrap:anywhere]">
+    <div id="lt26-content" tabIndex={-1} data-tone="health" className="pillar-2026 health-command-center lifetrack-redesign relative min-h-screen w-full bg-transparent font-sans antialiased [overflow-wrap:anywhere]">
       <div className="relative z-10 mx-auto flex w-full max-w-[1728px] flex-col gap-6">
         {/* Retorno al menú general sin alterarlo */}
         {!hasProfile ? <div className="relative z-10 flex items-center justify-between">
@@ -1301,31 +1277,200 @@ export default function CentroSaludPage() {
                 <Dialog.Overlay className="health-dialog-overlay fixed inset-0 z-[60] bg-[#020c15]/85 backdrop-blur-sm" />
                 <Dialog.Content onOpenAutoFocus={() => requestAnimationFrame(() => healthDialogRef.current?.scrollTo(0, 0))} data-active-panel={activePanel || ""} className="health-dialog-content health-detail-modal fixed inset-x-2 top-1/2 z-[61] mx-auto flex max-h-[92dvh] w-[calc(100%-1rem)] max-w-5xl -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-emerald-300/25 bg-[#071a29] text-slate-100 shadow-[0_30px_100px_rgba(0,0,0,.7)] outline-none">
                   <div className="health-dialog-header z-20 flex shrink-0 items-center gap-3 border-b border-emerald-300/15 bg-[#0b2431]/95 px-3 py-3 backdrop-blur-md sm:px-5">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-300/25 bg-emerald-400/10 text-emerald-300"><HeartPulse size={20} /></div>
+                    {activePanel === "routine" ? <Dumbbell size={20} className="hf-heading-icon" /> : <HeartPulse size={20} className="hf-heading-icon" />}
                     <div className="min-w-0 flex-1"><Dialog.Title className="text-base font-extrabold text-white">{activePanel === "nutrition" ? "Nutrición y comidas" : activePanel === "hydration" ? "Hidratación" : activePanel === "routine" ? "Plan y entrenamiento" : activePanel === "plan" ? "Plan semanal de salud" : "Progreso físico"}</Dialog.Title><Dialog.Description className="text-xs text-slate-400">Tus registros y acciones de Salud</Dialog.Description></div>
                     <Dialog.Close className="flex h-9 w-9 items-center justify-center rounded-lg border border-sky-100/10 text-slate-300 transition hover:border-emerald-300/40 hover:text-white" aria-label="Cerrar"><X size={17} /></Dialog.Close>
                   </div>
                   <div ref={healthDialogRef} className="health-dialog-body min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-5">
-                  {activePanel === "progress" && <div className="mb-4 grid gap-3 rounded-xl border border-emerald-300/15 bg-emerald-400/[0.05] p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+
+                  {activePanel === "nutrition" && <div className="pillar-form-workspace hf-food-workspace"><section className="pillar-form-main">                {/* ASISTENTE NUTRICIONAL */}
+                <Card data-health-panel="nutrition" id="health-nutrition" className="relative overflow-hidden rounded-[2.15rem] border border-white/[0.08] bg-[#07100f]/70 shadow-[0_22px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(245,158,11,0.18),transparent_32%),radial-gradient(circle_at_88%_12%,rgba(16,185,129,0.12),transparent_28%)]" />
+                  <motion.div
+                    animate={{ x: ["-20%", "120%"] }}
+                    transition={{ duration: 5.5, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-0 h-full w-1/3 bg-gradient-to-r from-transparent via-white/[0.035] to-transparent"
+                  />
+                  <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+                  <CardHeader className="relative">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                      <div className="space-y-2">
+                        <CardTitle className="flex items-center gap-2 text-xl font-extrabold text-white">
+                          <Salad size={20} className="hf-heading-icon" />
+                          Registrar comida
+                        </CardTitle>
+                        <CardDescription className="max-w-2xl text-slate-400">
+                          Describe tus platos en lenguaje natural o graba tu voz para computar calorías dinámicamente.
+                        </CardDescription>
+                      </div>
+                      <div className="rounded-2xl border border-white/[0.06] bg-black/25 px-4 py-3 text-center">
+                        <Salad className="mx-auto mb-1 text-emerald-300" size={18} />
+                        <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">IA Nutricional</p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative space-y-4">
+                    <div className="relative pillar-meal-entry">
+                      <Label htmlFor="meal-description">Comida y porciones</Label>
+                      <Textarea
+                        id="meal-description"
+                        aria-label="Describe tu comida"
+                        placeholder="Ej: Desayuné dos huevos revueltos con café y pan integral..."
+                        value={iaInput}
+                        onChange={(e) => {
+                          setIaInput(e.target.value)
+                          setIaInputSource("text")
+                        }}
+                        disabled={iaLoading}
+                        className="min-h-32 resize-y rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] pr-14 text-sm font-medium text-white placeholder:text-slate-600 focus:border-amber-400/60 focus:ring-2 focus:ring-amber-500/10"
+                      />
+                      <HealthMealAudioAction recording={isRecording} busy={iaLoading} onRecord={handleMicrofonoClick} />
+                    </div>
+                    <Button
+                      onClick={handleAnalyzeNutrition}
+                      disabled={iaLoading || !iaInput.trim()}
+                      className="hf-primary hf-food-submit"
+                      aria-busy={iaLoading}
+                    >
+                      {iaLoading ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" /> Procesando...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={16} /> Calcular e integrar calorías
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+                <HealthEnergySummary calories={caloriesIngested} target={currentCalorieTarget} percent={caloriePct} onAdjust={(amount) => void handleAdjustCalories(amount)} />
+</section><aside className="pillar-form-context">                  {activePanel === "nutrition" && <div className="mb-4 rounded-xl border border-emerald-300/15 bg-[#09202b] p-4">
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-bold text-white">Historial de comidas</h3><div className="flex flex-wrap gap-2"><HealthPeriodSelect label="Periodo de comidas" value={nutritionPeriod} onChange={(value) => { setNutritionPeriod(value as NutritionPeriod); setNutritionOffset(0) }}><option value="today">Día</option><option value="week">Semana</option><option value="month">Mes</option></HealthPeriodSelect><HealthPeriodSelect label="Fecha de comidas" value={nutritionOffset} onChange={(value) => setNutritionOffset(Number(value))}>{Array.from({ length: nutritionPeriod === "today" ? 14 : nutritionPeriod === "week" ? 8 : 7 }, (_, offset) => <option key={offset} value={offset}>{healthDateRange(nutritionPeriod, offset).label}</option>)}</HealthPeriodSelect></div></div>
+                    {selectedNutrition.meals.length ? <div className="max-h-72 overflow-y-auto hf-meal-list">
+                      {selectedNutrition.meals.map((meal) => <article key={meal.id} className="hf-meal-record">
+                        <div className="hf-meal-heading"><strong><Salad size={16} />{getMealTypeLabel(meal.meal_type)}</strong><strong>{meal.estimated_calories} kcal</strong></div>
+                        <p className="hf-meal-meta">{meal.date} · {new Date(meal.created_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}</p>
+                        <p className="hf-meal-description">{meal.meal_description}</p>
+                        <div className="hf-meal-footer"><dl className="hf-meal-macros">
+                          <div><dt>Proteínas</dt><dd>{meal.protein_g == null ? "Sin dato" : `${meal.protein_g} g`}</dd></div>
+                          <div><dt>Carbohidratos</dt><dd>{meal.carbs_g == null ? "Sin dato" : `${meal.carbs_g} g`}</dd></div>
+                          <div><dt>Grasas</dt><dd>{meal.fat_g == null ? "Sin dato" : `${meal.fat_g} g`}</dd></div>
+                        </dl><button type="button" aria-expanded={editingMealId === meal.id} onClick={() => setEditingMealId(editingMealId === meal.id ? null : meal.id)} className="hf-secondary hf-meal-review">{meal.protein_g == null || meal.carbs_g == null || meal.fat_g == null ? "Completar macros" : "Revisar macros"}</button></div>
+                        {editingMealId === meal.id && <div className="mt-2"><MealMacroEditor key={meal.id} meal={meal} onSave={(input) => saveMealMacros(meal.id, input)} /></div>}
+                      </article>)}
+                    </div> : <p className="text-xs text-slate-400">Sin comidas registradas en este periodo.</p>}
+                  </div>}
+</aside></div>}
+                  {activePanel === "progress" && <div className="pillar-form-workspace"><section className="pillar-form-main">                {/* PROGRESO FÍSICO */}
+                <Card data-health-panel="progress" className="relative overflow-hidden rounded-[2.15rem] border border-white/[0.08] bg-[#07100f]/70 shadow-[0_22px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(16,185,129,0.075),transparent_30%),radial-gradient(circle_at_90%_85%,rgba(245,158,11,0.06),transparent_32%)]" />
+                  <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
+                  <CardHeader className="relative pb-3">
+                    <CardTitle className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.08em] text-white">
+                      <BatteryCharging size={16} className="text-emerald-300" /> Progreso Físico
+                    </CardTitle>
+                    <CardDescription className="text-xs text-slate-400">
+                      Registra tu peso, energía y una nota breve para analizar evolución semanal.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="relative space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="progress-weight" className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
+                          Peso actual
+                        </Label>
+                        <Input
+                          type="number"
+                          step="0.1"
+                          placeholder="Ej. 74.8"
+                          id="progress-weight"
+                          value={progressWeight}
+                          onChange={(e) => setProgressWeight(e.target.value)}
+                          className="h-11 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-xs font-bold text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="progress-energy" className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
+                          Energía 1-10
+                        </Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="10"
+                          placeholder="7"
+                          id="progress-energy"
+                          value={energyLevel}
+                          onChange={(e) => setEnergyLevel(e.target.value)}
+                          className="h-11 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-xs font-bold text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="progress-notes" className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
+                        Nota de progreso
+                      </Label>
+                      <Textarea
+                        placeholder="Ej: Me sentí con más energía, mejor descanso o más fuerza esta semana..."
+                        id="progress-notes"
+                        value={progressNotes}
+                        onChange={(e) => setProgressNotes(e.target.value)}
+                        className="min-h-[82px] resize-none rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-xs font-medium text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
+                      />
+                    </div>
+
+                    <Button
+                      onClick={handleSaveBodyProgress}
+                      disabled={isSavingProgress}
+                      className="hf-primary w-full"
+                      aria-busy={isSavingProgress}
+                    >
+                      {isSavingProgress ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                      {isSavingProgress ? "Guardando..." : "Guardar progreso"}
+                    </Button>
+
+                    <div className="space-y-2 border-t border-white/[0.06] pt-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.10em] text-slate-500">Historial reciente</p>
+                        <span className="rounded-full border border-emerald-300/15 bg-emerald-500/[0.055] px-2 py-1 text-[9px] font-extrabold text-emerald-200">
+                          {bodyProgressLogs.length}
+                        </span>
+                      </div>
+
+                      {bodyProgressLogs.length === 0 ? (
+                        <div className="rounded-2xl border border-dashed border-white/[0.06] bg-white/[0.015] p-4 text-center text-[11px] font-medium text-slate-500">
+                          Aún no hay registros de progreso físico.
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {getRecentBodyProgressLogs(bodyProgressLogs).map((log) => (
+                            <BodyProgressLogCard key={log.id} log={log} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+</section><aside className="pillar-form-context">                  {activePanel === "progress" && <div className="mb-4 grid gap-3 rounded-xl border border-emerald-300/15 bg-emerald-400/[0.05] p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
                     <div><Label htmlFor="health-goal-weight" className="mb-1 block text-[11px] text-slate-300">Peso objetivo (kg)</Label><Input id="health-goal-weight" type="number" min="1" max="999" step="0.1" value={goalWeightInput} onChange={(event) => setGoalWeightInput(event.target.value)} placeholder={weightGoal ? String(weightGoal.target_weight_kg) : "Ej. 70"} className="border-emerald-300/20 bg-[#061923] text-white" /></div>
-                    <div><Label htmlFor="health-goal-date" className="mb-1 block text-[11px] text-slate-300">Fecha objetivo</Label><Input id="health-goal-date" type="date" min={getLocalDateString()} value={goalDateInput} onChange={(event) => setGoalDateInput(event.target.value)} className="border-emerald-300/20 bg-[#061923] text-white" /></div>
-                    <Button type="button" onClick={saveWeightGoal} disabled={goalSaving} className="bg-emerald-500 font-semibold text-[#03221b] hover:bg-emerald-400">{goalSaving ? "Guardando..." : weightGoal ? "Guardar nueva meta" : "Crear meta"}</Button>
+                    <PillarDateField id="health-goal-date" label="Fecha objetivo" tone="health" min={getLocalDateString()} value={goalDateInput} onChange={setGoalDateInput} />
+                    <Button type="button" onClick={saveWeightGoal} disabled={goalSaving} aria-busy={goalSaving} className="hf-primary">{goalSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}{goalSaving ? "Guardando..." : weightGoal ? "Guardar nueva meta" : "Crear meta"}</Button>
                     {goalError && <p className="text-xs text-orange-300 sm:col-span-3" role="alert">{goalError}</p>}
                     <p className="text-[11px] text-slate-400 sm:col-span-3">Una nueva meta archiva la anterior sin borrar su resultado. El peso inicial se toma del último registro.</p>
                     {weightGoal && <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300 sm:col-span-3"><span>Meta {weightGoalStatus(bodyProgressLogs.find((log) => log.weight_kg !== null)?.weight_kg ?? null, weightGoal).toLowerCase()}: {weightGoal.start_weight_kg} → {weightGoal.target_weight_kg} kg · {weightGoal.start_date} a {weightGoal.target_date}</span><button type="button" disabled={goalSaving} onClick={cancelWeightGoal} className="text-orange-300 hover:text-white">Cancelar meta</button></div>}
                   </div>}
                   {activePanel === "progress" && <div className="mb-4 grid gap-3 sm:grid-cols-2"><section className="rounded-xl border border-emerald-300/15 p-3"><h3 className="mb-2 text-xs font-bold text-white">Historial de peso</h3>{history.body.filter((row) => row.weight_kg !== null).slice(-10).reverse().map((row) => <div key={`${row.date}-${row.created_at}`} className="flex justify-between border-t border-sky-100/10 py-1 text-[11px] text-slate-300"><span>{row.date}</span><strong className="text-white">{row.weight_kg} kg</strong></div>)}</section><section className="rounded-xl border border-emerald-300/15 p-3"><h3 className="mb-2 text-xs font-bold text-white">Metas cerradas</h3>{weightGoalHistory.length ? weightGoalHistory.map((goal) => <div key={goal.id} className="border-t border-sky-100/10 py-1.5 text-[11px] text-slate-300"><strong className="text-white">{goal.start_weight_kg} → {goal.target_weight_kg} kg</strong> · {goal.start_date} a {goal.target_date}<span className="block text-slate-400">{({ completed: "Cumplida", expired: "Vencida", cancelled: "Cancelada", replaced: "Reemplazada" } as Record<string, string>)[goal.status] || goal.status} · final {goal.final_weight_kg ?? "sin registro"} kg</span></div>) : <p className="text-[11px] text-slate-400">Aún no hay metas cerradas.</p>}</section></div>}
-                  {activePanel === "nutrition" && <div className="mb-4 rounded-xl border border-emerald-300/15 bg-[#09202b] p-4">
-                    <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-bold text-white">Historial de comidas</h3><div className="flex flex-wrap gap-2"><HealthPeriodSelect label="Periodo de comidas" value={nutritionPeriod} onChange={(value) => { setNutritionPeriod(value as NutritionPeriod); setNutritionOffset(0) }}><option value="today">Día</option><option value="week">Semana</option><option value="month">Mes</option></HealthPeriodSelect><HealthPeriodSelect label="Fecha de comidas" value={nutritionOffset} onChange={(value) => setNutritionOffset(Number(value))}>{Array.from({ length: nutritionPeriod === "today" ? 14 : nutritionPeriod === "week" ? 8 : 7 }, (_, offset) => <option key={offset} value={offset}>{healthDateRange(nutritionPeriod, offset).label}</option>)}</HealthPeriodSelect></div></div>
-                    {selectedNutrition.meals.length ? <div className="max-h-72 space-y-1.5 overflow-y-auto pr-1">{selectedNutrition.meals.map((meal) => <div key={meal.id} className="rounded-lg border border-emerald-300/10 bg-[#081b27] p-2 text-xs"><div className="flex min-w-0 flex-wrap items-center gap-2"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-400/10 text-orange-300"><Salad size={16} /></span><div className="min-w-0 flex-1"><strong className="text-white">{getMealTypeLabel(meal.meal_type)}</strong><p className="truncate text-slate-300" title={meal.meal_description}>{meal.date} · {meal.meal_description}</p></div><div className="shrink-0 text-right text-slate-300"><strong className="text-white">{meal.estimated_calories} kcal</strong><p>{new Date(meal.created_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}</p></div><button type="button" onClick={() => setEditingMealId(editingMealId === meal.id ? null : meal.id)} className="rounded-lg border border-emerald-300/20 px-2 py-1 text-[10px] font-semibold text-emerald-200 hover:bg-emerald-400/10">{meal.protein_g == null || meal.carbs_g == null || meal.fat_g == null ? "Completar macros" : "Revisar macros"}</button></div>{editingMealId === meal.id && <div className="mt-2"><MealMacroEditor key={meal.id} meal={meal} onSave={(input) => saveMealMacros(meal.id, input)} /></div>}</div>)}</div> : <p className="text-xs text-slate-400">Sin comidas registradas en este periodo.</p>}
-                  </div>}
-                  {activePanel === "hydration" && <div className="mb-4 flex flex-wrap items-end gap-3 rounded-xl border border-cyan-300/20 bg-cyan-400/[0.05] p-4"><div><Label htmlFor="water-goal" className="mb-1 block text-[11px] text-slate-300">Meta diaria de agua (L)</Label><Input id="water-goal" type="number" inputMode="decimal" min="0.25" max="10" step="0.25" value={waterGoalInput} onChange={(event) => setWaterGoalInput(event.target.value)} className="w-36 border-cyan-300/20 bg-[#061923] text-white" /></div><Button type="button" onClick={saveWaterGoal} disabled={waterGoalSaving} className="bg-cyan-500 font-semibold text-[#03222b] hover:bg-cyan-400">{waterGoalSaving ? "Guardando..." : "Guardar meta"}</Button>{waterGoalError && <p role="alert" className="w-full text-xs text-orange-300">{waterGoalError}</p>}</div>}
+</aside></div>}
+
+                  {activePanel === "hydration" && <HealthHydrationWorkspace liters={waterIngested} goal={waterGoal} percent={waterPct} goalInput={waterGoalInput} saving={waterGoalSaving} error={waterGoalError} count={waterLogs.length} logs={getRecentWaterLogs(waterLogs).map((water) => <WaterLogCard key={water.id} water={water} />)} onInput={setWaterGoalInput} onSave={() => void saveWaterGoal()} onAdd={() => void handleAddWater()} onRemove={() => void handleRemoveWater()} />}
                   {activePanel === "plan" && <HealthPlanManager items={selectedPlanItems} workouts={selectedPlanWorkouts} weekOffset={planWeekOffset} onAdd={addPlanItem} onToggleItem={togglePlanItem} onDeleteItem={deletePlanItem} onToggleWorkout={(entry) => toggleRoutineCheck(entry.dayId, entry.type)} />}
-            {activePanel !== "plan" && <motion.div
+            {activePanel !== "plan" && activePanel !== "nutrition" && activePanel !== "hydration" && <motion.div
               key="tracker"
               initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{ duration: 0.65, ease: "easeOut" }}
+              transition={{ duration: 0.18, ease: [.22, 1, .36, 1] }}
               className={activePanel === "routine" ? "health-routine-layout grid min-w-0 items-start gap-4 md:grid-cols-2" : "grid min-w-0 items-start gap-4"}
             >
               {/* Controles y registros existentes, enlazados desde el resumen visual. */}
@@ -1466,87 +1611,13 @@ export default function CentroSaludPage() {
                   </Card>
                 </div>
 
-                {/* ASISTENTE NUTRICIONAL */}
-                <Card data-health-panel="nutrition" id="health-nutrition" className="relative overflow-hidden rounded-[2.15rem] border border-white/[0.08] bg-[#07100f]/70 shadow-[0_22px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(245,158,11,0.18),transparent_32%),radial-gradient(circle_at_88%_12%,rgba(16,185,129,0.12),transparent_28%)]" />
-                  <motion.div
-                    animate={{ x: ["-20%", "120%"] }}
-                    transition={{ duration: 5.5, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-0 h-full w-1/3 bg-gradient-to-r from-transparent via-white/[0.035] to-transparent"
-                  />
-                  <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
-                  <CardHeader className="relative">
-                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                      <div className="space-y-2">
-                        <CardTitle className="flex items-center gap-2 text-xl font-extrabold text-white">
-                          <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-amber-400/20 bg-amber-500/10 text-amber-300">
-                            <Sparkles size={18} />
-                          </span>
-                          Asistente Nutricional Inteligente
-                        </CardTitle>
-                        <CardDescription className="max-w-2xl text-slate-400">
-                          Describe tus platos en lenguaje natural o graba tu voz para computar calorías dinámicamente.
-                        </CardDescription>
-                      </div>
-                      <div className="rounded-2xl border border-white/[0.06] bg-black/25 px-4 py-3 text-center">
-                        <Salad className="mx-auto mb-1 text-emerald-300" size={18} />
-                        <p className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">IA Nutricional</p>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="relative space-y-4">
-                    <div className="relative">
-                      <Input
-                        placeholder="Ej: Desayuné dos huevos revueltos con café y pan integral..."
-                        value={iaInput}
-                        onChange={(e) => {
-                          setIaInput(e.target.value)
-                          setIaInputSource("text")
-                        }}
-                        disabled={iaLoading}
-                        className="h-12 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] pr-14 text-sm font-medium text-white placeholder:text-slate-600 focus:border-amber-400/60 focus:ring-2 focus:ring-amber-500/10"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleMicrofonoClick}
-                        disabled={iaLoading}
-                        className={`absolute right-3 top-1/2 -translate-y-1/2 rounded-xl p-2 transition-all ${
-                          isRecording
-                            ? "border border-red-400/30 bg-red-500/20 text-red-300 shadow-[0_0_22px_rgba(239,68,68,0.25)] animate-pulse"
-                            : "bg-white/[0.055] text-slate-400 hover:bg-white/10 hover:text-white"
-                        }`}
-                      >
-                        {isRecording ? <AudioWaveform size={17} /> : <Mic size={17} />}
-                      </button>
-                    </div>
-                    <Button
-                      onClick={handleAnalyzeNutrition}
-                      disabled={iaLoading || !iaInput.trim()}
-                      className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 text-[11px] font-bold tracking-[0.08em] text-white shadow-[0_18px_42px_rgba(249,115,22,0.18)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(249,115,22,0.28)] disabled:opacity-55"
-                    >
-                      {iaLoading ? (
-                        <>
-                          <Loader2 size={16} className="animate-spin" /> PROCESANDO...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles size={16} /> CALCULAR E INTEGRAR CALORÍAS
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-
-
                 {/* HISTORIAL DIARIO */}
                 <Card data-health-panel="hydration" className="relative overflow-hidden rounded-[2.15rem] border border-white/[0.08] bg-[#07100f]/70 shadow-[0_22px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(16,185,129,0.10),transparent_32%),radial-gradient(circle_at_88%_12%,rgba(59,130,246,0.08),transparent_28%)]" />
                   <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
                   <CardHeader className="relative">
                     <CardTitle className="flex items-center gap-2 text-xl font-extrabold text-white">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.055] text-emerald-300">
-                        <CircleDotDashed size={18} />
-                      </span>
+                      <CircleDotDashed size={18} className="hf-heading-icon" />
                       Historial de Hidratación de Hoy
                     </CardTitle>
                     <CardDescription className="break-words text-slate-400">
@@ -1586,9 +1657,7 @@ export default function CentroSaludPage() {
                   <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-blue-400 to-transparent" />
                   <CardHeader className="relative">
                     <CardTitle className="flex items-center gap-2 text-xl font-extrabold text-white">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-blue-400/20 bg-blue-500/10 text-blue-300">
-                        <Calendar size={18} />
-                      </span>
+                      <Calendar size={18} className="hf-heading-icon" />
                       Planificación Semanal de Entrenamiento
                     </CardTitle>
                     <CardDescription className="break-words text-slate-400">
@@ -1714,7 +1783,7 @@ export default function CentroSaludPage() {
               </div>
 
               {/* LADO DERECHO */}
-              <div className={`health-detail-secondary space-y-4 ${activePanel === "nutrition" || activePanel === "hydration" ? "hidden" : ""}`}>
+              <div className="health-detail-secondary space-y-4">
                 {/* ESTADO FÍSICO BASE */}
                 <Card data-health-panel="progress" className="relative overflow-hidden rounded-[2.15rem] border border-white/[0.08] bg-[#07100f]/70 shadow-[0_22px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(16,185,129,0.075),transparent_30%),radial-gradient(circle_at_90%_85%,rgba(59,130,246,0.08),transparent_32%)]" />
@@ -1765,93 +1834,6 @@ export default function CentroSaludPage() {
                     >
                       RE-CALIBRAR PERFIL
                     </Button>
-                  </CardContent>
-                </Card>
-
-                {/* PROGRESO FÍSICO */}
-                <Card data-health-panel="progress" className="relative overflow-hidden rounded-[2.15rem] border border-white/[0.08] bg-[#07100f]/70 shadow-[0_22px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(16,185,129,0.075),transparent_30%),radial-gradient(circle_at_90%_85%,rgba(245,158,11,0.06),transparent_32%)]" />
-                  <div className="absolute left-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
-                  <CardHeader className="relative pb-3">
-                    <CardTitle className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.08em] text-white">
-                      <BatteryCharging size={16} className="text-emerald-300" /> Progreso Físico
-                    </CardTitle>
-                    <CardDescription className="text-xs text-slate-400">
-                      Registra tu peso, energía y una nota breve para analizar evolución semanal.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="relative space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-2">
-                        <Label className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
-                          Peso actual
-                        </Label>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          placeholder="Ej. 74.8"
-                          value={progressWeight}
-                          onChange={(e) => setProgressWeight(e.target.value)}
-                          className="h-11 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-xs font-bold text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
-                          Energía 1-10
-                        </Label>
-                        <Input
-                          type="number"
-                          min="1"
-                          max="10"
-                          placeholder="7"
-                          value={energyLevel}
-                          onChange={(e) => setEnergyLevel(e.target.value)}
-                          className="h-11 rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-xs font-bold text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-[9px] font-bold uppercase tracking-[0.10em] text-slate-500">
-                        Nota de progreso
-                      </Label>
-                      <Textarea
-                        placeholder="Ej: Me sentí con más energía, mejor descanso o más fuerza esta semana..."
-                        value={progressNotes}
-                        onChange={(e) => setProgressNotes(e.target.value)}
-                        className="min-h-[82px] resize-none rounded-2xl border-white/10 bg-slate-950/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] text-xs font-medium text-white placeholder:text-slate-700 focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/10"
-                      />
-                    </div>
-
-                    <Button
-                      onClick={handleSaveBodyProgress}
-                      disabled={isSavingProgress}
-                      className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-500/[0.12] text-[10px] font-bold uppercase tracking-[0.10em] text-emerald-100 shadow-lg shadow-emerald-950/20 transition-all hover:-translate-y-0.5 hover:bg-emerald-500/[0.18] disabled:opacity-60"
-                    >
-                      {isSavingProgress ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-                      Guardar Progreso
-                    </Button>
-
-                    <div className="space-y-2 border-t border-white/[0.06] pt-4">
-                      <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.10em] text-slate-500">Historial reciente</p>
-                        <span className="rounded-full border border-emerald-300/15 bg-emerald-500/[0.055] px-2 py-1 text-[9px] font-extrabold text-emerald-200">
-                          {bodyProgressLogs.length}
-                        </span>
-                      </div>
-
-                      {bodyProgressLogs.length === 0 ? (
-                        <div className="rounded-2xl border border-dashed border-white/[0.06] bg-white/[0.015] p-4 text-center text-[11px] font-medium text-slate-500">
-                          Aún no hay registros de progreso físico.
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          {getRecentBodyProgressLogs(bodyProgressLogs).map((log) => (
-                            <BodyProgressLogCard key={log.id} log={log} />
-                          ))}
-                        </div>
-                      )}
-                    </div>
                   </CardContent>
                 </Card>
 
@@ -1937,9 +1919,7 @@ export default function CentroSaludPage() {
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(249,115,22,0.16),transparent_30%),radial-gradient(circle_at_90%_85%,rgba(16,185,129,0.08),transparent_32%)]" />
                   <CardContent className="relative space-y-4 p-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-orange-400/20 bg-orange-500/10 text-orange-300">
-                        <Target size={18} />
-                      </div>
+                      <Target size={18} className="hf-heading-icon hf-heading-icon-target" />
                       <div>
                         <p className="text-sm font-extrabold text-white">Resumen de control</p>
                         <p className="text-xs font-medium text-slate-500">Panel diario sincronizado</p>

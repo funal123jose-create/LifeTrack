@@ -1,9 +1,14 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import { MotionConfig } from "framer-motion"
 
 export function DashboardContentShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  if (pathname === "/dashboard") return <div className="lt26-content-shell">{children}</div>
+  if (["/pilares", "/pilares/salud", "/pilares/carrera", "/pilares/cuidado-personal"].includes(pathname)) {
+    return <MotionConfig reducedMotion="user">{children}</MotionConfig>
+  }
   const isFullWidthPillar = pathname === "/pilares" || pathname === "/pilares/salud" || pathname === "/pilares/carrera" || pathname === "/pilares/cuidado-personal" || pathname === "/portafolio" || pathname === "/historial" || pathname === "/calendario"
 
   return (

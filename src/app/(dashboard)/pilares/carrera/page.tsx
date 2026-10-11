@@ -1,5 +1,7 @@
 "use client"
 
+import "../pillars-2026.css"
+
 import { useEffect, useState, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,11 +12,21 @@ import {
   FolderPlus, CheckCircle2,
   Trash2, Plus, ListTodo, X, Activity, Sparkles,
   Tags, Database, Cpu, Layers3, Save, BookOpen,
-  ExternalLink, Download, FileArchive,
+  Download,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { CareerCommandOverview } from "@/components/career/career-command-overview"
 import { CareerBoardParticles } from "@/components/career/career-board-particles"
+import { CareerBoardViewport } from "@/components/career/career-board-viewport"
+import { CareerViewSwitch } from "@/components/career/career-view-switch"
+import { CareerDetailSections } from "@/components/career/career-detail-sections"
+import { TechnologyMark } from "@/components/career/technology-mark"
+import { CareerCaseStudy } from "@/components/career/career-case-study"
+import "./career-refinement.css"
+import "./career-detail.css"
+import "./career-case-study.css"
+import { PillarModalFrame } from "@/components/pillars/pillar-modal-frame"
+import { PillarLoading } from "@/components/pillars/pillar-loading"
 import { LifeTrackFooter } from "@/components/lifetrack-footer"
 import { CareerSelect } from "@/components/career/career-filters"
 import { MetricGrid } from "@/components/career/metric-grid"
@@ -29,7 +41,6 @@ import { containerVariants, macroColumns, microColumns } from "@/lib/career-page
 import { generateCaseStudyExportHtml } from "@/lib/career-export"
 import {
   buildEmptyTaskDoc,
-  getCaseStudySummaryMetrics,
   getProjectProfessionalScore,
   getProjectSkillIds,
   getProjectSkills,
@@ -59,11 +70,7 @@ import type {
 } from "@/lib/career-page-models"
 import {
   buildRichDocumentSeed,
-  formatAssetSize,
-  getCaseStudyDocHasContent,
-  getAssetVisual,
   getScoreTone,
-  getTaskStatusTone,
   mapCareerSkill,
   mapSkillLink,
   splitStack,
@@ -915,15 +922,15 @@ export default function DataCarreraPage() {
   }
 
   return (
-    <div className="lifetrack-redesign career-page relative min-h-screen w-full overflow-x-hidden bg-transparent px-2 pb-12 pt-2 font-sans text-slate-100 antialiased selection:bg-orange-500/20 selection:text-orange-100 sm:px-4 [overflow-wrap:anywhere]">
+    <div id="lt26-content" tabIndex={-1} data-tone="career" className="pillar-2026 lifetrack-redesign career-page relative min-h-screen w-full font-sans antialiased [overflow-wrap:anywhere]">
       <div className="relative z-10 mx-auto flex w-full max-w-[1728px] flex-col gap-3">
-      {careerView === "overview" && (loading ? <div className="flex min-h-[320px] items-center justify-center text-sm text-slate-400" role="status">Cargando proyectos...</div> : <CareerCommandOverview projects={projects} scores={projectScores} summaries={technicalSummaries} skills={careerSkills} evidence={careerEvidence} activity={careerActivity} documents={careerDocuments} view={careerView} onViewChange={setCareerView} onOpenProject={openProject} onOpenCaseStudy={fetchProjectCaseStudy} onShowBoard={() => setCareerView("board")} deadlineBell={<CareerDeadlineBell alerts={alerts} onPostpone={postponeProject} onPause={pauseProject} />} />)}
+      {careerView === "overview" && (loading ? <PillarLoading tone="career" label="Cargando proyectos y evidencias" /> : <CareerCommandOverview projects={projects} scores={projectScores} summaries={technicalSummaries} skills={careerSkills} evidence={careerEvidence} activity={careerActivity} documents={careerDocuments} view={careerView} onViewChange={setCareerView} onOpenProject={openProject} onOpenCaseStudy={fetchProjectCaseStudy} onShowBoard={() => setCareerView("board")} deadlineBell={<CareerDeadlineBell alerts={alerts} onPostpone={postponeProject} onPause={pauseProject} />} />)}
       {careerView === "board" && <div className="career-board relative isolate space-y-3 overflow-hidden rounded-xl border border-orange-300/20 bg-[#071a29] p-2 sm:p-3">
       <CareerBoardParticles />
       <div className="career-board-atmosphere pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="career-board-circuits pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="career-board-beam pointer-events-none absolute inset-y-0 -z-10 w-px" aria-hidden="true" />
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-orange-300/20 bg-[#0a2230]/90 p-3 shadow-[inset_0_1px_rgba(255,255,255,.04)]"><div><h1 className="text-lg font-bold text-white">Tablero de proyectos</h1><p className="text-xs text-slate-400">Gestiona proyectos, subtareas, skills y documentación.</p></div><div className="flex items-center gap-2"><div className="inline-flex rounded-md border border-orange-300/25 bg-[#081824] p-1" role="group" aria-label="Vista de Data y Carrera"><button type="button" onClick={() => setCareerView("overview")} aria-pressed={false} className="rounded px-3 py-1.5 text-[11px] text-slate-300 transition-all hover:-translate-y-0.5 hover:bg-orange-400/10 hover:text-white motion-reduce:transform-none">Resumen</button><button type="button" aria-pressed className="rounded border border-orange-300/35 bg-orange-500/25 px-3 py-1.5 text-[11px] font-semibold text-orange-100 shadow-[0_0_15px_rgba(249,115,22,.16)]">Tablero</button></div><CareerDeadlineBell alerts={alerts} onPostpone={postponeProject} onPause={pauseProject} /></div></div>
+      <div className="pillar-board-heading relative z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-orange-300/20 bg-[#0a2230]/90 p-3 shadow-[inset_0_1px_rgba(255,255,255,.04)]"><div><h1 className="text-lg font-bold text-white">Tablero de proyectos</h1><p className="text-xs text-slate-400">Gestiona proyectos, subtareas, skills y documentación.</p></div><div className="flex items-center gap-2"><CareerViewSwitch view="board" onChange={setCareerView} /><CareerDeadlineBell alerts={alerts} onPostpone={postponeProject} onPause={pauseProject} /></div></div>
 
       {/* FORMULARIO DE INICIALIZACIÓN */}
       <motion.div
@@ -947,8 +954,9 @@ export default function DataCarreraPage() {
           <CardContent className="relative">
             <form onSubmit={handleCreateProject} className="grid items-end gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1.5fr_160px_160px_140px]">
               <div className="space-y-2 md:col-span-1">
-                <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">⚡ Identificador</label>
+                <label htmlFor="new-project-title" className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">Nombre del proyecto</label>
                 <Input
+                  id="new-project-title"
                   placeholder="Ej. Dashboard Core Analytics"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
@@ -956,8 +964,9 @@ export default function DataCarreraPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">⚙️ Enfoque Técnico / Stacks</label>
+                <label htmlFor="new-project-stack" className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">Enfoque técnico / Stacks</label>
                 <Input
+                  id="new-project-stack"
                   placeholder="Ej. Power BI, Modelado Estrella, DAX Avanzado, SQL Server"
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
@@ -981,17 +990,9 @@ export default function DataCarreraPage() {
       {/* TABLERO KANBAN EXTERNO */}
       <div className="relative z-10 flex-1">
         {loading ? (
-          <div className="flex flex-col items-center justify-center gap-5 py-40">
-            <div className="relative flex items-center justify-center">
-              <div className="absolute h-24 w-24 rounded-full border border-orange-400/10 bg-orange-500/5 blur-sm" />
-              <Activity className="absolute animate-spin text-orange-400 drop-shadow-[0_0_16px_rgba(249,115,22,0.55)]" size={42} />
-              <div className="h-20 w-20 animate-ping rounded-full border border-orange-500/25 [animation-duration:2s]" />
-              <div className="absolute h-32 w-32 animate-pulse rounded-full border border-amber-400/10" />
-            </div>
-            <div className="animate-pulse text-[10px] font-extrabold uppercase tracking-[0.45em] text-orange-300/75">Sincronizando Matriz Cuántica...</div>
-          </div>
+          <PillarLoading tone="career" label="Cargando el tablero de proyectos" />
         ) : (
-          <div className="career-board-scroll grid grid-flow-col auto-cols-[minmax(244px,1fr)] gap-2.5 overflow-x-auto pb-2">
+          <CareerBoardViewport>
             {macroColumns.map((col) => {
               const filtered = getProjectsByStatus(projects, col.id)
               return (
@@ -1035,7 +1036,7 @@ export default function DataCarreraPage() {
                 </div>
               )
             })}
-          </div>
+          </CareerBoardViewport>
         )}
       </div>
       </div>}
@@ -1043,29 +1044,25 @@ export default function DataCarreraPage() {
       {/* POPUP MODAL CONTROL PANEL */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="career-modal-overlay fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#02040a]/88 p-4 backdrop-blur-xl">
+          <PillarModalFrame title="Gestionar proyecto" onClose={() => { setSelectedProject(null); setSelectedTaskForDoc(null); setTaskDoc(null); setSelectedTaskSkillLinks([]); setSelectedCaseStudy(null) }}><div className="career-modal-overlay fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#02040a]/88 p-4 backdrop-blur-xl">
             <motion.div
               initial={{ scale: 0.94, opacity: 0, y: 30, filter: "blur(8px)" }}
               animate={{ scale: 1, opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ scale: 0.94, opacity: 0, y: 30, filter: "blur(8px)" }}
-              transition={{ type: "spring", duration: 0.5 }}
-              className="career-modal-panel relative my-8 flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/90 text-white shadow-[0_0_60px_rgba(0,0,0,0.52)] backdrop-blur-2xl"
+              transition={{ duration: .2, ease: [.22, 1, .36, 1] }}
+              className="career-modal-panel career-detail-panel"
             >
-              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_18%_0%,rgba(249,115,22,0.060),transparent_28%),radial-gradient(circle_at_85%_15%,rgba(59,130,246,0.08),transparent_28%)]" />
-              <div className="pointer-events-none absolute left-5 top-5 h-5 w-5 border-l-2 border-t-2 border-orange-300/35" />
-              <div className="pointer-events-none absolute right-5 top-5 h-5 w-5 border-r-2 border-t-2 border-orange-300/35" />
-              <div className="pointer-events-none absolute bottom-5 left-5 h-5 w-5 border-b-2 border-l-2 border-orange-300/35" />
-              <div className="pointer-events-none absolute bottom-5 right-5 h-5 w-5 border-b-2 border-r-2 border-orange-300/35" />
 
-              <div className="relative flex shrink-0 items-start justify-between border-b border-white/[0.06] bg-[#080b12]/68 p-6 backdrop-blur-xl md:p-8">
+              <div className="career-detail-header relative flex shrink-0 items-start justify-between border-b border-white/[0.06] p-6">
                 <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-orange-300/18 to-transparent" />
 
                 <div className="mr-4 flex-1 space-y-3">
-                  <span className="flex items-center gap-2 text-[9px] font-extrabold uppercase tracking-[0.3em] text-orange-200/85">
-                    <Sparkles size={12} className="animate-pulse text-amber-300" /> MATRIX REQUIREMENT CONTROL PANEL
+                  <span className="flex items-center gap-2 text-sm font-semibold text-orange-200/85">
+                    <Sparkles size={12} className="animate-pulse text-amber-300" /> Gestionar proyecto
                   </span>
                   <input
                     className="w-full border-b border-transparent bg-transparent pb-1 text-2xl font-extrabold tracking-[-0.035em] text-white outline-none transition-all hover:border-white/10 focus:border-orange-400/50 md:text-4xl"
+                    aria-label="Nombre del proyecto"
                     value={selectedProject.title}
                     onChange={(e) => {
                       setSelectedProject({ ...selectedProject, title: e.target.value })
@@ -1077,11 +1074,12 @@ export default function DataCarreraPage() {
                   <button
                     onClick={() => handleDeleteProject(selectedProject.id)}
                     className="rounded-xl p-2.5 text-slate-500 transition-all duration-200 hover:bg-rose-500/10 hover:text-rose-300"
-                    title="Destruir Nodo"
+                    title="Eliminar proyecto" aria-label="Eliminar proyecto"
                   >
                     <Trash2 size={16} />
                   </button>
                   <button
+                    aria-label="Cerrar proyecto"
                     onClick={() => {
                       setSelectedProject(null)
                       setSelectedTaskForDoc(null)
@@ -1096,16 +1094,98 @@ export default function DataCarreraPage() {
                 </div>
               </div>
 
-              <div className="custom-scrollbar relative flex-1 space-y-8 overflow-y-auto p-6 md:p-8">
+              <CareerDetailSections key={selectedProject.id} labels={["General", "Resumen técnico", "Stack", "Subtareas"]}>
+              <div className="career-detail-general">
+<div className="pillar-project-editing">                <section className="rounded-lg border border-orange-300/20 bg-[#0a2230]/75 p-4" aria-label="Planificación del proyecto">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h3 className="text-sm font-bold text-white">Planificación del proyecto</h3><p className="text-[10px] text-slate-400">{selectedProject.status === "En pausa" ? "Asigna nuevas fechas para retomar sin perder el avance." : "Ajusta las fechas activas sin cambiar el estado ni el progreso."}</p></div>{selectedProject.end_date && <span className="text-[10px] text-orange-200">Límite actual: {formatProjectDate(selectedProject.end_date)}</span>}</div>
+                  <div className="grid gap-3 sm:grid-cols-2"><CareerDateField id="project-start" label="Fecha de inicio" value={detailStartDate} onChange={setDetailStartDate} /><CareerDateField id="project-end" label="Fecha de finalización" value={detailEndDate} min={detailStartDate || undefined} onChange={setDetailEndDate} /></div>
+                  {dateError && <p role="alert" className="mt-2 text-xs text-rose-300">{dateError}</p>}
+                  <div className="mt-3 flex flex-wrap gap-2"><button type="button" disabled={savingDates} onClick={() => saveProjectDates(selectedProject.status === "En pausa")} className="rounded-md border border-orange-300/35 bg-orange-500/20 px-3 py-2 text-xs font-semibold text-orange-100 transition-colors hover:bg-orange-500/35 disabled:opacity-50">{savingDates ? "Guardando..." : selectedProject.status === "En pausa" ? "Retomar proyecto" : "Guardar fechas"}</button>{selectedProject.status !== "En pausa" && <button type="button" onClick={() => setConfirmPauseInDetail(true)} className="rounded-md border border-slate-400/20 px-3 py-2 text-xs text-slate-300 hover:bg-white/10">Pausar proyecto</button>}</div>
+                  {confirmPauseInDetail && <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-orange-300/20 bg-orange-400/5 p-2 text-xs text-slate-300"><span className="flex-1">Se quitarán las fechas activas y se conservará el avance.</span><button type="button" onClick={async () => { if (await pauseProject(selectedProject.id)) { setDetailStartDate(""); setDetailEndDate(""); setConfirmPauseInDetail(false) } else setDateError("No se pudo pausar el proyecto.") }} className="rounded bg-orange-500/20 px-2 py-1.5 text-orange-100 hover:bg-orange-500/35">Confirmar pausa</button><button type="button" onClick={() => setConfirmPauseInDetail(false)} className="px-2 py-1.5 text-slate-400 hover:text-white">Cancelar</button></div>}
+                </section>
+
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                  <div className="relative space-y-5 overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-[#080b12]/68 p-5 shadow-[0_14px_40px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+                    <div className="pointer-events-none absolute right-0 top-0 h-36 w-36 rounded-full bg-orange-500/[0.045] blur-3xl" />
+
+                    <div className="relative space-y-2">
+                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">Estado del proyecto</label>
+                      <CareerSelect
+                        label="Estado del proyecto"
+                        fullWidth
+                        value={selectedProject.status}
+                        onChange={(value) => {
+                          const nextSt = value as ProjectStatus
+                          if (selectedProject.status === "En pausa" && nextSt !== "En pausa") { setDateError("Para retomar este proyecto, indica nuevas fechas y usa Retomar proyecto."); return }
+                          if (nextSt === "En pausa") { setDetailStartDate(""); setDetailEndDate("") }
+                          setSelectedProject({ ...selectedProject, status: nextSt })
+                          handleUpdateProjectFields({ status: nextSt })
+                        }}
+                      >
+                        {macroColumns.map(c => <option key={c.id} value={c.id} className="bg-[#02040a]">{c.label}</option>)}
+                      </CareerSelect>
+                    </div>
+
+                    <div className="relative space-y-2">
+                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">Prioridad</label>
+                      <CareerSelect
+                        label="Prioridad del proyecto"
+                        fullWidth
+                        value={selectedProject.priority}
+                        onChange={(value) => {
+                          const nextPr = value as PriorityLevel
+                          setSelectedProject({ ...selectedProject, priority: nextPr })
+                          handleUpdateProjectFields({ priority: nextPr })
+                        }}
+                      >
+                        <option value="Baja" className="bg-[#02040a]">Baja</option>
+                        <option value="Media" className="bg-[#02040a]">Media</option>
+                        <option value="Alta" className="bg-[#02040a]">Alta</option>
+                      </CareerSelect>
+                    </div>
+                  </div>
+
+                  <div className="space-y-5 md:col-span-2">
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">Enfoque técnico / Stacks</label>
+                      <Input
+                        aria-label="Enfoque técnico del proyecto"
+                        value={selectedProject.description || ""}
+                        placeholder="Arquitectura de datos, tecnologías y stacks aplicados..."
+                        className="h-12 rounded-2xl border-white/10 bg-black/25 text-xs font-bold text-white transition-all placeholder:text-slate-700 focus:border-orange-400/60 focus:ring-2 focus:ring-orange-500/10"
+                        onChange={(e) => {
+                          setSelectedProject({ ...selectedProject, description: e.target.value })
+                          handleUpdateProjectFields({ description: e.target.value })
+                        }}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">Resumen y entregables técnicos</label>
+                      <Textarea
+                        placeholder="Detalla las especificaciones del entregable, lógica de negocio DAX, modelos de datos, etc..."
+                        className="custom-scrollbar min-h-[112px] rounded-2xl border-white/10 bg-black/25 text-xs font-medium leading-relaxed text-slate-200 transition-all placeholder:text-slate-700 focus:border-orange-400/60 focus:ring-2 focus:ring-orange-500/10"
+                        aria-label="Resumen y entregables técnicos"
+                        value={selectedProject.summary || ""}
+                        onChange={(e) => {
+                          setSelectedProject({ ...selectedProject, summary: e.target.value })
+                          handleUpdateProjectFields({ summary: e.target.value })
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+</div>
                 {(() => {
                   const score = getProjectScore(selectedProject)
                   const scoreValue = score?.professional_score ?? 0
                   const scoreTone = getScoreTone(scoreValue)
 
                   return (
-                    <div className={`relative overflow-hidden rounded-[1.7rem] border ${scoreTone.border} ${scoreTone.bg} p-5 shadow-[0_18px_48px_rgba(0,0,0,0.24)] backdrop-blur-xl`}>
+                    <div className="career-detail-score">
                       <div className="pointer-events-none absolute right-0 top-0 h-44 w-44 rounded-full bg-orange-500/[0.045] blur-3xl" />
-                      <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+                      <div className="relative flex flex-col justify-between gap-5">
                         <div>
                           <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-orange-200/85">
                             <Activity size={14} className="text-orange-300" />
@@ -1135,10 +1215,10 @@ export default function DataCarreraPage() {
                         />
                       </div>
 
-                      <div className="relative mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                      <div className="pillar-score-metrics relative mt-5 grid grid-cols-2 gap-4">
                         {getProfessionalScoreMetrics(score).map((metric) => (
                           <div key={metric.label} className="rounded-2xl border border-white/[0.06] bg-black/24 p-3">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col gap-1">
                               <span className="break-words text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">
                                 {metric.label}
                               </span>
@@ -1163,7 +1243,8 @@ export default function DataCarreraPage() {
                     </div>
                   )
                 })()}
-
+              </div>
+              <div className="career-detail-technical">
                 {(() => {
                   const technicalSummary = getProjectTechnicalSummary(selectedProject)
                   const plannedStack = splitStack(technicalSummary?.project_stack)
@@ -1171,9 +1252,7 @@ export default function DataCarreraPage() {
                   const scoreTone = getScoreTone(technicalSummary?.professional_score ?? 0)
 
                   return (
-                    <div className="relative overflow-hidden rounded-[1.7rem] border border-white/[0.06] bg-[#080b12]/68 p-5 shadow-[0_18px_48px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                      <div className="pointer-events-none absolute left-0 top-0 h-40 w-40 rounded-full bg-cyan-500/[0.045] blur-3xl" />
-                      <div className="pointer-events-none absolute right-0 bottom-0 h-44 w-44 rounded-full bg-orange-500/[0.045] blur-3xl" />
+                    <div className="career-technical-body">
 
                       <div className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
                         <div>
@@ -1186,22 +1265,22 @@ export default function DataCarreraPage() {
                           </p>
                         </div>
 
-                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                        <div className="career-case-actions">
                           <button
                             type="button"
                             onClick={() => fetchProjectCaseStudy(selectedProject.id)}
                             disabled={loadingCaseStudy}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-cyan-300/14 bg-cyan-500/[0.10] px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.10em] text-cyan-100 transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-500/[0.16] disabled:cursor-not-allowed disabled:opacity-60"
+                            className="career-case-open"
                           >
                             <BookOpen size={14} />
                             {loadingCaseStudy ? "Cargando..." : "Ver caso técnico"}
                           </button>
 
-                          <div className={`w-fit rounded-2xl border ${scoreTone.border} ${scoreTone.bg} px-4 py-3 text-right`}>
-                            <p className={`text-2xl font-extrabold ${scoreTone.text}`}>
+                          <div className="career-case-maturity">
+                            <p className={`career-case-maturity__value ${scoreTone.text}`}>
                               {(technicalSummary?.professional_score ?? 0).toFixed(1)}%
                             </p>
-                            <p className="mt-1 text-[8px] font-extrabold uppercase tracking-[0.14em] text-slate-500">
+                            <p className="career-case-maturity__label">
                               madurez técnica
                             </p>
                           </div>
@@ -1210,9 +1289,9 @@ export default function DataCarreraPage() {
 
                       <MetricGrid className="relative mt-5" metrics={getTechnicalSummaryMetrics(technicalSummary)} />
 
-                      <div className="relative mt-5 grid gap-4 lg:grid-cols-2">
-                        <div className="rounded-2xl border border-orange-300/10 bg-orange-500/[0.045] p-4">
-                          <div className="mb-3 flex items-center gap-2 text-[9px] font-extrabold uppercase tracking-[0.14em] text-orange-200/85">
+                      <div className="career-stack-comparison relative mt-5 grid gap-4 lg:grid-cols-2">
+                        <div className="career-stack-group career-stack-planned">
+                          <div className="career-stack-label">
                             <Layers3 size={13} />
                             Stack planificado del proyecto
                           </div>
@@ -1220,9 +1299,10 @@ export default function DataCarreraPage() {
                           {plannedStack.length === 0 ? (
                             <p className="text-xs font-medium text-slate-600">Sin stack general asignado todavía.</p>
                           ) : (
-                            <div className="flex flex-wrap gap-2">
+                            <div className="career-stack-tags">
                               {plannedStack.map((skill) => (
-                                <span key={skill} className="rounded-full border border-orange-300/12 bg-black/24 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-orange-100/85">
+                                <span key={skill}>
+                                  <TechnologyMark name={skill} />
                                   {skill}
                                 </span>
                               ))}
@@ -1230,8 +1310,8 @@ export default function DataCarreraPage() {
                           )}
                         </div>
 
-                        <div className="rounded-2xl border border-cyan-300/10 bg-cyan-500/[0.045] p-4">
-                          <div className="mb-3 flex items-center gap-2 text-[9px] font-extrabold uppercase tracking-[0.14em] text-cyan-200/85">
+                        <div className="career-stack-group career-stack-applied">
+                          <div className="career-stack-label">
                             <Cpu size={13} />
                             Stack aplicado en subtareas
                           </div>
@@ -1239,9 +1319,10 @@ export default function DataCarreraPage() {
                           {appliedStack.length === 0 ? (
                             <p className="text-xs font-medium text-slate-600">Aún no hay skills aplicadas directamente a subtareas.</p>
                           ) : (
-                            <div className="flex flex-wrap gap-2">
+                            <div className="career-stack-tags">
                               {appliedStack.map((skill) => (
-                                <span key={skill} className="rounded-full border border-cyan-300/12 bg-black/24 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-cyan-100/85">
+                                <span key={skill}>
+                                  <TechnologyMark name={skill} />
                                   {skill}
                                 </span>
                               ))}
@@ -1252,85 +1333,8 @@ export default function DataCarreraPage() {
                     </div>
                   )
                 })()}
-
-                <section className="rounded-lg border border-orange-300/20 bg-[#0a2230]/75 p-4" aria-label="Planificación del proyecto">
-                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h3 className="text-sm font-bold text-white">Planificación del proyecto</h3><p className="text-[10px] text-slate-400">{selectedProject.status === "En pausa" ? "Asigna nuevas fechas para retomar sin perder el avance." : "Ajusta las fechas activas sin cambiar el estado ni el progreso."}</p></div>{selectedProject.end_date && <span className="text-[10px] text-orange-200">Límite actual: {formatProjectDate(selectedProject.end_date)}</span>}</div>
-                  <div className="grid gap-3 sm:grid-cols-2"><CareerDateField id="project-start" label="Fecha de inicio" value={detailStartDate} onChange={setDetailStartDate} /><CareerDateField id="project-end" label="Fecha de finalización" value={detailEndDate} min={detailStartDate || undefined} onChange={setDetailEndDate} /></div>
-                  {dateError && <p role="alert" className="mt-2 text-xs text-rose-300">{dateError}</p>}
-                  <div className="mt-3 flex flex-wrap gap-2"><button type="button" disabled={savingDates} onClick={() => saveProjectDates(selectedProject.status === "En pausa")} className="rounded-md border border-orange-300/35 bg-orange-500/20 px-3 py-2 text-xs font-semibold text-orange-100 transition-colors hover:bg-orange-500/35 disabled:opacity-50">{savingDates ? "Guardando..." : selectedProject.status === "En pausa" ? "Retomar proyecto" : "Guardar fechas"}</button>{selectedProject.status !== "En pausa" && <button type="button" onClick={() => setConfirmPauseInDetail(true)} className="rounded-md border border-slate-400/20 px-3 py-2 text-xs text-slate-300 hover:bg-white/10">Pausar proyecto</button>}</div>
-                  {confirmPauseInDetail && <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-orange-300/20 bg-orange-400/5 p-2 text-xs text-slate-300"><span className="flex-1">Se quitarán las fechas activas y se conservará el avance.</span><button type="button" onClick={async () => { if (await pauseProject(selectedProject.id)) { setDetailStartDate(""); setDetailEndDate(""); setConfirmPauseInDetail(false) } else setDateError("No se pudo pausar el proyecto.") }} className="rounded bg-orange-500/20 px-2 py-1.5 text-orange-100 hover:bg-orange-500/35">Confirmar pausa</button><button type="button" onClick={() => setConfirmPauseInDetail(false)} className="px-2 py-1.5 text-slate-400 hover:text-white">Cancelar</button></div>}
-                </section>
-
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                  <div className="relative space-y-5 overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-[#080b12]/68 p-5 shadow-[0_14px_40px_rgba(0,0,0,0.22)] backdrop-blur-xl">
-                    <div className="pointer-events-none absolute right-0 top-0 h-36 w-36 rounded-full bg-orange-500/[0.045] blur-3xl" />
-
-                    <div className="relative space-y-2">
-                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">📊 Estado Macro</label>
-                      <CareerSelect
-                        label="Estado del proyecto"
-                        fullWidth
-                        value={selectedProject.status}
-                        onChange={(value) => {
-                          const nextSt = value as ProjectStatus
-                          if (selectedProject.status === "En pausa" && nextSt !== "En pausa") { setDateError("Para retomar este proyecto, indica nuevas fechas y usa Retomar proyecto."); return }
-                          if (nextSt === "En pausa") { setDetailStartDate(""); setDetailEndDate("") }
-                          setSelectedProject({ ...selectedProject, status: nextSt })
-                          handleUpdateProjectFields({ status: nextSt })
-                        }}
-                      >
-                        {macroColumns.map(c => <option key={c.id} value={c.id} className="bg-[#02040a]">{c.label}</option>)}
-                      </CareerSelect>
-                    </div>
-
-                    <div className="relative space-y-2">
-                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">⚠️ Prioridad Crítica</label>
-                      <CareerSelect
-                        label="Prioridad del proyecto"
-                        fullWidth
-                        value={selectedProject.priority}
-                        onChange={(value) => {
-                          const nextPr = value as PriorityLevel
-                          setSelectedProject({ ...selectedProject, priority: nextPr })
-                          handleUpdateProjectFields({ priority: nextPr })
-                        }}
-                      >
-                        <option value="Baja" className="bg-[#02040a]">🟢 Baja Presión</option>
-                        <option value="Media" className="bg-[#02040a]">🟡 Media Estándar</option>
-                        <option value="Alta" className="bg-[#02040a]">🔴 Alta Prioridad</option>
-                      </CareerSelect>
-                    </div>
-                  </div>
-
-                  <div className="space-y-5 md:col-span-2">
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">🛠️ Enfoque Stack Completo</label>
-                      <Input
-                        value={selectedProject.description || ""}
-                        placeholder="Arquitectura de datos, tecnologías y stacks aplicados..."
-                        className="h-12 rounded-2xl border-white/10 bg-black/25 text-xs font-bold text-white transition-all placeholder:text-slate-700 focus:border-orange-400/60 focus:ring-2 focus:ring-orange-500/10"
-                        onChange={(e) => {
-                          setSelectedProject({ ...selectedProject, description: e.target.value })
-                          handleUpdateProjectFields({ description: e.target.value })
-                        }}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.10em] text-slate-400">📜 Resumen de Criterio / Entregables Técnicos</label>
-                      <Textarea
-                        placeholder="Detalla las especificaciones del entregable, lógica de negocio DAX, modelos de datos, etc..."
-                        className="custom-scrollbar min-h-[112px] rounded-2xl border-white/10 bg-black/25 text-xs font-medium leading-relaxed text-slate-200 transition-all placeholder:text-slate-700 focus:border-orange-400/60 focus:ring-2 focus:ring-orange-500/10"
-                        value={selectedProject.summary || ""}
-                        onChange={(e) => {
-                          setSelectedProject({ ...selectedProject, summary: e.target.value })
-                          handleUpdateProjectFields({ summary: e.target.value })
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
+              </div>
+              <div className="career-detail-stack">
                 {/* STACK / SKILLS DEL PROYECTO */}
                 <div className="space-y-5 border-t border-white/[0.06] pt-6">
                   <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
@@ -1448,7 +1452,8 @@ export default function DataCarreraPage() {
                     </div>
                   </div>
                 </div>
-
+              </div>
+              <div className="career-detail-tasks">
                 {/* SUBTAREAS & MICRO KANBAN INTERNO */}
                 <div className="space-y-5 border-t border-white/[0.06] pt-6">
                   <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -1470,7 +1475,7 @@ export default function DataCarreraPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="career-micro-board grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2 lg:grid-cols-4">
                     {microColumns.map((col) => {
                       const tasksInCol = getTasksByStatus(selectedProject.project_tasks, col.id)
 
@@ -1511,11 +1516,12 @@ export default function DataCarreraPage() {
                   </div>
                 </div>
               </div>
+              </CareerDetailSections>
             </motion.div>
 
             <AnimatePresence>
               {selectedTaskForDoc && (
-                <motion.div
+                <PillarModalFrame title="Documentación de subtarea" onClose={() => setSelectedTaskForDoc(null)}><motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -1525,13 +1531,11 @@ export default function DataCarreraPage() {
                     initial={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
                     animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
-                    transition={{ type: "spring", stiffness: 260, damping: 24 }}
-                    className="career-modal-panel relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/96 text-white shadow-[0_0_80px_rgba(0,0,0,0.62)] backdrop-blur-2xl"
+                    transition={{ duration: .2, ease: [.22, 1, .36, 1] }}
+                    className="career-modal-panel career-document-panel"
                   >
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(249,115,22,0.075),transparent_30%),radial-gradient(circle_at_88%_10%,rgba(59,130,246,0.075),transparent_30%)]" />
-                    <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-orange-300/35 to-transparent" />
 
-                    <div className="relative flex shrink-0 flex-col gap-4 border-b border-white/[0.065] bg-[#080b12]/74 p-6 backdrop-blur-xl md:p-8">
+                    <div className="career-detail-header relative flex shrink-0 flex-col gap-4 border-b border-white/[0.065] p-6">
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 flex-1 space-y-3">
                           <div className="flex w-fit items-center gap-2 rounded-full border border-orange-300/12 bg-orange-500/[0.06] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.16em] text-orange-200/85">
@@ -1562,6 +1566,7 @@ export default function DataCarreraPage() {
                           </button>
 
                           <button
+                            aria-label="Cerrar documentación"
                             type="button"
                             onClick={() => {
                               setSelectedTaskForDoc(null)
@@ -1576,7 +1581,7 @@ export default function DataCarreraPage() {
                       </div>
                     </div>
 
-                    <div className="custom-scrollbar relative flex-1 overflow-y-auto p-6 md:p-8">
+                    <div className="career-document-body custom-scrollbar relative flex-1 overflow-y-auto p-6">
                       {loadingTaskDoc || !taskDoc ? (
                         <div className="flex min-h-[720px] flex-col items-center justify-center gap-4">
                           <Activity className="animate-spin text-orange-400 drop-shadow-[0_0_16px_rgba(249,115,22,0.55)]" size={40} />
@@ -1585,7 +1590,21 @@ export default function DataCarreraPage() {
                           </p>
                         </div>
                       ) : (
-                        <div className="mx-auto w-full max-w-6xl">
+                        <CareerDetailSections labels={["Documento y archivos", "Contexto y skills"]}>
+                          <div>
+                          <RichTaskDocumentEditor
+                            key={`${selectedTaskForDoc.id}-${taskDoc.id || "draft"}`}
+                            taskTitle={selectedTaskForDoc.title}
+                            initialContent={(taskDoc.document_content_json as RichEditorJSON | null) || buildRichDocumentSeed(selectedTaskForDoc.title, taskDoc)}
+                            onContentChange={updateTaskDocRichContent}
+                            supabase={supabase}
+                            projectId={selectedProject.id}
+                            taskId={selectedTaskForDoc.id}
+                            docId={taskDoc.id || null}
+                            disabled={savingTaskDoc}
+                          />
+                          </div>
+                          <div>
                           <div className="mb-5 rounded-[1.6rem] border border-white/[0.06] bg-[#080b12]/60 p-5 shadow-[0_14px_42px_rgba(0,0,0,0.22)] backdrop-blur-xl">
                             <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
                               <div>
@@ -1673,282 +1692,28 @@ export default function DataCarreraPage() {
                             )}
                           </div>
 
-                          <RichTaskDocumentEditor
-                            key={`${selectedTaskForDoc.id}-${taskDoc.id || "draft"}`}
-                            taskTitle={selectedTaskForDoc.title}
-                            initialContent={(taskDoc.document_content_json as RichEditorJSON | null) || buildRichDocumentSeed(selectedTaskForDoc.title, taskDoc)}
-                            onContentChange={updateTaskDocRichContent}
-                            supabase={supabase}
-                            projectId={selectedProject.id}
-                            taskId={selectedTaskForDoc.id}
-                            docId={taskDoc.id || null}
-                            disabled={savingTaskDoc}
-                          />
                         </div>
+                        </CareerDetailSections>
                       )}
 
                     </div>
                   </motion.div>
-                </motion.div>
+                </motion.div></PillarModalFrame>
               )}
             </AnimatePresence>
-          </div>
+          </div></PillarModalFrame>
         )}
       </AnimatePresence>
 
             <AnimatePresence>
               {selectedCaseStudy && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="career-modal-overlay fixed inset-0 z-[70] flex items-center justify-center bg-[#02040a]/88 p-4 backdrop-blur-2xl"
-                >
-                  <motion.div
-                    initial={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
-                    animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, y: 34, scale: 0.96, filter: "blur(8px)" }}
-                    transition={{ type: "spring", stiffness: 260, damping: 24 }}
-                    className="career-modal-panel relative flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#02040a]/96 text-white shadow-[0_0_90px_rgba(0,0,0,0.70)] backdrop-blur-2xl"
-                  >
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(34,211,238,0.070),transparent_30%),radial-gradient(circle_at_88%_10%,rgba(249,115,22,0.075),transparent_30%)]" />
-                    <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/35 to-transparent" />
-
-                    <div className="relative flex shrink-0 flex-col gap-4 border-b border-white/[0.065] bg-[#080b12]/74 p-6 backdrop-blur-xl md:p-8">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex w-fit items-center gap-2 rounded-full border border-cyan-300/12 bg-cyan-500/[0.06] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.16em] text-cyan-200/85">
-                            <BookOpen size={13} className="text-cyan-300" />
-                            Caso técnico consolidado
-                          </div>
-
-                          <h3 className="mt-4 line-clamp-2 text-2xl font-extrabold tracking-[-0.035em] text-white md:text-5xl">
-                            {selectedCaseStudy.project_title}
-                          </h3>
-
-                          <p className="mt-3 max-w-5xl text-sm font-medium leading-relaxed text-slate-500">
-                            {selectedCaseStudy.project_description || "Caso técnico generado desde las subtareas, documentación, skills y evidencias registradas en LifeTrack."}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-2 rounded-2xl border border-white/[0.06] bg-black/34 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                          <button
-                            type="button"
-                            onClick={handleExportCaseStudy}
-                            className="inline-flex items-center gap-2 rounded-xl border border-orange-300/14 bg-orange-500/[0.12] px-3 py-2.5 text-[9px] font-extrabold uppercase tracking-[0.10em] text-orange-100 transition-all duration-200 hover:bg-orange-500/[0.20] hover:text-white"
-                            title="Abrir versión imprimible para guardar como PDF"
-                          >
-                            <Download size={15} />
-                            Exportar
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setSelectedCaseStudy(null)}
-                            aria-label="Cerrar caso técnico"
-                            className="rounded-xl p-2.5 text-slate-400 transition-all duration-200 hover:bg-white/8 hover:text-white"
-                          >
-                            <X size={20} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="custom-scrollbar relative flex-1 overflow-y-auto p-6 md:p-8">
-                      <div className="mx-auto max-w-6xl space-y-7">
-                        {(() => {
-                          const scoreTone = getScoreTone(selectedCaseStudy.professional_score)
-                          const plannedStack = splitStack(selectedCaseStudy.project_stack)
-                          const appliedStack = splitStack(selectedCaseStudy.task_stack)
-
-                          return (
-                            <div className={`relative overflow-hidden rounded-[1.8rem] border ${scoreTone.border} ${scoreTone.bg} p-5`}>
-                              <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
-                                <div>
-                                  <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-orange-200/85">
-                                    <Activity size={14} className="text-orange-300" />
-                                    Resumen ejecutivo del caso
-                                  </div>
-                                  <p className="mt-2 max-w-3xl text-xs font-medium leading-relaxed text-slate-500">
-                                    Este consolidado resume el proyecto como caso de estudio técnico: ejecución, documentación, stack real aplicado y evidencias.
-                                  </p>
-                                </div>
-
-                                <div className="rounded-2xl border border-white/[0.06] bg-black/28 p-4 text-right">
-                                  <p className={`text-4xl font-extrabold tracking-[-0.035em] ${scoreTone.text}`}>
-                                    {selectedCaseStudy.professional_score.toFixed(1)}%
-                                  </p>
-                                  <p className="mt-1 text-[9px] font-extrabold uppercase tracking-[0.16em] text-slate-500">
-                                    score profesional
-                                  </p>
-                                </div>
-                              </div>
-
-                              <MetricGrid className="mt-5" metrics={getCaseStudySummaryMetrics(selectedCaseStudy)} />
-
-                              <div className="mt-5 grid gap-4 lg:grid-cols-2">
-                                <div className="rounded-2xl border border-orange-300/10 bg-black/24 p-4">
-                                  <p className="mb-3 text-[9px] font-extrabold uppercase tracking-[0.14em] text-orange-200/85">Stack planificado</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {plannedStack.length === 0 ? (
-                                      <span className="text-xs text-slate-600">Sin stack planificado.</span>
-                                    ) : plannedStack.map((skill) => (
-                                      <span key={skill} className="rounded-full border border-orange-300/12 bg-orange-500/[0.06] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-orange-100/85">
-                                        {skill}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-
-                                <div className="rounded-2xl border border-cyan-300/10 bg-black/24 p-4">
-                                  <p className="mb-3 text-[9px] font-extrabold uppercase tracking-[0.14em] text-cyan-200/85">Stack aplicado</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {appliedStack.length === 0 ? (
-                                      <span className="text-xs text-slate-600">Sin stack aplicado en subtareas.</span>
-                                    ) : appliedStack.map((skill) => (
-                                      <span key={skill} className="rounded-full border border-cyan-300/12 bg-cyan-500/[0.06] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-cyan-100/85">
-                                        {skill}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        })()}
-
-                        <div className="rounded-[1.8rem] border border-white/[0.06] bg-[#080b12]/68 p-5">
-                          <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-orange-200/85">
-                            <ListTodo size={14} className="text-orange-300" />
-                            Desarrollo por subtareas
-                          </div>
-
-                          <div className="mt-5 space-y-5">
-                            {selectedCaseStudy.tasks_json.length === 0 ? (
-                              <div className="rounded-2xl border border-dashed border-white/[0.06] bg-black/24 p-7 text-center">
-                                <p className="break-words text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
-                                  Este proyecto aún no tiene subtareas registradas.
-                                </p>
-                              </div>
-                            ) : (
-                              selectedCaseStudy.tasks_json.map((task, index) => {
-                                const doc = task.documentation || {}
-                                const hasDocContent = getCaseStudyDocHasContent(doc)
-                                const docHtml = doc.document_content_html || ""
-
-                                return (
-                                  <div key={task.task_id} className="relative overflow-hidden rounded-[1.6rem] border border-white/[0.06] bg-black/24 p-5">
-                                    <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-white/[0.035]" />
-
-                                    <div className="relative flex flex-col justify-between gap-3 md:flex-row md:items-start">
-                                      <div>
-                                        <div className="flex flex-wrap items-center gap-2">
-                                          <span className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] text-slate-400">
-                                            Paso {index + 1}
-                                          </span>
-                                          <span className={`rounded-xl border px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] ${getTaskStatusTone(task.task_status)}`}>
-                                            {task.task_status}
-                                          </span>
-                                        </div>
-                                        <h4 className="mt-3 text-xl font-extrabold tracking-[-0.035em] text-white">
-                                          {task.task_title}
-                                        </h4>
-                                      </div>
-
-                                      <div className="flex flex-wrap gap-2">
-                                        <span className="rounded-xl border border-cyan-300/10 bg-cyan-500/[0.06] px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] text-cyan-100">
-                                          {task.skills?.length || 0} skills
-                                        </span>
-                                        <span className="rounded-xl border border-emerald-300/10 bg-emerald-500/[0.06] px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-[0.08em] text-emerald-100">
-                                          {task.total_assets || 0} evidencias
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    {task.skills && task.skills.length > 0 && (
-                                      <div className="relative mt-4 flex flex-wrap gap-2">
-                                        {task.skills.map((skill) => (
-                                          <span
-                                            key={`${task.task_id}-${skill.skill_id}`}
-                                            className="rounded-full border border-cyan-300/12 bg-cyan-500/[0.055] px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-cyan-100/85"
-                                          >
-                                            {skill.name}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    )}
-
-                                    {hasDocContent ? (
-                                      <div className="relative mt-5 rounded-2xl border border-white/[0.06] bg-[#080b12]/70 p-5">
-                                        {docHtml ? (
-                                          <div
-                                            className="rich-task-editor prose prose-invert max-w-none text-sm text-slate-300 [&_h1]:text-3xl [&_h1]:font-extrabold [&_h1]:text-white [&_h2]:mt-8 [&_h2]:border-l [&_h2]:border-orange-300/30 [&_h2]:pl-4 [&_h2]:text-lg [&_h2]:font-extrabold [&_h2]:uppercase [&_h2]:tracking-[0.14em] [&_h2]:text-orange-100 [&_p]:my-3 [&_a]:text-cyan-300 [&_img]:my-5 [&_img]:max-h-[520px] [&_img]:w-full [&_img]:rounded-2xl [&_img]:border [&_img]:border-white/[0.08] [&_img]:object-contain"
-                                            dangerouslySetInnerHTML={{ __html: docHtml }}
-                                          />
-                                        ) : (
-                                          <div className="space-y-4 text-sm leading-7 text-slate-300">
-                                            {doc.objective && <p><span className="font-extrabold text-orange-200">Objetivo:</span> {doc.objective}</p>}
-                                            {doc.content && <p><span className="font-extrabold text-orange-200">Proceso:</span> {doc.content}</p>}
-                                            {doc.technical_notes && <p><span className="font-extrabold text-orange-200">Notas técnicas:</span> {doc.technical_notes}</p>}
-                                            {doc.challenges && <p><span className="font-extrabold text-orange-200">Problemas:</span> {doc.challenges}</p>}
-                                            {doc.solution && <p><span className="font-extrabold text-orange-200">Solución:</span> {doc.solution}</p>}
-                                            {doc.learnings && <p><span className="font-extrabold text-orange-200">Aprendizajes:</span> {doc.learnings}</p>}
-                                            {doc.result_summary && <p><span className="font-extrabold text-orange-200">Resultado:</span> {doc.result_summary}</p>}
-                                            {doc.reference_links && <p><span className="font-extrabold text-orange-200">Referencias:</span> {doc.reference_links}</p>}
-                                          </div>
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <div className="relative mt-5 rounded-2xl border border-dashed border-white/[0.06] bg-black/20 p-5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-600">
-                                        Subtarea sin documentación detallada todavía.
-                                      </div>
-                                    )}
-
-                                    {task.assets && task.assets.length > 0 && (
-                                      <div className="relative mt-5">
-                                        <p className="mb-3 text-[9px] font-extrabold uppercase tracking-[0.14em] text-emerald-200/85">
-                                          Evidencias adjuntas
-                                        </p>
-                                        <div className="grid gap-3 md:grid-cols-2">
-                                          {task.assets.map((asset) => {
-                                            const visual = getAssetVisual(asset.mime_type, asset.file_name)
-
-                                            return (
-                                              <a
-                                                key={asset.asset_id}
-                                                href={asset.file_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className={`group/evidence rounded-2xl border ${visual.border} ${visual.bg} p-4 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/[0.055]`}
-                                              >
-                                                <div className="flex items-center gap-3">
-                                                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${visual.border} bg-black/28 ${visual.accent}`}>
-                                                    <FileArchive size={17} />
-                                                  </div>
-                                                  <div className="min-w-0 flex-1">
-                                                    <p className="truncate text-sm font-extrabold text-slate-100">{asset.file_name}</p>
-                                                    <p className="mt-1 text-[9px] font-medium text-slate-600">{formatAssetSize(asset.file_size)}</p>
-                                                  </div>
-                                                  <ExternalLink size={13} className="text-slate-500 transition-colors group-hover/evidence:text-cyan-300" />
-                                                </div>
-                                              </a>
-                                            )
-                                          })}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )
-                              })
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                </motion.div>
+                <CareerCaseStudy study={selectedCaseStudy} onClose={() => setSelectedCaseStudy(null)} actions={<>
+                  <button type="button" onClick={handleExportCaseStudy} title="Abrir versión imprimible para guardar como PDF"><Download size={17} aria-hidden="true" /><span>Exportar</span></button>
+                  <button type="button" onClick={() => setSelectedCaseStudy(null)} aria-label="Cerrar caso técnico" title="Cerrar caso técnico"><X size={20} aria-hidden="true" /></button>
+                </>} />
               )}
             </AnimatePresence>
-      <LifeTrackFooter />
+      <LifeTrackFooter current />
       </div>
     </div>
   )

@@ -44,3 +44,8 @@ next-env.d.ts
 # local skill search cache
 __pycache__/
 *.pyc
+
+# Local skill runtime and generated QA compilation
+.agents/skills/impeccable/scripts/.cache/
+.impeccable/cache/
+.test-build/

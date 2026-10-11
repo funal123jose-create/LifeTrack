@@ -1,8 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
+import { PillarModuleHeading } from "@/components/pillars/pillar-module-heading"
+import "../pillars-2026.css"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -11,7 +11,6 @@ import { PersonalCareCommandCenter } from "@/components/personal-care/personal-c
 import { LifeTrackFooter } from "@/components/lifetrack-footer"
 import {
   Sparkles,
-  ArrowLeft,
   ShieldCheck,
   Plus,
   Save,
@@ -350,28 +349,22 @@ export default function CuidadoPersonalPage() {
     "w-full cursor-pointer accent-violet-400 transition-all"
 
   return (
-    <div className={`lifetrack-redesign care-page ${careView === "manage" ? "care-manage" : ""} relative min-h-screen overflow-hidden bg-transparent px-2 pb-14 pt-2 font-sans text-slate-100 antialiased sm:px-4 [overflow-wrap:anywhere]`}>
+    <div id="lt26-content" tabIndex={-1} data-tone="care" className={`pillar-2026 lifetrack-redesign care-page ${careView === "manage" ? "care-manage" : ""} relative min-h-screen overflow-hidden bg-transparent px-2 pb-14 pt-2 font-sans text-slate-100 antialiased sm:px-4 [overflow-wrap:anywhere]`}>
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1728px] flex-col gap-3">
         {careView === "overview" ? <>{historyError && <p role="alert" className="rounded-md border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-xs text-amber-100">No se pudo cargar el historial de este período. Los indicadores no están actualizados.</p>}<PersonalCareCommandCenter logs={historyLogs} completions={historyCompletions} routines={routines} period={carePeriod} today={today} loading={loading} onPeriodChange={setCarePeriod} onToggleRoutine={toggleRoutineCompletion} onManage={() => setCareView("manage")} /></> : <>
-        <section className="care-hero relative isolate flex min-h-[220px] flex-col justify-between gap-6 overflow-hidden rounded-lg border border-violet-300/25 bg-[#0a1430] p-4 sm:p-5">
-          <Image src="/images/lifetrack/night-mountains.webp" alt="" fill sizes="100vw" className="object-cover opacity-45 [filter:hue-rotate(38deg)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,15,34,.98),rgba(11,16,43,.72)_57%,rgba(8,14,39,.64))]" />
-          <div className="absolute inset-y-0 right-[16%] w-[min(36vw,450px)] max-sm:right-[-18%] max-sm:w-64"><Image src="/images/lifetrack/care-meditation.webp" alt="" fill sizes="(max-width: 640px) 256px, 36vw" className="object-contain object-bottom opacity-85 [mask-image:linear-gradient(to_bottom,black_76%,transparent)] max-sm:opacity-35" /></div>
-          <div className="relative z-10 max-w-[720px]">
-            <div className="mb-3 flex flex-wrap items-center gap-2"><Link href="/pilares" className="inline-flex items-center gap-1.5 rounded-md border border-violet-300/30 bg-[#101d3a]/85 px-3 py-1.5 text-[11px] font-semibold text-violet-100 transition-colors hover:border-violet-300/70 hover:bg-violet-400/15"><ArrowLeft size={13} />Volver a Pilares</Link><span className="rounded-md border border-violet-300/30 bg-violet-400/12 px-2.5 py-1.5 text-[10px] font-bold uppercase text-violet-200">Cuidado personal</span></div>
-            <h1 className="text-3xl font-extrabold leading-tight text-white sm:text-5xl">Gestionar <span className="text-violet-300">Cuidado Personal</span></h1>
-            <p className="mt-1 text-base text-sky-100 sm:text-lg">Registra tu día y organiza tus rutinas.</p>
-            <p className="mt-2 max-w-[550px] text-xs leading-relaxed text-slate-300">Tus registros alimentan el resumen de ánimo, descanso y hábitos.</p>
+        <PillarModuleHeading tone="care" title="Tu cuidado, día a día" description="Registra cómo te sientes y organiza las rutinas que quieres sostener.">
+          <div className="pillar-segments" role="group" aria-label="Vista de Cuidado Personal">
+            <button type="button" onClick={() => setCareView("overview")} aria-pressed={false}>Resumen</button>
+            <button type="button" aria-pressed>Gestionar</button>
           </div>
-          <div className="relative z-10 inline-flex w-fit rounded-md border border-violet-300/25 bg-[#0d1933]/85 p-1" role="group" aria-label="Vista de Cuidado Personal"><button type="button" onClick={() => setCareView("overview")} className="rounded px-3 py-1.5 text-[11px] text-slate-300 transition-colors hover:bg-violet-400/15 hover:text-white">Resumen</button><button type="button" aria-pressed className="rounded border border-violet-300/35 bg-violet-400/20 px-3 py-1.5 text-[11px] font-semibold text-violet-100">Gestionar</button></div>
-        </section>
+        </PillarModuleHeading>
 
-        <div className="grid items-stretch gap-3 xl:grid-cols-[minmax(0,1.45fr)_minmax(340px,.75fr)]">
+        <div className="pillar-care-journal-grid">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.06 }}
+            transition={{ duration: .2, ease: [.22, 1, .36, 1] }}
           >
             <Card className="care-manage-panel h-full">
 
@@ -436,7 +429,7 @@ export default function CuidadoPersonalPage() {
                   ))}
                 </div>
 
-                <div className="grid gap-3 lg:grid-cols-3">
+                <div className="pillar-care-reflection grid gap-3 lg:grid-cols-3">
                   <div className="space-y-2 lg:col-span-1">
                     <label htmlFor="care-reflection" className="text-[11px] font-semibold text-slate-300">
                       Reflexión del día
@@ -494,7 +487,7 @@ export default function CuidadoPersonalPage() {
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.10 }}
+            transition={{ duration: .2, ease: [.22, 1, .36, 1] }}
           >
             <Card className="care-manage-panel h-full">
 
@@ -583,7 +576,7 @@ export default function CuidadoPersonalPage() {
           </motion.div>
         </div>
 
-        <div className="grid items-stretch gap-3 xl:grid-cols-[minmax(300px,.75fr)_minmax(0,1.45fr)]">
+        <div className="pillar-care-routine-grid">
           <motion.div
             className="h-full"
             initial={{ opacity: 0, y: 18 }}
@@ -643,7 +636,7 @@ export default function CuidadoPersonalPage() {
                   />
                 </div>
 
-                <div className="mt-auto grid gap-3 pt-3 sm:grid-cols-2">
+                <div className="grid gap-3 pt-3 sm:grid-cols-2">
                   <Button
                     onClick={createRoutine}
                     disabled={savingRoutine}
@@ -709,7 +702,7 @@ export default function CuidadoPersonalPage() {
                       return (
                         <div
                           key={routine.id}
-                          className={`relative overflow-hidden rounded-md border px-3 py-2.5 transition-[border-color,background-color] duration-200 hover:border-violet-300/40 ${
+                          className={`pillar-care-routine-item relative overflow-hidden rounded-md border px-3 py-2.5 transition-[border-color,background-color] duration-200 hover:border-violet-300/40 ${
                             routine.active
                               ? completed
                                 ? "border-violet-300/45 bg-violet-400/12"
@@ -722,6 +715,8 @@ export default function CuidadoPersonalPage() {
                               <button
                                 type="button"
                                 onClick={() => routine.active && toggleRoutineCompletion(routine)}
+                                aria-label={`${completed ? "Desmarcar" : "Completar"} ${routine.name}`}
+                                aria-pressed={completed}
                                 disabled={!routine.active}
                                 className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border transition ${
                                   completed
@@ -781,7 +776,7 @@ export default function CuidadoPersonalPage() {
           </motion.div>
         </div>
         </>}
-        <LifeTrackFooter />
+        <LifeTrackFooter current />
       </div>
     </div>
   )

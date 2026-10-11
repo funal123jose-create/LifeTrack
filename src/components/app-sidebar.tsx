@@ -21,6 +21,7 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { DashboardNavigation2026 } from "@/components/dashboard/dashboard-navigation-2026"
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutGrid },
@@ -99,6 +100,10 @@ export function AppSidebar() {
 
     return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
   }, [displayName])
+
+  if (pathname === "/dashboard" || ["/pilares", "/pilares/salud", "/pilares/carrera", "/pilares/cuidado-personal", "/portafolio", "/historial", "/calendario"].includes(pathname)) {
+    return <DashboardNavigation2026 items={navItems} displayName={displayName} initials={initials} theme={theme} setTheme={setTheme} mounted={mounted} onLogout={handleLogout} />
+  }
 
   if (["/dashboard", "/pilares", "/portafolio", "/historial", "/calendario"].includes(pathname) || pathname.startsWith("/pilares/")) {
     return (

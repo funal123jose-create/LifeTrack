@@ -7,9 +7,7 @@ import { Select } from "radix-ui"
 import {
   Activity,
   ArrowUpRight,
-  BriefcaseBusiness,
   BrainCircuit,
-  CheckCircle2,
   Check,
   ChevronDown,
   Code2,
@@ -34,11 +32,13 @@ import {
   Tooltip,
 } from "recharts"
 
-import { DashboardProgressBar, DashboardProgressRing } from "@/components/dashboard/dashboard-progress"
+import { PortfolioProgress } from "@/components/career/portfolio-progress"
+import { TechnologyMark, TechnologyList } from "@/components/career/technology-mark"
 import { createClient } from "@/lib/supabase/client"
 import { profileImageSrc } from "@/lib/dashboard-page-config"
 import type { Database } from "@/types/database"
-import "./portfolio-overhaul.css"
+import "../final-phase.css"
+import "./portfolio-final.css"
 
 type ProjectSummary = Database["public"]["Views"]["vw_project_technical_summary"]["Row"]
 type CareerSkillsSummary = Database["public"]["Views"]["vw_career_skills_summary"]["Row"]
@@ -95,11 +95,11 @@ const getSkillDetails = (summary: CareerSkillsSummary | null): SkillDetail[] => 
 }
 
 const chartTooltipStyle = {
-  backgroundColor: "rgba(17, 20, 25, 0.94)",
-  border: "1px solid rgba(255,255,255,0.08)",
-  borderRadius: "14px",
-  color: "#e5e7eb",
-  boxShadow: "0 20px 60px rgba(0,0,0,0.32)",
+  backgroundColor: "var(--final-surface)",
+  border: "1px solid var(--final-line)",
+  borderRadius: "6px",
+  color: "var(--final-text)",
+  boxShadow: "0 12px 28px rgba(0,0,0,0.2)",
 }
 
 function subscribeToClientMount(onStoreChange: () => void) {
@@ -119,25 +119,7 @@ const formatDate = (value: string | null) => {
 }
 
 const getRecruiterProjectDescription = (project: ProjectSummary) => {
-  const title = (project.project_title || "").toLowerCase()
-
-  if (title.includes("lifetrack")) {
-    return "Aplicacion full-stack creada para convertir salud, carrera y cuidado personal en un sistema medible. Demuestra arquitectura frontend, autenticacion, Supabase, dashboards, UX/UI y capacidad para transformar vida personal en producto digital con datos accionables."
-  }
-
-  if (title.includes("retail") || title.includes("cloud")) {
-    return "Proyecto orientado a analitica cloud para retail: integra procesamiento, modelado y visualizacion de datos para convertir informacion operativa en indicadores de negocio. Relevante para roles de data engineering, BI y plataformas analiticas modernas."
-  }
-
-  if (title.includes("educativo") || title.includes("educativa")) {
-    return "Aplicativo web enfocado en experiencia educativa, gestion de contenido y seguimiento de avance. Aporta valor al mostrar criterio de producto, UX para usuarios reales, estructura frontend y capacidad de construir soluciones utiles para aprendizaje."
-  }
-
-  if (title.includes("copilot") || title.includes("mcp") || title.includes("power bi")) {
-    return "Caso orientado a IA, automatizacion y analitica conversacional. Busca conectar asistentes, MCP y Power BI para facilitar consulta de datos y toma de decisiones, mostrando potencial en integracion de IA con herramientas empresariales."
-  }
-
-  return project.project_summary || project.project_description || "Proyecto registrado con evidencia tecnica, tareas, skills y activos asociados. Muestra capacidad para estructurar trabajo, documentar avances y convertir ejecucion en evidencia profesional verificable."
+  return project.project_summary || project.project_description || "Sin descripción registrada."
 }
 
 export default function PortfolioPage() {
@@ -354,38 +336,22 @@ export default function PortfolioPage() {
   ]
 
   return (
-    <main className="lifetrack-general portfolio-overhaul min-h-[calc(100vh-72px)] text-white">
+    <div id="lt26-content" tabIndex={-1} className="lt-final-page portfolio-overhaul">
       <div className="portfolio-stage">
         <section className="portfolio-masthead" aria-labelledby="portfolio-title">
-          <Image src="/images/lifetrack/career-sunrise.webp" alt="" fill priority sizes="100vw" className="portfolio-masthead__image" />
-          <div className="portfolio-masthead__shade" aria-hidden="true" />
           <div className="portfolio-masthead__copy">
-            <span className="portfolio-kicker"><BriefcaseBusiness size={14} /> Pilar profesional</span>
-            <h1 id="portfolio-title">Portafolio <span>profesional</span></h1>
+            <h1 id="portfolio-title">Portafolio</h1>
             <p>Proyectos, habilidades y evidencia de tu crecimiento en Data &amp; Carrera.</p>
-            <div className="portfolio-owner">
+          </div>
+          <div className="portfolio-owner">
               <Image src={profile?.avatar_url || profileImageSrc} alt="" width={36} height={36} />
               <div><strong>{displayName}</strong><span>Proyectos registrados en LifeTrack</span></div>
             </div>
-          </div>
-          <div className="portfolio-masthead__metrics" aria-label="Resumen del portafolio">
-            {[
-              { icon: FolderKanban, label: "Proyectos", value: portfolioStats.totalProjects, detail: String(portfolioStats.activeProjects) + " activos" },
-              { icon: CheckCircle2, label: "Tareas", value: portfolioStats.completedTasks, detail: String(portfolioStats.totalTasks) + " registradas" },
-              { icon: FileText, label: "Documentos", value: portfolioStats.totalDocs, detail: "En proyectos" },
-              { icon: ImageIcon, label: "Evidencias", value: portfolioStats.totalAssets, detail: "Archivos y entregables" },
-            ].map(({ icon: Icon, label, value, detail }) => (
-              <div className="portfolio-metric" key={label}>
-                <Icon size={19} aria-hidden="true" />
-                <div><span>{label}</span><strong>{value}</strong><small>{detail}</small></div>
-              </div>
-            ))}
-          </div>
         </section>
 
         <section className="portfolio-explorer" aria-labelledby="portfolio-explorer-title">
           <div className="portfolio-section-heading">
-            <div><span className="portfolio-section-icon"><FolderKanban size={19} /></span><div><h2 id="portfolio-explorer-title">Explorar proyectos</h2><p>Selecciona un proyecto para revisar su avance y evidencia.</p></div></div>
+            <div><FolderKanban size={18} /><div><h2 id="portfolio-explorer-title">Proyectos</h2></div></div>
             <span className="portfolio-count">{filteredProjects.length} de {projects.length}</span>
           </div>
           <div className="portfolio-explorer__body">
@@ -408,9 +374,10 @@ export default function PortfolioPage() {
                     const score = pct(project.professional_score)
                     const active = selectedProject?.project_id === project.project_id
                     return <button type="button" key={project.project_id || index} className={"portfolio-project-row" + (active ? " is-active" : "")} aria-pressed={active} onClick={() => setSelectedProjectId(project.project_id)} title={"Ver detalle de " + (project.project_title || "Proyecto sin titulo")}>
-                      <span className="portfolio-project-row__number">{String(index + 1).padStart(2, "0")}</span>
-                      <span className="portfolio-project-row__main"><strong>{project.project_title || "Proyecto sin titulo"}</strong><span>{project.project_status || "Sin estado"} <i aria-hidden="true">·</i> {numberOrZero(project.completed_tasks)}/{numberOrZero(project.total_tasks)} tareas</span></span>
-                      <span className="portfolio-project-row__score">{score}%</span>
+                      <span className="portfolio-project-row__status">{project.project_status || "Sin estado"}<ArrowUpRight size={17} aria-hidden="true" /></span>
+                      <span className="portfolio-project-row__main"><strong>{project.project_title || "Proyecto sin titulo"}</strong><span>{project.project_description || project.project_summary || "Sin descripción registrada."}</span></span>
+                      <span className="portfolio-project-row__technologies">{(project.project_stack || "").split(/[,|;]/).map((name) => name.trim()).filter(Boolean).slice(0, 5).map((name) => <span key={name} title={name}><TechnologyMark name={name} /></span>)}</span>
+                      <span className="portfolio-project-row__score"><span>{numberOrZero(project.completed_tasks)}/{numberOrZero(project.total_tasks)} tareas</span><strong>{score}% <small>score</small></strong></span>
                     </button>
                   })}
               </div>
@@ -421,16 +388,17 @@ export default function PortfolioPage() {
                   <div className="portfolio-case__top"><span className="portfolio-case__label"><Code2 size={15} /> Caso de proyecto</span><span className="portfolio-status">{selectedProject.project_status || "Sin estado"}</span></div>
                   <div className="portfolio-case__lead">
                     <div><h3>{selectedProject.project_title || "Proyecto sin titulo"}</h3><p>{getRecruiterProjectDescription(selectedProject)}</p></div>
-                    <div className="portfolio-case__score"><DashboardProgressRing value={pct(selectedProject.professional_score)} color="#fb923c" size="h-24 w-24" inner="h-[54px] w-[54px]" label={String(pct(selectedProject.professional_score)) + "%"} /><span>Score profesional</span></div>
+                    <div className="portfolio-case__score"><strong>{pct(selectedProject.professional_score)}%</strong><span>Score profesional</span></div>
                   </div>
+                  <div className="portfolio-case__stacks"><div><h4>Stack planificado</h4><TechnologyList stack={selectedProject.project_stack} label="Stack planificado" /></div><div><h4>Stack aplicado en subtareas</h4><TechnologyList stack={selectedProject.task_stack} label="Stack aplicado" /></div></div>
                   <div className="portfolio-case__facts">
                     <div><span>Tareas completadas</span><strong>{numberOrZero(selectedProject.completed_tasks)} / {numberOrZero(selectedProject.total_tasks)}</strong></div>
                     <div><span>Documentos</span><strong>{numberOrZero(selectedProject.total_documents)}</strong></div>
                     <div><span>Evidencias</span><strong>{numberOrZero(selectedProject.total_assets)}</strong></div>
                   </div>
                   <div className="portfolio-case__coverage">
-                    <div><span>Cobertura de skills <strong>{pct(selectedProject.skill_coverage_percentage)}%</strong></span><DashboardProgressBar value={pct(selectedProject.skill_coverage_percentage)} fillClassName="bg-gradient-to-r from-sky-500 to-cyan-300" heightClassName="h-1.5" /></div>
-                    <div><span>Cobertura de evidencia <strong>{pct(selectedProject.evidence_coverage_percentage)}%</strong></span><DashboardProgressBar value={pct(selectedProject.evidence_coverage_percentage)} fillClassName="bg-gradient-to-r from-orange-500 to-amber-300" heightClassName="h-1.5" /></div>
+                    <div><span>Cobertura de skills <strong>{pct(selectedProject.skill_coverage_percentage)}%</strong></span><PortfolioProgress value={pct(selectedProject.skill_coverage_percentage)} label="Cobertura de skills" /></div>
+                    <div><span>Cobertura de evidencia <strong>{pct(selectedProject.evidence_coverage_percentage)}%</strong></span><PortfolioProgress value={pct(selectedProject.evidence_coverage_percentage)} label="Cobertura de evidencia" /></div>
                   </div>
                   <div className="portfolio-case__files">
                     <h4><ImageIcon size={16} /> Evidencias recientes del proyecto</h4>
@@ -442,11 +410,13 @@ export default function PortfolioPage() {
           </div>
         </section>
 
+        <div className="portfolio-collection-summary" aria-label="Resumen del portafolio"><span><strong>{portfolioStats.totalProjects}</strong> proyectos · {portfolioStats.activeProjects} activos</span><span><strong>{portfolioStats.completedTasks}/{portfolioStats.totalTasks}</strong> tareas</span><span><strong>{portfolioStats.totalDocs}</strong> documentos</span><span><strong>{portfolioStats.totalAssets}</strong> evidencias</span></div>
+
         <div className="portfolio-secondary">
           <section className="portfolio-capabilities" aria-labelledby="portfolio-capabilities-title">
-            <div className="portfolio-section-heading"><div><span className="portfolio-section-icon"><BrainCircuit size={19} /></span><div><h2 id="portfolio-capabilities-title">Capacidades demostradas</h2><p>Skills vinculadas a los proyectos registrados.</p></div></div></div>
+            <div className="portfolio-section-heading"><div><span className="portfolio-section-icon"><BrainCircuit size={19} /></span><div><h2 id="portfolio-capabilities-title">Competencias registradas</h2><p>Skills vinculadas a los proyectos registrados.</p></div></div></div>
             <div className="portfolio-capabilities__grid">{recruiterHighlights.map(({ title, value, icon: Icon }) => <div key={title}><Icon size={18} /><span>{title}</span><strong>{value}</strong></div>)}</div>
-            <div className="portfolio-skills-list"><div className="portfolio-minor-heading"><h3><Layers3 size={16} /> Tecnologias con evidencia</h3><span>{topSkills.length} principales</span></div>{topSkills.length ? topSkills.map((skill) => <div key={skill.name} className="portfolio-skill-row"><span>{skill.name}</span><div><DashboardProgressBar value={scaleToPct(skill.projects_count, Math.max(...topSkills.map((item) => item.projects_count), 1))} fillClassName="bg-gradient-to-r from-orange-500 to-amber-300" heightClassName="h-1.5" /></div><strong>{skill.projects_count}</strong></div>) : <p className="portfolio-empty">Las tecnologias apareceran al registrar skills en Data &amp; Carrera.</p>}</div>
+            <div className="portfolio-skills-list"><div className="portfolio-minor-heading"><h3><Layers3 size={16} /> Tecnologías vinculadas</h3><span>{topSkills.length} principales</span></div>{topSkills.length ? topSkills.map((skill) => <div key={skill.name} className="portfolio-skill-row"><span><TechnologyMark name={skill.name} />{skill.name}</span><div><PortfolioProgress value={scaleToPct(skill.projects_count, Math.max(...topSkills.map((item) => item.projects_count), 1))} label={skill.name + ": presencia relativa en proyectos"} /></div><strong>{skill.projects_count}</strong></div>) : <p className="portfolio-empty">Las tecnologias apareceran al registrar skills en Data &amp; Carrera.</p>}</div>
           </section>
           <section className="portfolio-specialties" aria-labelledby="portfolio-specialties-title">
             <div className="portfolio-section-heading"><div><span className="portfolio-section-icon"><Gauge size={19} /></span><div><h2 id="portfolio-specialties-title">Perfil tecnico</h2><p>Distribucion basada en skills registradas.</p></div></div></div>
@@ -465,7 +435,7 @@ export default function PortfolioPage() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   )
 }
 

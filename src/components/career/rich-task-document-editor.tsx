@@ -23,6 +23,7 @@ import {
   type RichEditorJSON,
 } from "@/lib/career"
 import { getErrorMessage } from "@/lib/errors"
+import { CareerDetailSections } from "./career-detail-sections"
 
 type BrowserSupabaseClient = ReturnType<typeof createClient<SupabaseDatabase>>
 
@@ -377,49 +378,48 @@ export function RichTaskDocumentEditor({
   }
 
   return (
-    <div className="relative flex h-[calc(92vh-260px)] min-h-[680px] flex-col overflow-hidden rounded-[2rem] border border-white/[0.07] bg-[linear-gradient(135deg,rgba(8,11,18,0.80),rgba(18,13,10,0.52))] shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(249,115,22,0.065),transparent_30%),radial-gradient(circle_at_90%_10%,rgba(59,130,246,0.055),transparent_32%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-orange-300/35 to-transparent" />
-
-      <div className="relative z-20 shrink-0 border-b border-white/[0.06] bg-[#050813]/94 px-4 py-4 backdrop-blur-2xl md:px-6">
+    <div className="career-rich-editor">
+      <CareerDetailSections labels={["Documento", "Archivos"]}>
+      <div>
+      <div className="career-editor-toolbar relative z-20 shrink-0 border-b border-white/[0.06] px-4 py-4">
         <div className="flex flex-wrap items-center gap-2">
-          <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={toolbarButton(editor.isActive("bold"))}>
+          <button type="button" aria-label="Negrita" title="Negrita" aria-pressed={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} className={toolbarButton(editor.isActive("bold"))}>
             <Bold size={13} />
           </button>
-          <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={toolbarButton(editor.isActive("italic"))}>
+          <button type="button" aria-label="Cursiva" title="Cursiva" aria-pressed={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} className={toolbarButton(editor.isActive("italic"))}>
             <Italic size={13} />
           </button>
-          <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={toolbarButton(editor.isActive("underline"))}>
+          <button type="button" aria-label="Subrayado" title="Subrayado" aria-pressed={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} className={toolbarButton(editor.isActive("underline"))}>
             <UnderlineIcon size={13} />
           </button>
 
           <span className="mx-1 h-7 w-px bg-white/[0.08]" />
 
-          <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={toolbarButton(editor.isActive("heading", { level: 1 }))}>
+          <button type="button" aria-label="Título principal" title="Título principal" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={toolbarButton(editor.isActive("heading", { level: 1 }))}>
             <Heading1 size={14} />
           </button>
-          <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={toolbarButton(editor.isActive("heading", { level: 2 }))}>
+          <button type="button" aria-label="Título de sección" title="Título de sección" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={toolbarButton(editor.isActive("heading", { level: 2 }))}>
             <Heading2 size={14} />
           </button>
 
           <span className="mx-1 h-7 w-px bg-white/[0.08]" />
 
-          <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={toolbarButton(editor.isActive("bulletList"))}>
+          <button type="button" aria-label="Lista con viñetas" title="Lista con viñetas" onClick={() => editor.chain().focus().toggleBulletList().run()} className={toolbarButton(editor.isActive("bulletList"))}>
             <List size={14} />
           </button>
-          <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={toolbarButton(editor.isActive("orderedList"))}>
+          <button type="button" aria-label="Lista numerada" title="Lista numerada" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={toolbarButton(editor.isActive("orderedList"))}>
             <ListOrdered size={14} />
           </button>
-          <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={toolbarButton(editor.isActive("blockquote"))}>
+          <button type="button" aria-label="Cita" title="Cita" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={toolbarButton(editor.isActive("blockquote"))}>
             <Quote size={14} />
           </button>
-          <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={toolbarButton(editor.isActive("codeBlock"))}>
+          <button type="button" aria-label="Bloque de código" title="Bloque de código" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={toolbarButton(editor.isActive("codeBlock"))}>
             <Code2 size={14} />
           </button>
 
           <span className="mx-1 h-7 w-px bg-white/[0.08]" />
 
-          <button type="button" onClick={setLink} className={toolbarButton(editor.isActive("link"))}>
+          <button type="button" aria-label="Enlace" title="Enlace" onClick={setLink} className={toolbarButton(editor.isActive("link"))}>
             <LinkIcon size={14} />
           </button>
 
@@ -470,6 +470,7 @@ export function RichTaskDocumentEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
+            aria-label="Limpiar formato" title="Limpiar formato"
             className="rounded-xl border border-white/[0.06] bg-black/24 px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.08em] text-slate-400 transition-all hover:border-rose-300/22 hover:bg-rose-500/[0.08] hover:text-rose-100"
           >
             <Eraser size={14} />
@@ -599,8 +600,9 @@ export function RichTaskDocumentEditor({
           [&_.ProseMirror_img]:object-contain
           [&_.ProseMirror_img]:shadow-[0_18px_50px_rgba(0,0,0,0.35)]"
         />
-
-        <div className="relative border-t border-white/[0.06] bg-black/18 px-6 py-6 md:px-10 md:py-8">
+      </div>
+      </div>
+        <div className="career-reference-files relative px-2 py-4">
         <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-center">
           <div>
             <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-emerald-200/85">
@@ -638,14 +640,14 @@ export function RichTaskDocumentEditor({
             </p>
           </div>
         ) : (
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="career-file-list">
             {referenceAssets.map((asset) => {
               const visual = getAssetVisual(asset.mime_type, asset.file_name)
 
               return (
                 <div
                   key={asset.id}
-                  className={`group/file relative overflow-hidden rounded-2xl border ${visual.border} ${visual.bg} p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-300/24 hover:bg-white/[0.055]`}
+                  className="career-file-row group/file"
                 >
                   <div className="absolute right-0 top-0 h-20 w-20 rounded-bl-full bg-white/[0.035]" />
                   <div className="relative flex items-start gap-3">
@@ -707,7 +709,7 @@ export function RichTaskDocumentEditor({
           </div>
         )}
       </div>
-      </div>
+      </CareerDetailSections>
     </div>
   )
 }

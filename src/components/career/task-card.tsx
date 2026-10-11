@@ -1,7 +1,9 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
+import { CareerSelect } from "./career-filters"
 import { FileText, Trash2 } from "lucide-react"
+import { TechnologyMark } from "./technology-mark"
 
 import {
   getHiddenTaskSkillCount,
@@ -19,16 +21,16 @@ type TaskCardProps = {
 
 export function TaskCard({ task, onStatusChange, onOpenDocumentation, onDelete }: TaskCardProps) {
   const hiddenTaskSkillCount = getHiddenTaskSkillCount(task.task_skills)
+  const reduced = useReducedMotion()
 
   return (
     <motion.div
       key={task.id}
-      initial={{ opacity: 0, scale: 0.96, y: 5 }}
+      initial={reduced ? false : { opacity: 0, y: 5 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.93, x: -10 }}
-      whileHover={{ y: -2, borderColor: "rgba(249,115,22,0.22)" }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className="group/task relative flex flex-col gap-2 rounded-2xl border border-white/[0.055] bg-black/32 p-3 shadow-[0_12px_25px_rgba(0,0,0,0.25)] transition-colors duration-300"
+      exit={{ opacity: 0 }}
+      transition={{ duration: reduced ? 0 : .16, ease: "easeOut" }}
+      className="career-task-card group/task" data-status={task.status}
     >
       <div className="absolute inset-x-3 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       <p className="pr-4 text-xs font-semibold leading-snug text-slate-300 break-words">{task.title}</p>
@@ -42,20 +44,17 @@ export function TaskCard({ task, onStatusChange, onOpenDocumentation, onDelete }
             return (
               <span
                 key={link.id}
-                className="inline-flex max-w-[92px] items-center gap-1 rounded-lg border border-cyan-300/12 bg-cyan-500/[0.075] px-2 py-1 text-[7px] font-extrabold uppercase tracking-[0.08em] text-cyan-100/85"
+                className="career-task-technology"
                 title={skill.name}
               >
-                <span
-                  className="h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: skill.color || "#22d3ee" }}
-                />
-                <span className="truncate">{skill.name}</span>
+                <TechnologyMark name={skill.name} size={14} />
+                <span>{skill.name}</span>
               </span>
             )
           })}
 
           {hiddenTaskSkillCount > 0 && (
-            <span className="inline-flex items-center rounded-lg border border-white/[0.06] bg-black/28 px-2 py-1 text-[7px] font-extrabold uppercase tracking-[0.08em] text-slate-400">
+            <span className="career-task-technology career-task-technology--count">
               +{hiddenTaskSkillCount}
             </span>
           )}
@@ -63,16 +62,16 @@ export function TaskCard({ task, onStatusChange, onOpenDocumentation, onDelete }
       )}
 
       <div className="mt-2 flex items-center justify-between border-t border-white/[0.05] pt-2">
-        <select
-          className="max-w-[122px] cursor-pointer rounded-lg border border-white/10 bg-[#02040a] px-1.5 py-1 text-[9px] font-extrabold uppercase text-slate-400 outline-none transition-all focus:border-orange-400/50"
+        <CareerSelect
+          label={`Estado de ${task.title}`}
           value={task.status}
-          onChange={(event) => onStatusChange(task.id, event.target.value as TaskStatus)}
+          onChange={(value) => onStatusChange(task.id, value as TaskStatus)}
         >
-          <option value="SIN EMPEZAR" className="bg-[#02040a]">🔘 Sin empezar</option>
-          <option value="EN CURSO" className="bg-[#02040a]">🔵 En curso</option>
-          <option value="COMPLETADO" className="bg-[#02040a]">🟢 Completado</option>
-          <option value="ARCHIVADO" className="bg-[#02040a]">📦 Archivado</option>
-        </select>
+          <option value="SIN EMPEZAR">Sin empezar</option>
+          <option value="EN CURSO">En curso</option>
+          <option value="COMPLETADO">Completado</option>
+          <option value="ARCHIVADO">Archivado</option>
+        </CareerSelect>
 
         <div className="flex items-center gap-1">
           <button
@@ -80,6 +79,7 @@ export function TaskCard({ task, onStatusChange, onOpenDocumentation, onDelete }
             onClick={() => onOpenDocumentation(task)}
             className="rounded-lg p-1 text-slate-500 transition-colors hover:bg-orange-500/10 hover:text-orange-300"
             title="Abrir documentación"
+            aria-label="Abrir documentación"
           >
             <FileText size={12} />
           </button>
@@ -89,6 +89,7 @@ export function TaskCard({ task, onStatusChange, onOpenDocumentation, onDelete }
             onClick={() => onDelete(task.id)}
             className="rounded-lg p-1 text-slate-600 transition-colors hover:bg-rose-500/10 hover:text-rose-300"
             title="Purgar Tarea"
+            aria-label="Purgar Tarea"
           >
             <Trash2 size={11} />
           </button>

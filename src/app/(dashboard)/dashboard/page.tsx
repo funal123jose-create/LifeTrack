@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { motion } from "framer-motion"
 import { RegistrationPanel } from "@/components/registration-panel"
-import { DashboardMockupView, type DashboardMockupData } from "@/components/dashboard/dashboard-mockup-view"
+import type { DashboardMockupData } from "@/components/dashboard/dashboard-mockup-view"
+import { DashboardView2026 } from "@/components/dashboard/dashboard-view-2026"
+import "./dashboard-2026.css"
 import { getCurrentWeekEndString, getCurrentWeekStartString, getLocalDateString } from "@/lib/date"
-import { containerVariants } from "@/lib/dashboard-page-config"
 import {
   formatDateShort,
   getCareerDashboardMetrics,
@@ -37,8 +37,8 @@ export default function DashboardPage() {
   // --- ESTADOS PARA LÓGICA REAL ---
   const [careerProgress, setCareerProgress] = useState(0)
   const [healthProgress, setHealthProgress] = useState(0)
-  const [, setLoadingProgress] = useState(true)
-  const [, setLoadingHealth] = useState(true)
+  const [loadingProgress, setLoadingProgress] = useState(true)
+  const [loadingHealth, setLoadingHealth] = useState(true)
 
   // --- NUEVAS MÉTRICAS DEL DASHBOARD GENERAL ---
   const [totalProjects, setTotalProjects] = useState(0)
@@ -60,24 +60,24 @@ export default function DashboardPage() {
 
   // --- RESUMEN SEMANAL DE SALUD ---
   const [weeklyHealthSummary, setWeeklyHealthSummary] = useState<WeeklyHealthSummary | null>(null)
-  const [, setLoadingWeeklyHealth] = useState(true)
+  const [loadingWeeklyHealth, setLoadingWeeklyHealth] = useState(true)
 
   // --- RESUMEN SEMANAL DE DATA & CARRERA ---
   const [weeklyCareerSummary, setWeeklyCareerSummary] = useState<WeeklyCareerSummary | null>(null)
-  const [, setLoadingWeeklyCareer] = useState(true)
+  const [loadingWeeklyCareer, setLoadingWeeklyCareer] = useState(true)
 
   // --- ACTIVIDAD SEMANAL REAL DE DATA & CARRERA ---
   const [weeklyCareerActivity, setWeeklyCareerActivity] = useState<WeeklyCareerActivity | null>(null)
-  const [, setLoadingWeeklyCareerActivity] = useState(true)
+  const [loadingWeeklyCareerActivity, setLoadingWeeklyCareerActivity] = useState(true)
 
   // --- SKILLS & STACK PROFESIONAL ---
   const [careerSkillsSummary, setCareerSkillsSummary] = useState<CareerSkillsSummary | null>(null)
-  const [, setLoadingCareerSkills] = useState(true)
+  const [loadingCareerSkills, setLoadingCareerSkills] = useState(true)
 
   // --- RESUMEN SEMANAL DE CUIDADO PERSONAL ---
   const [personalCareProgress, setPersonalCareProgress] = useState(0)
   const [weeklyPersonalCareSummary, setWeeklyPersonalCareSummary] = useState<WeeklyPersonalCareSummary | null>(null)
-  const [, setLoadingPersonalCare] = useState(true)
+  const [loadingPersonalCare, setLoadingPersonalCare] = useState(true)
 
   const supabase = createClient()
 
@@ -1002,19 +1002,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="dashboard-redesign relative min-h-screen overflow-hidden bg-transparent px-2 pb-8 pt-2 font-sans text-slate-100 antialiased selection:bg-blue-500/30 selection:text-white sm:px-4 [overflow-wrap:anywhere]">
-
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="relative z-10 mx-auto flex w-full max-w-[1760px] flex-col gap-3"
-      >
-        <DashboardMockupView data={dashboardMockupData} onRegister={() => setIsPanelOpen(true)} />
-
-
-        <RegistrationPanel open={isPanelOpen} setOpen={setIsPanelOpen} />
-      </motion.div>
-    </div>
+    <>
+      <DashboardView2026 data={dashboardMockupData} onRegister={() => setIsPanelOpen(true)} loading={{
+        health: loadingHealth || loadingWeeklyHealth,
+        career: loadingProgress || loadingWeeklyCareer || loadingWeeklyCareerActivity || loadingCareerSkills,
+        care: loadingPersonalCare,
+      }} />
+      <RegistrationPanel open={isPanelOpen} setOpen={setIsPanelOpen} visual2026 />
+    </>
   )
 }

@@ -23,7 +23,7 @@ export function CheckinMetricCard({
     <div className="flex min-h-[108px] min-w-0 flex-col justify-between border-b border-violet-300/15 px-2 py-3 transition-colors hover:bg-violet-400/5">
       <div className="mb-3 flex min-w-0 items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-violet-300/25 bg-violet-400/12 ${accent}`}>
+          <span className={`pillar-heading-icon shrink-0 ${accent}`}>
             <Icon size={16} />
           </span>
           <div className="min-w-0">

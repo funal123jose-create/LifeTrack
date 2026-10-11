@@ -1,14 +1,10 @@
-export default function LoginLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    // Forzamos la clase 'dark' y un fondo específico para que no cambie con el tema
-    <div className="dark">
-      <div className="min-h-screen bg-[#020617] text-white antialiased selection:bg-blue-500/30">
-        {children}
-      </div>
-    </div>
-  )
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "LifeTrack | Inicia sesión",
+  icons: { icon: "/images/lifetrack/2026/lifetrack-mark.svg" },
+}
+
+export default function LoginLayout({ children }: { children: React.ReactNode }) {
+  return children
 }

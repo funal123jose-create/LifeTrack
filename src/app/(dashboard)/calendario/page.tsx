@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { motion, useReducedMotion } from "framer-motion"
 import {
@@ -38,7 +37,8 @@ import {
   mapWaterRows,
   toDateKey,
 } from "@/lib/progress-calendar"
-import "./calendar-overhaul.css"
+import "../final-phase.css"
+import "./calendar-final.css"
 
 type LoadState = "idle" | "loading" | "ready" | "error"
 
@@ -242,14 +242,11 @@ export default function CalendarioPage() {
   }
 
   return (
-    <main className="lifetrack-general calendar-overhaul text-slate-100">
+    <div id="lt26-content" tabIndex={-1} className="lt-final-page calendar-overhaul">
       <div className="calendar-stage">
         <section className="calendar-masthead" aria-labelledby="calendar-title">
-          <Image src="/images/lifetrack/career-sunrise.webp" alt="" fill priority sizes="100vw" className="calendar-masthead__image" />
-          <div className="calendar-masthead__shade" aria-hidden="true" />
           <div className="calendar-masthead__copy">
-            <span className="calendar-kicker"><CalendarDays size={15} /> Vista mensual</span>
-            <h1 id="calendar-title">Calendario de progreso</h1>
+            <h1 id="calendar-title">Calendario</h1>
             <p>Habitos, rutinas, salud, cuidado personal y eventos organizados por fecha.</p>
           </div>
           <div className="calendar-masthead__metrics" aria-label="Resumen del mes">
@@ -262,6 +259,7 @@ export default function CalendarioPage() {
           </div>
         </section>
 
+        <div className="calendar-planning-layout">
         <section className="calendar-workspace" aria-labelledby="calendar-month-title">
           <div className="calendar-workspace__head">
             <div><span className="calendar-section-icon"><CalendarDays size={19} /></span><div><h2 id="calendar-month-title">{calendarMonth.label}</h2><p>Selecciona una fecha para revisar sus registros.</p></div></div>
@@ -274,8 +272,8 @@ export default function CalendarioPage() {
           <div className="calendar-legend" aria-label="Estados del calendario">{statusLegend.map((item) => <span key={item.id}><i data-status={item.id} />{item.label}</span>)}</div>
           {loadState === "idle" || loadState === "loading" ? <div className="calendar-state" role="status"><Loader2 size={22} className="animate-spin" /> Cargando calendario desde Supabase...</div> : null}
           {loadState === "error" ? <div className="calendar-state calendar-state--error" role="alert">No se pudo cargar el calendario desde Supabase.{errorMessage ? <span>{errorMessage}</span> : null}</div> : null}
-          {loadState === "ready" ? <>
-            <div className="calendar-desktop-grid">
+          {loadState !== "error" ? <>
+            <div className="calendar-desktop-grid" aria-busy={loadState !== "ready"}>
               <div className="calendar-weekdays">{WEEKDAY_LABELS.map((day) => <span key={day}>{day}</span>)}</div>
               <motion.div key={calendarMonth.key} initial={reducedMotion ? false : { opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .22 }} className="calendar-days-grid">
                 {calendarMonth.days.map((day) => <CalendarCell key={day.date} day={day} isSelected={selectedDay?.date === day.date} onSelect={() => selectDay(day)} reducedMotion={reducedMotion} />)}
@@ -294,15 +292,18 @@ export default function CalendarioPage() {
               <div><span>Fecha</span><strong>{selectedDay ? new Intl.DateTimeFormat("es-PE", { weekday: "long", day: "numeric", month: "long" }).format(new Date(selectedDay.date + "T12:00:00")) : "--"}</strong></div>
               <div><span>Eventos</span><strong>{selectedDay?.events.length ?? 0}</strong></div>
               <div><span>Avance de registros</span><strong>{selectedDay?.completionRate ?? 0}%</strong></div>
-              <div><span>Estado</span><strong className="calendar-selected__status" data-status={selectedDay?.status}>{selectedDay?.status || "Sin datos"}</strong></div>
+              <div><span>Estado</span><strong className="calendar-selected__status" data-status={selectedDay?.status}>{statusLegend.find((status) => status.id === selectedDay?.status)?.label || "Sin registros"}</strong></div>
             </div>
             <div className="calendar-selected__events">
               <h3><Layers3 size={16} /> Registros de la fecha</h3>
-              {loadState === "ready" && selectedDay?.events.length ? selectedDay.events.map((event) => <EventCard key={event.id} event={event} />) : <div className="calendar-selected__empty">{loadState === "loading" ? "Cargando registros..." : "Sin registros para esta fecha."}</div>}
+              <div key={selectedDay?.date} className="calendar-selected__list" role="region" aria-label="Actividades de la fecha seleccionada" tabIndex={0}>
+                {loadState === "ready" && selectedDay?.events.length ? selectedDay.events.map((event) => <EventCard key={event.id} event={event} />) : <div className="calendar-selected__empty">{loadState === "loading" ? "Cargando registros..." : "Sin registros para esta fecha."}</div>}
+              </div>
             </div>
           </div>
         </section>
 
+        </div>
         <div className="calendar-bottom">
           <section className="calendar-milestones" aria-labelledby="calendar-milestones-title">
             <div className="calendar-section-head"><div><span className="calendar-section-icon"><Trophy size={19} /></span><div><h2 id="calendar-milestones-title">Senales del mes</h2><p>Fechas que destacan dentro de los registros.</p></div></div></div>
@@ -319,6 +320,6 @@ export default function CalendarioPage() {
           </section>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

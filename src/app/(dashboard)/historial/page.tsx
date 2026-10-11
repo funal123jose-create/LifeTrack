@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { motion, useReducedMotion } from "framer-motion"
 import { Select } from "radix-ui"
@@ -43,7 +42,8 @@ import {
   mapWaterLogs,
   sortActivities,
 } from "@/lib/activity-history"
-import "./history-overhaul.css"
+import "../final-phase.css"
+import "./history-final.css"
 
 type LoadState = "idle" | "loading" | "ready" | "error"
 
@@ -218,13 +218,10 @@ export default function HistorialPage() {
   )
 
   return (
-    <main className="lifetrack-general history-overhaul text-slate-100">
+    <div id="lt26-content" tabIndex={-1} className="lt-final-page history-overhaul">
       <div className="history-stage">
         <section className="history-masthead" aria-labelledby="history-title">
-          <Image src="/images/lifetrack/career-sunrise.webp" alt="" fill priority sizes="100vw" className="history-masthead__image" />
-          <div className="history-masthead__shade" aria-hidden="true" />
           <div className="history-masthead__copy">
-            <span className="history-kicker"><History size={15} /> Registro global</span>
             <h1 id="history-title">Historial de actividad</h1>
             <p>Un registro cronologico de Salud, Data &amp; Carrera y Cuidado Personal.</p>
           </div>
@@ -253,21 +250,7 @@ export default function HistorialPage() {
           </div>
         </section>
 
-        <div className="history-insights">
-          <section className="history-week" aria-labelledby="history-week-title">
-            <div className="history-mini-head"><h2 id="history-week-title"><Activity size={18} /> Ritmo de los ultimos 7 dias</h2><span>Registros por dia</span></div>
-            <div className="history-week__chart">{weeklyActivity.map((day) => <button type="button" key={day.key} disabled={!day.count} onClick={() => document.getElementById("history-day-" + day.key)?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" })} aria-label={day.label + ": " + day.count + " registros. Ir a los eventos del dia."} title={day.label + ": " + day.count + " registros"}><span className="history-week__bar-track"><span className="history-week__bar" style={{ height: String(Math.max(day.percent, day.count ? 9 : 0)) + "%" }} /></span><strong>{day.count}</strong><small>{day.label}</small></button>)}</div>
-          </section>
-          <section className="history-distribution" aria-labelledby="history-distribution-title">
-            <div className="history-mini-head"><h2 id="history-distribution-title"><BarChart3 size={18} /> Por pilar</h2><span>Vista filtrada</span></div>
-            <div className="history-distribution__list">{stats.distribution.map((pillar) => <button type="button" key={pillar.id} onClick={() => setActiveFilter(pillar.id)} aria-pressed={activeFilter === pillar.id}><span><strong>{pillar.label}</strong><small>{pillar.count} eventos</small></span><span className="history-distribution__track"><span data-pillar={pillar.id} style={{ width: String(pillar.percent) + "%" }} /></span><b>{pillar.percent}%</b></button>)}</div>
-          </section>
-          <section className="history-milestones" aria-labelledby="history-milestones-title">
-            <div className="history-mini-head"><h2 id="history-milestones-title"><Sparkles size={18} /> Ultimos hitos</h2><span>Actividad reciente</span></div>
-            <div className="history-milestones__list">{activities.slice(0, 3).map((event) => <div key={event.id}><span>{formatActivityTime(event.occurredAt)}</span><div><strong>{event.title}</strong><small>{sourceLabels[event.source]}</small></div></div>)}{loadState === "ready" && !activities.length ? <p className="history-empty">Sin hitos recientes.</p> : null}</div>
-          </section>
-        </div>
-
+        <div className="history-workspace">
         <section className="history-ledger" aria-labelledby="history-ledger-title">
           <div className="history-section-head"><div><span className="history-section-icon"><History size={18} /></span><div><h2 id="history-ledger-title">Cronologia de registros</h2><p>De lo mas reciente a lo mas antiguo.</p></div></div><span>{groupedActivities.length} fechas</span></div>
           {loadState === "idle" || loadState === "loading" ? <div className="history-state"><Loader2 size={24} className="animate-spin" /> Cargando actividad desde Supabase...</div> : null}
@@ -290,7 +273,22 @@ export default function HistorialPage() {
             })}</div>
           </div>)}
         </section>
+        <aside className="history-insights" aria-label="Análisis de los registros">
+          <section className="history-week" aria-labelledby="history-week-title">
+            <div className="history-mini-head"><h2 id="history-week-title"><Activity size={18} /> Ritmo de los ultimos 7 dias</h2><span>Registros por dia</span></div>
+            <div className="history-week__chart">{weeklyActivity.map((day) => <button type="button" key={day.key} disabled={!day.count} onClick={() => document.getElementById("history-day-" + day.key)?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" })} aria-label={day.label + ": " + day.count + " registros. Ir a los eventos del dia."} title={day.label + ": " + day.count + " registros"}><span className="history-week__bar-track"><span className="history-week__bar" style={{ height: String(Math.max(day.percent, day.count ? 9 : 0)) + "%" }} /></span><strong>{day.count}</strong><small>{day.label}</small></button>)}</div>
+          </section>
+          <section className="history-distribution" aria-labelledby="history-distribution-title">
+            <div className="history-mini-head"><h2 id="history-distribution-title"><BarChart3 size={18} /> Por pilar</h2><span>Vista filtrada</span></div>
+            <div className="history-distribution__list">{stats.distribution.map((pillar) => <button type="button" key={pillar.id} onClick={() => setActiveFilter(pillar.id)} aria-pressed={activeFilter === pillar.id}><span><strong>{pillar.label}</strong><small>{pillar.count} eventos</small></span><span className="history-distribution__track"><span data-pillar={pillar.id} style={{ width: String(pillar.percent) + "%" }} /></span><b>{pillar.percent}%</b></button>)}</div>
+          </section>
+          <section className="history-milestones" aria-labelledby="history-milestones-title">
+            <div className="history-mini-head"><h2 id="history-milestones-title"><Sparkles size={18} /> Ultimos hitos</h2><span>Actividad reciente</span></div>
+            <div className="history-milestones__list">{activities.slice(0, 3).map((event) => <div key={event.id}><span>{formatActivityTime(event.occurredAt)}</span><div><strong>{event.title}</strong><small>{sourceLabels[event.source]}</small></div></div>)}{loadState === "ready" && !activities.length ? <p className="history-empty">Sin hitos recientes.</p> : null}</div>
+          </section>
+        </aside>
+        </div>
       </div>
-    </main>
+    </div>
   )
 }

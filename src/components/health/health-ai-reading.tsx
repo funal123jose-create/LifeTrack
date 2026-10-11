@@ -47,7 +47,7 @@ export function HealthAiReading({ fallback, revision }: { fallback: HealthInsigh
 
   return <>
     <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-emerald-300/15 pb-3">
-      <h2 className="flex items-center gap-2 text-sm font-extrabold text-white sm:text-[15px]"><span className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-300/20 bg-emerald-400/10 text-emerald-300"><Sparkles size={17} /></span>Lectura de salud</h2>
+      <h2 className="flex items-center gap-2 text-sm font-extrabold text-white sm:text-[15px]"><Sparkles size={17} className="shrink-0 text-emerald-300" aria-hidden="true" />Lectura de salud</h2>
       {available && <button type="button" onClick={generate} disabled={loading} className="health-pressable inline-flex items-center gap-1.5 rounded-md border border-emerald-300/35 bg-emerald-400/10 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-100 hover:border-emerald-300/60 hover:bg-emerald-400/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-300 disabled:opacity-50">{loading ? <Loader2 size={12} className="motion-safe:animate-spin" /> : current ? <RefreshCcw size={12} /> : <Sparkles size={12} />}{loading ? "Analizando..." : current ? "Actualizar" : "Generar con Gemini"}</button>}
     </div>
     <div className="flex flex-1 flex-col justify-between gap-3">
